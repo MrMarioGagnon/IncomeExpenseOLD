@@ -23,6 +23,27 @@ public class TestUtilities extends AndroidTestCase {
     static final String AUTOMOBILE_CATEGORY = "Automobile";
     static final String AUTOMOBILE_SUBCATEGORY = "Insurance|Parking|Pay Toll";
 
+    static final String HOUSE_ACCOUNT = "House";
+    static final String CURRENCY_ACCOUNT = "CAD";
+
+    static final String NATHALIE_CONTRIBUTOR = "Nathalie";
+
+    static ContentValues createHouseAccountValues() {
+        // Create a new map of values, where column names are the keys
+        ContentValues testValues = new ContentValues();
+        testValues.put(IncomeExpenseContract.AccountEntry.COLUMN_NAME, HOUSE_ACCOUNT);
+        testValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY, CURRENCY_ACCOUNT);
+        return testValues;
+    }
+
+    static ContentValues createNathalieContributorValues() {
+        // Create a new map of values, where column names are the keys
+        ContentValues testValues = new ContentValues();
+        testValues.put(IncomeExpenseContract.ContributorEntry.COLUMN_NAME, NATHALIE_CONTRIBUTOR);
+        return testValues;
+    }
+
+
     static ContentValues createAutomobileCategoryValues() {
         // Create a new map of values, where column names are the keys
         ContentValues testValues = new ContentValues();
