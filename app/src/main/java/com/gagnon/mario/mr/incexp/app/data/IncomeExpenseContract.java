@@ -19,7 +19,6 @@ public class IncomeExpenseContract {
     public static final String PATH_CATEGORY = "category";
     public static final String PATH_ACCOUNT = "account";
     public static final String PATH_CONTRIBUTOR = "contributor";
-    public static final String PATH_CURRENCY = "currency";
 
     public static final class CategoryEntry implements BaseColumns{
 
@@ -63,6 +62,15 @@ public class IncomeExpenseContract {
         public static final String COLUMN_ID = _ID;
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_CURRENCY = "currency";
+
+        public static Uri buildAccountUri(long id){
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static long getIdFromUri(Uri uri) {
+            return Integer.parseInt(uri.getPathSegments().get(1));
+        }
+
     }
 
     public static final class ContributorEntry implements BaseColumns{
@@ -79,6 +87,15 @@ public class IncomeExpenseContract {
 
         public static final String COLUMN_ID = _ID;
         public static final String COLUMN_NAME = "name";
+
+        public static Uri buildContributorUri(long id){
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static long getIdFromUri(Uri uri) {
+            return Integer.parseInt(uri.getPathSegments().get(1));
+        }
+
 
     }
 

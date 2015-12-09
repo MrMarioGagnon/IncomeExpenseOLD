@@ -80,6 +80,36 @@ public class TestUtilities extends AndroidTestCase {
         return locationRowId;
     }
 
+    static long insertHouseAccountValues(Context context) {
+        // insert our test records into the database
+        IncomeExpenseDbHelper dbHelper = new IncomeExpenseDbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues testValues = TestUtilities.createHouseAccountValues();
+
+        long locationRowId;
+        locationRowId = db.insert(IncomeExpenseContract.AccountEntry.TABLE_NAME, null, testValues);
+
+        // Verify we got a row back.
+        assertTrue("Error: Failure to insert House Account Values", locationRowId != -1);
+
+        return locationRowId;
+    }
+
+    static long insertNathalieContributorValues(Context context) {
+        // insert our test records into the database
+        IncomeExpenseDbHelper dbHelper = new IncomeExpenseDbHelper(context);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues testValues = TestUtilities.createNathalieContributorValues();
+
+        long locationRowId;
+        locationRowId = db.insert(IncomeExpenseContract.ContributorEntry.TABLE_NAME, null, testValues);
+
+        // Verify we got a row back.
+        assertTrue("Error: Failure to insert House Account Values", locationRowId != -1);
+
+        return locationRowId;
+    }
+
     static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues) {
         assertTrue("Empty cursor returned. " + error, valueCursor.moveToFirst());
         validateCurrentRecord(error, valueCursor, expectedValues);
