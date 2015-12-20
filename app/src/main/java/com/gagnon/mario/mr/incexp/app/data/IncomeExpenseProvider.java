@@ -221,7 +221,7 @@ public class IncomeExpenseProvider extends ContentProvider {
             case CATEGORY: {
                 long _id = db.insert(IncomeExpenseContract.CategoryEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = IncomeExpenseContract.CategoryEntry.buildCategoryUri(_id);
+                    returnUri = IncomeExpenseContract.CategoryEntry.buildInstanceUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -229,7 +229,7 @@ public class IncomeExpenseProvider extends ContentProvider {
             case ACCOUNT: {
                 long _id = db.insert(IncomeExpenseContract.AccountEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = IncomeExpenseContract.AccountEntry.buildAccountUri(_id);
+                    returnUri = IncomeExpenseContract.AccountEntry.buildInstanceUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -237,7 +237,7 @@ public class IncomeExpenseProvider extends ContentProvider {
             case CONTRIBUTOR: {
                 long _id = db.insert(IncomeExpenseContract.ContributorEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = IncomeExpenseContract.ContributorEntry.buildContributorUri(_id);
+                    returnUri = IncomeExpenseContract.ContributorEntry.buildInstanceUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;

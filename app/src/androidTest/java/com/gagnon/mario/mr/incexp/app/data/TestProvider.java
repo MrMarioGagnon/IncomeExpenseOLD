@@ -129,7 +129,7 @@ public class TestProvider extends AndroidTestCase {
         long id = 12;
         // content://com.gagnon.mario.mr.incexp.app/category/12
         type = mContext.getContentResolver().getType(
-                IncomeExpenseContract.CategoryEntry.buildCategoryUri(id));
+                IncomeExpenseContract.CategoryEntry.buildInstanceUri(id));
         // vnd.android.cursor.item/com.gagnon.mario.mr.incexp.app/category
         assertEquals("Error: the CategoryEntry CONTENT_URI with id should return CategoryEntry.CONTENT_TYPE",
                 IncomeExpenseContract.CategoryEntry.CONTENT_ITEM_TYPE, type);
@@ -145,7 +145,7 @@ public class TestProvider extends AndroidTestCase {
         id = 12;
         // content://com.gagnon.mario.mr.incexp.app/account/12
         type = mContext.getContentResolver().getType(
-                IncomeExpenseContract.AccountEntry.buildAccountUri(id));
+                IncomeExpenseContract.AccountEntry.buildInstanceUri(id));
         // vnd.android.cursor.item/com.gagnon.mario.mr.incexp.app/account
         assertEquals("Error: the AccountEntry CONTENT_URI with id should return AccountEntry.CONTENT_TYPE",
                 IncomeExpenseContract.AccountEntry.CONTENT_ITEM_TYPE, type);
@@ -161,7 +161,7 @@ public class TestProvider extends AndroidTestCase {
         id = 12;
         // content://com.gagnon.mario.mr.incexp.app/contributor/12
         type = mContext.getContentResolver().getType(
-                IncomeExpenseContract.ContributorEntry.buildContributorUri(id));
+                IncomeExpenseContract.ContributorEntry.buildInstanceUri(id));
         // vnd.android.cursor.item/com.gagnon.mario.mr.incexp.app/contributor
         assertEquals("Error: the ContributorEntry CONTENT_URI with id should return ContributorEntry.CONTENT_TYPE",
                 IncomeExpenseContract.ContributorEntry.CONTENT_ITEM_TYPE, type);
@@ -572,7 +572,6 @@ public class TestProvider extends AndroidTestCase {
         for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++) {
             ContentValues weatherValues = new ContentValues();
             weatherValues.put(IncomeExpenseContract.CategoryEntry.COLUMN_NAME, "CAT" + String.valueOf(i));
-            weatherValues.put(IncomeExpenseContract.CategoryEntry.COLUMN_SUBCATEGORY, "SUBCAT" + String.valueOf(i));
             returnContentValues[i] = weatherValues;
         }
         return returnContentValues;

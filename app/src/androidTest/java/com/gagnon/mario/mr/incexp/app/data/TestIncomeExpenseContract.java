@@ -11,7 +11,7 @@ public class TestIncomeExpenseContract extends AndroidTestCase {
     private static final long ID = 12;
 
     public void testGetIdFromUri(){
-        Uri categoryUri = IncomeExpenseContract.CategoryEntry.buildCategoryUri(ID);
+        Uri categoryUri = IncomeExpenseContract.CategoryEntry.buildInstanceUri(ID);
 
         assertNotNull("Error: Null Uri returned.", categoryUri);
         long actual = IncomeExpenseContract.CategoryEntry.getIdFromUri(categoryUri);

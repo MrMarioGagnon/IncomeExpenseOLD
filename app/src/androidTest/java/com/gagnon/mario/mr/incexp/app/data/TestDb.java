@@ -59,7 +59,6 @@ public class TestDb extends AndroidTestCase{
         final HashSet<String> categoryColumnHashSet = new HashSet<String>();
         categoryColumnHashSet.add(IncomeExpenseContract.CategoryEntry.COLUMN_ID);
         categoryColumnHashSet.add(IncomeExpenseContract.CategoryEntry.COLUMN_NAME);
-        categoryColumnHashSet.add(IncomeExpenseContract.CategoryEntry.COLUMN_SUBCATEGORY);
 
         int columnNameIndex = c.getColumnIndex("name");
         do {

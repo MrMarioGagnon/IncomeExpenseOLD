@@ -48,7 +48,6 @@ public class TestUtilities extends AndroidTestCase {
         // Create a new map of values, where column names are the keys
         ContentValues testValues = new ContentValues();
         testValues.put(IncomeExpenseContract.CategoryEntry.COLUMN_NAME, AUTOMOBILE_CATEGORY);
-        testValues.put(IncomeExpenseContract.CategoryEntry.COLUMN_SUBCATEGORY, AUTOMOBILE_SUBCATEGORY);
         return testValues;
     }
 
