@@ -2,7 +2,6 @@ package com.gagnon.mario.mr.incexp.app;
 
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.gagnon.mario.mr.incexp.app.Helper.AccountUtils;
+
 /**
  * Created by mario on 12/30/2015.
  */
@@ -20,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
     String TITLES[] = {"Home","Events","Mail","Shop","Travel"};
     int ICONS[] = {R.drawable.ic_home,R.drawable.ic_event,R.drawable.ic_mail,R.drawable.ic_shop,R.drawable.ic_travel};
 
-    String NAME = "Akash Bangad";
-    String EMAIL = "akash.bangad@android4devs.com";
     int PROFILE = R.drawable.ic_home;
 
     private Toolbar toolbar;                              // Declaring the Toolbar Object
@@ -45,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
         mRecyclerView.setHasFixedSize(true);
 
-        mAdapter = new MyAdapter(TITLES, ICONS, NAME, EMAIL, PROFILE);
+        AccountUtils.UserProfile up = AccountUtils.getUserProfile(this);
+
+        mAdapter = new DrawerAdapter(TITLES, ICONS, up.getName(), up.getEmail(), up.possiblePhoto());
 
         mRecyclerView.setAdapter(mAdapter);
 

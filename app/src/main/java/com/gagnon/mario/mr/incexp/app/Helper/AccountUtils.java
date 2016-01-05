@@ -82,6 +82,20 @@ public class AccountUtils {
                 _possible_phone_numbers.add(phone_number);
         }
 
+        public String getName(){
+            if(_possible_names.isEmpty())
+                return null;
+
+            return _possible_names.get(0);
+        }
+
+        public String getEmail(){
+            if(_possible_emails.isEmpty())
+                return null;
+
+            return _possible_emails.get(0);
+        }
+
         /**
          * Sets the possible photo for the user.
          * @param photo the possible photo
