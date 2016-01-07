@@ -27,7 +27,7 @@ import com.gagnon.mario.mr.incexp.app.Helper.UserProfileLoader;
 import java.util.List;
 
 public class MainActivityOld extends AppCompatActivity
-    implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<AccountUtils.UserProfile>{
+    implements NavigationView.OnNavigationItemSelectedListener , LoaderManager.LoaderCallbacks<AccountUtils.UserProfile>{
 
     public static final String LOG_TAG = MainActivityOld.class.getSimpleName();
 

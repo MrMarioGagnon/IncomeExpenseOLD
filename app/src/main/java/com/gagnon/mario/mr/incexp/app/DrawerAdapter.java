@@ -22,6 +22,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
 
     private String mName;        //String Resource for header View mName
     private Uri mProfile;        //int Resource for header view mProfile picture
+    private int mProfileInt;
     private String mEmail;       //String Resource for header view mEmail
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -46,8 +47,6 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
                 mHolderid = 1;                                               // setting holder id as 1 as the object being populated are of type item row
             }
             else{
-
-
                 mName = (TextView) itemView.findViewById(R.id.name);         // Creating Text View object from header.xml for name
                 mEmail = (TextView) itemView.findViewById(R.id.email);       // Creating Text View object from header.xml for mEmail
                 mProfile = (ImageView) itemView.findViewById(R.id.circleView);// Creating Image view object from header.xml for mProfile pic
@@ -64,8 +63,21 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
         mName = name;
         mEmail = email;
         mProfile = profile;                     //here we assign those passed values to the values we declared here
+        mProfileInt = 0;
         //in adapter
     }
+
+    DrawerAdapter(String titles[], int icons[], String name, String email, int profile){ // DrawerAdapter Constructor with titles and icons parameter
+        // titles, icons, name, mEmail, mProfile pic are passed from the main activity as we
+        mNavTitles = titles;                //have seen earlier
+        mIcons = icons;
+        mName = name;
+        mEmail = email;
+        mProfile = null;
+        mProfileInt = profile;                     //here we assign those passed values to the values we declared here
+        //in adapter
+    }
+
 
     @Override
     public DrawerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -102,7 +114,11 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
         }
         else{
 
-            holder.mProfile.setImageURI(mProfile);           // Similarly we set the resources for header view
+            if(null != mProfile) {
+                holder.mProfile.setImageURI(mProfile);           // Similarly we set the resources for header view
+            }else {
+                holder.mProfile.setImageResource(mProfileInt);
+            }
             holder.mName.setText(mName);
             holder.mEmail.setText(mEmail);
         }

@@ -1,5 +1,8 @@
 package com.gagnon.mario.mr.incexp.app;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -7,9 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.Helper.AccountUtils;
 
@@ -18,10 +23,10 @@ import com.gagnon.mario.mr.incexp.app.Helper.AccountUtils;
  */
 public class MainActivity extends AppCompatActivity {
 
-    String TITLES[] = {"Home","Events","Mail","Shop","Travel"};
-    int ICONS[] = {R.drawable.ic_home,R.drawable.ic_event,R.drawable.ic_mail,R.drawable.ic_shop,R.drawable.ic_travel};
+    public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    int PROFILE = R.drawable.ic_home;
+    String TITLES[] = {"Home", "Events", "Mail", "Shop", "Travel"};
+    int ICONS[] = {R.drawable.ic_home, R.drawable.ic_event, R.drawable.ic_mail, R.drawable.ic_shop, R.drawable.ic_travel};
 
     private Toolbar toolbar;                              // Declaring the Toolbar Object
 
@@ -32,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
 
     ActionBarDrawerToggle mDrawerToggle;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
+
+    private void initActivity() {
 
         setContentView(R.layout.activity_main);
 
@@ -44,22 +49,18 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
         mRecyclerView.setHasFixedSize(true);
 
-        AccountUtils.UserProfile up = AccountUtils.getUserProfile(this);
-
-        mAdapter = new DrawerAdapter(TITLES, ICONS, up.getName(), up.getEmail(), up.possiblePhoto());
-
         mRecyclerView.setAdapter(mAdapter);
 
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         Drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close){
+        mDrawerToggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                // code here will execute once the drawer is opened( As I dont want anything happened whe drawer is
+                // code here will execute once the drawer is opened( As I dont want anything happened the drawer is
                 // open I am not going to put anything here)
             }
 
@@ -73,6 +74,50 @@ public class MainActivity extends AppCompatActivity {
 
         Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
         mDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
+
+    }
+
+    private void initActivity(String name, String email, Uri photo) {
+        mAdapter = new DrawerAdapter(TITLES, ICONS, name, email, photo);
+        initActivity();
+    }
+
+    private void initActivity(String name, String email, int photo) {
+        mAdapter = new DrawerAdapter(TITLES, ICONS, name, email, photo);
+        initActivity();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    AccountUtils.UserProfile up = AccountUtils.getUserProfile(this);
+                    initActivity(up.getName(), up.getEmail(), up.possiblePhoto());
+                } else {
+                    initActivity("", "", R.drawable.ic_account_circle_black_24dp);
+                    Log.v(LOG_TAG, "WRITE_CONTACTS Denied");
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        final int hasWriteContactsPermission = checkSelfPermission(Manifest.permission.WRITE_CONTACTS);
+        if (hasWriteContactsPermission != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_CONTACTS}, REQUEST_CODE_ASK_PERMISSIONS);
+            return;
+        }
+
+        AccountUtils.UserProfile up = AccountUtils.getUserProfile(this);
+        initActivity(up.getName(), up.getEmail(), up.possiblePhoto());
 
     }
 
