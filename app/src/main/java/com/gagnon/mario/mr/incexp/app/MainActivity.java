@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.Helper.AccountUtils;
 
@@ -25,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    String TITLES[] = {"Home", "Events", "Mail", "Shop", "Travel"};
-    int ICONS[] = {R.drawable.ic_home, R.drawable.ic_event, R.drawable.ic_mail, R.drawable.ic_shop, R.drawable.ic_travel};
+    String TITLES[] = {"Category", "Settings", "Send feedback", "Help"};
+    int ICONS[] = {R.drawable.ic_view_list_black_24dp, R.drawable.ic_settings_black_24dp, R.drawable.ic_feedback_black_24dp, R.drawable.ic_help_black_24dp};
 
     private Toolbar toolbar;                              // Declaring the Toolbar Object
 
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     ActionBarDrawerToggle mDrawerToggle;
 
-    final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
+    final private int REQUEST_CODE_READ_CONTACTS_PERMISSIONS = 123;
 
     private void initActivity() {
 
@@ -53,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mRecyclerView.addItemDecoration( new DividerItemDecoration(this, R.drawable.divider),0);
 
         Drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
@@ -91,13 +92,13 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         switch (requestCode) {
-            case REQUEST_CODE_ASK_PERMISSIONS:
+            case REQUEST_CODE_READ_CONTACTS_PERMISSIONS:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     AccountUtils.UserProfile up = AccountUtils.getUserProfile(this);
                     initActivity(up.getName(), up.getEmail(), up.possiblePhoto());
                 } else {
-                    initActivity("", "", R.drawable.ic_account_circle_black_24dp);
-                    Log.v(LOG_TAG, "WRITE_CONTACTS Denied");
+                    initActivity("", "", R.drawable.ic_account_circle_black_48dp);
+                    Log.v(LOG_TAG, "READ_CONTACTS Denied");
                 }
                 break;
             default:
@@ -110,9 +111,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final int hasWriteContactsPermission = checkSelfPermission(Manifest.permission.WRITE_CONTACTS);
+        final int hasWriteContactsPermission = checkSelfPermission(Manifest.permission.READ_CONTACTS);
         if (hasWriteContactsPermission != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_CONTACTS}, REQUEST_CODE_ASK_PERMISSIONS);
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE_READ_CONTACTS_PERMISSIONS);
             return;
         }
 
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+//        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -135,9 +136,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+  //      if (id == R.id.action_settings) {
+    //        return true;
+      //  }
 
         return super.onOptionsItemSelected(item);
     }
