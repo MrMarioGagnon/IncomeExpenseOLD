@@ -23,4 +23,11 @@
         android:text="Medium Text"
         android:id="@+id/rowText" />
 
+    <ToggleButton
+        android:id="@+id/toggleButtonSeparator"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:visibility="gone"/>
+
+
 </LinearLayout>

@@ -2,11 +2,15 @@ package com.gagnon.mario.mr.incexp.app;
 
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
+
+import java.util.List;
 
 /**
  * Created by mario on 12/30/2015.
@@ -17,15 +21,17 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
     // IF the view under inflation and population is header or Item
     private static final int TYPE_ITEM = 1;
 
-    private String mNavTitles[]; // String Array to store the passed titles Value from MainActivity.java
-    private int mIcons[];       // Int Array to store the passed icons resource value from MainActivity.java
+    private final List<DrawerItem> mDrawerItems;
 
     private String mName;        //String Resource for header View mName
     private Uri mProfile;        //int Resource for header view mProfile picture
     private int mProfileInt;
     private String mEmail;       //String Resource for header view mEmail
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
+        public static final String LOG_TAG = ViewHolder.class.getSimpleName();
+
         int mHolderid;
 
         TextView mTextView;
@@ -33,7 +39,8 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
         ImageView mProfile;
         TextView mName;
         TextView mEmail;
-
+        ToggleButton mSeparator0;
+        ToggleButton mSeparator1;
 
         public ViewHolder(View itemView,int viewType) {                 // Creating ViewHolder Constructor with View and viewType As a parameter
             super(itemView);
@@ -44,22 +51,29 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
             if(viewType == TYPE_ITEM) {
                 mTextView = (TextView) itemView.findViewById(R.id.rowText); // Creating TextView object with the id of mTextView from item_row.xml
                 mImageView = (ImageView) itemView.findViewById(R.id.rowIcon);// Creating ImageView object with the id of ImageView from item_row.xml
+                mSeparator1 = (ToggleButton) itemView.findViewById(R.id.toggleButtonSeparator);
+                itemView.setOnClickListener(this);
                 mHolderid = 1;                                               // setting holder id as 1 as the object being populated are of type item row
             }
             else{
                 mName = (TextView) itemView.findViewById(R.id.name);         // Creating Text View object from header.xml for name
                 mEmail = (TextView) itemView.findViewById(R.id.email);       // Creating Text View object from header.xml for mEmail
                 mProfile = (ImageView) itemView.findViewById(R.id.circleView);// Creating Image view object from header.xml for mProfile pic
+                mSeparator0 = (ToggleButton) itemView.findViewById(R.id.toggleButtonSeparator);
+
                 mHolderid = 0;                                                // Setting holder id = 0 as the object being populated are of type header view
             }
         }
 
+        @Override
+        public void onClick(View v) {
+            Log.v(LOG_TAG, v.toString());
+        }
     }
 
-    DrawerAdapter(String titles[], int icons[], String name, String email, Uri profile){ // DrawerAdapter Constructor with titles and icons parameter
+    DrawerAdapter(List<DrawerItem> drawerItems, String name, String email, Uri profile){ // DrawerAdapter Constructor with titles and icons parameter
         // titles, icons, name, mEmail, mProfile pic are passed from the main activity as we
-        mNavTitles = titles;                //have seen earlier
-        mIcons = icons;
+        mDrawerItems = drawerItems;
         mName = name;
         mEmail = email;
         mProfile = profile;                     //here we assign those passed values to the values we declared here
@@ -67,10 +81,9 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
         //in adapter
     }
 
-    DrawerAdapter(String titles[], int icons[], String name, String email, int profile){ // DrawerAdapter Constructor with titles and icons parameter
+    DrawerAdapter(List<DrawerItem> drawerItems, String name, String email, int profile){ // DrawerAdapter Constructor with titles and icons parameter
         // titles, icons, name, mEmail, mProfile pic are passed from the main activity as we
-        mNavTitles = titles;                //have seen earlier
-        mIcons = icons;
+        mDrawerItems = drawerItems;
         mName = name;
         mEmail = email;
         mProfile = null;
@@ -109,8 +122,9 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
     public void onBindViewHolder(DrawerAdapter.ViewHolder holder, int position) {
         if(holder.mHolderid ==1) {                              // as the list view is going to be called after the header view so we decrement the
             // position by 1 and pass it to the holder while setting the text and image
-            holder.mTextView.setText(mNavTitles[position - 1]); // Setting the Text with the array of our Titles
-            holder.mImageView.setImageResource(mIcons[position - 1]);// Settimg the image with array of our icons
+            holder.mTextView.setText(mDrawerItems.get(position - 1).getTitle()); // Setting the Text with the array of our Titles
+            holder.mImageView.setImageResource(mDrawerItems.get(position - 1).getIcon());// Settimg the image with array of our icons
+            holder.mSeparator1.setChecked(mDrawerItems.get(position - 1).isSeparator());
         }
         else{
 
@@ -121,12 +135,13 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
             }
             holder.mName.setText(mName);
             holder.mEmail.setText(mEmail);
+            holder.mSeparator0.setChecked(true);
         }
     }
 
     @Override
     public int getItemCount() {
-        return mNavTitles.length+1; // the number of items in the list will be +1 the titles including the header view.
+        return mDrawerItems.size()+1; // the number of items in the list will be +1 the titles including the header view.
     }
 
     @Override

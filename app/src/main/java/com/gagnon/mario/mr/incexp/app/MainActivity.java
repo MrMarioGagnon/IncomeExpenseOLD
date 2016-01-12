@@ -17,6 +17,9 @@ import android.view.View;
 
 import com.gagnon.mario.mr.incexp.app.Helper.AccountUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by mario on 12/30/2015.
  */
@@ -24,8 +27,14 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    String TITLES[] = {"Category", "Settings", "Send feedback", "Help"};
-    int ICONS[] = {R.drawable.ic_view_list_black_24dp, R.drawable.ic_settings_black_24dp, R.drawable.ic_feedback_black_24dp, R.drawable.ic_help_black_24dp};
+    private final static List<DrawerItem> mDrawerItems;
+    static {
+        mDrawerItems = new ArrayList<>();
+        mDrawerItems.add(new DrawerItem("Category", R.drawable.ic_view_list_black_24dp, true));
+        mDrawerItems.add(new DrawerItem("Settings", R.drawable.ic_settings_black_24dp, false));
+        mDrawerItems.add(new DrawerItem("Send feedback", R.drawable.ic_feedback_black_24dp, false));
+        mDrawerItems.add(new DrawerItem("Help", R.drawable.ic_help_black_24dp, true));
+    }
 
     private Toolbar toolbar;                              // Declaring the Toolbar Object
 
@@ -79,12 +88,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initActivity(String name, String email, Uri photo) {
-        mAdapter = new DrawerAdapter(TITLES, ICONS, name, email, photo);
+        mAdapter = new DrawerAdapter(mDrawerItems, name, email, photo);
         initActivity();
     }
 
     private void initActivity(String name, String email, int photo) {
-        mAdapter = new DrawerAdapter(TITLES, ICONS, name, email, photo);
+        mAdapter = new DrawerAdapter(mDrawerItems, name, email, photo);
         initActivity();
     }
 
