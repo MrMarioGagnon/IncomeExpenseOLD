@@ -1,139 +1,173 @@
 package com.gagnon.mario.mr.incexp.app;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-
-import com.gagnon.mario.mr.incexp.app.Helper.AccountUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by mario on 12/30/2015.
- */
 public class MainActivity extends AppCompatActivity {
 
-    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+    DrawerLayout mDrawerLayout;
+    NavigationView mNavigationView;
+    FragmentManager mFragmentManager;
+    FragmentTransaction mFragmentTransaction;
 
-    private final static List<DrawerItem> mDrawerItems;
-    static {
-        mDrawerItems = new ArrayList<>();
-        mDrawerItems.add(new DrawerItem("Category", R.drawable.ic_view_list_black_24dp, true));
-        mDrawerItems.add(new DrawerItem("Settings", R.drawable.ic_settings_black_24dp, false));
-        mDrawerItems.add(new DrawerItem("Send feedback", R.drawable.ic_feedback_black_24dp, false));
-        mDrawerItems.add(new DrawerItem("Help", R.drawable.ic_help_black_24dp, true));
-    }
 
-    private Toolbar toolbar;                              // Declaring the Toolbar Object
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide
+     * fragments for each of the sections. We use a
+     * {@link FragmentPagerAdapter} derivative, which will keep every
+     * loaded fragment in memory. If this becomes too memory intensive, it
+     * may be best to switch to a
+     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     */
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    RecyclerView mRecyclerView;                           // Declaring RecyclerView
-    RecyclerView.Adapter mAdapter;                        // Declaring Adapter For Recycler View
-    RecyclerView.LayoutManager mLayoutManager;            // Declaring Layout Manager as a linear layout manager
-    DrawerLayout Drawer;                                  // Declaring DrawerLayout
-
-    ActionBarDrawerToggle mDrawerToggle;
-
-    final private int REQUEST_CODE_READ_CONTACTS_PERMISSIONS = 123;
-
-    private void initActivity() {
-
-        setContentView(R.layout.activity_main);
-
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView);
-        mRecyclerView.setHasFixedSize(true);
-
-        mRecyclerView.setAdapter(mAdapter);
-
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        mRecyclerView.addItemDecoration( new DividerItemDecoration(this, R.drawable.divider),0);
-
-        Drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerToggle = new ActionBarDrawerToggle(this, Drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                // code here will execute once the drawer is opened( As I dont want anything happened the drawer is
-                // open I am not going to put anything here)
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                // Code here will execute once drawer is closed
-            }
-
-        };
-
-        Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
-        mDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
-
-    }
-
-    private void initActivity(String name, String email, Uri photo) {
-        mAdapter = new DrawerAdapter(mDrawerItems, name, email, photo);
-        initActivity();
-    }
-
-    private void initActivity(String name, String email, int photo) {
-        mAdapter = new DrawerAdapter(mDrawerItems, name, email, photo);
-        initActivity();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
-        switch (requestCode) {
-            case REQUEST_CODE_READ_CONTACTS_PERMISSIONS:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    AccountUtils.UserProfile up = AccountUtils.getUserProfile(this);
-                    initActivity(up.getName(), up.getEmail(), up.possiblePhoto());
-                } else {
-                    initActivity("", "", R.drawable.ic_account_circle_black_48dp);
-                    Log.v(LOG_TAG, "READ_CONTACTS Denied");
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-
-    }
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    private ViewPager mViewPager;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        final int hasWriteContactsPermission = checkSelfPermission(Manifest.permission.READ_CONTACTS);
-        if (hasWriteContactsPermission != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE_READ_CONTACTS_PERMISSIONS);
-            return;
-        }
+        /**
+         *Setup the DrawerLayout and NavigationView
+         */
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        mNavigationView = (NavigationView) findViewById(R.id.shitstuff) ;
 
-        AccountUtils.UserProfile up = AccountUtils.getUserProfile(this);
-        initActivity(up.getName(), up.getEmail(), up.possiblePhoto());
+        /**
+         * Lets inflate the very first fragment
+         * Here , we are inflating the TransactionFragment as the first Fragment
+         */
+
+        mFragmentManager = getSupportFragmentManager();
+        mFragmentTransaction = mFragmentManager.beginTransaction();
+        mFragmentTransaction.replace(R.id.containerView,new TransactionFragment()).commit();
+
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar.setTitle("Transaction");
+
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                mDrawerLayout.closeDrawers();
+
+                if (menuItem.getItemId() == R.id.nav_contributor) {
+
+                    //Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+                    MainActivity.this.toolbar.setTitle("Contributor");
+
+                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.containerView,new ContributorFragment()).commit();
+
+                }
+
+                if (menuItem.getItemId() == R.id.nav_account) {
+                    //Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+                    MainActivity.this.toolbar.setTitle("Account");
+
+
+                    FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
+                    xfragmentTransaction.replace(R.id.containerView,new AccountFragment()).commit();
+                }
+
+                if (menuItem.getItemId() == R.id.nav_category) {
+
+                    //Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+                    MainActivity.this.toolbar.setTitle("Category");
+
+
+                    FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
+                    xfragmentTransaction.replace(R.id.containerView,new CategoryFragment()).commit();
+                }
+
+                if (menuItem.getItemId() == R.id.nav_transaction) {
+
+                    //Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+                    MainActivity.this.toolbar.setTitle("Transaction");
+
+
+                    FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
+                    xfragmentTransaction.replace(R.id.containerView,new TransactionFragment()).commit();
+                }
+
+                return false;
+            }
+
+        });
+
+//        android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout, toolbar,R.string.app_name,
+                R.string.app_name);
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        mDrawerToggle.syncState();
+
+
+// Region tabs
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        // Create the adapter that will return a fragment for each of the three
+//        // primary sections of the activity.
+//        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+//
+//        // Set up the ViewPager with the sections adapter.
+//        mViewPager = (ViewPager) findViewById(R.id.container);
+//        setupViewPager(mViewPager);
+//
+//        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+//        tabLayout.setupWithViewPager(mViewPager);
+//
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
+// endregion tabs
+    }
+
+    private void setupViewPager(ViewPager viewPager){
+
+        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        adapter.addFrag(new OneFragment(), "ONE");
+        adapter.addFrag(new TwoFragment(), "TWO");
+        adapter.addFrag(new ThreeFragment(), "THREE");
+        adapter.addFrag(new FourFragment(), "FOUR");
+        adapter.addFrag(new FiveFragment(), "FIVE");
+        adapter.addFrag(new SixFragment(), "SIX");
+        adapter.addFrag(new SevenFragment(), "SEVEN");
+        adapter.addFrag(new EightFragment(), "EIGHT");
+        adapter.addFrag(new NineFragment(), "NINE");
+        adapter.addFrag(new TenFragment(), "TEN");
+        viewPager.setAdapter(adapter);
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.main, menu);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -145,10 +179,79 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-  //      if (id == R.id.action_settings) {
-    //        return true;
-      //  }
+        if (id == R.id.action_settings) {
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+//    public static class PlaceholderFragment extends Fragment {
+//        /**
+//         * The fragment argument representing the section number for this
+//         * fragment.
+//         */
+//        private static final String ARG_SECTION_NUMBER = "section_number";
+//
+//        public PlaceholderFragment() {
+//        }
+//
+//        /**
+//         * Returns a new instance of this fragment for the given section
+//         * number.
+//         */
+//        public static PlaceholderFragment newInstance(int sectionNumber) {
+//            PlaceholderFragment fragment = new PlaceholderFragment();
+//            Bundle args = new Bundle();
+//            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+//            fragment.setArguments(args);
+//            return fragment;
+//        }
+//
+//        @Override
+//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                                 Bundle savedInstanceState) {
+//            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+//            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+//            return rootView;
+//        }
+//    }
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFrag(Fragment fragment, String title){
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
     }
 }
