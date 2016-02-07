@@ -1,6 +1,5 @@
 package com.gagnon.mario.mr.incexp.app;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -15,7 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseDbHelper;
+import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
 
 import java.util.ArrayList;
 import java.util.List;
