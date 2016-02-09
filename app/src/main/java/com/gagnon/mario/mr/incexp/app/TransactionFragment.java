@@ -46,6 +46,15 @@ public class TransactionFragment extends Fragment {
 
     }
 
+    public String GetCurrentFragment(){
+        for(Fragment f : getChildFragmentManager().getFragments()){
+            if(f.isVisible()){
+                return "ssss";
+            }
+        }
+        return null;
+    }
+
     private void setupViewPager(ViewPager viewPager){
 
         TransactionFragment.SectionsPagerAdapter adapter = new TransactionFragment.SectionsPagerAdapter(getChildFragmentManager());

@@ -1,5 +1,6 @@
 package com.gagnon.mario.mr.incexp.app.contributor;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,14 +24,13 @@ import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
  */
 public class ContributorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    static final int COL_NAME = 1;
     // region Static Field
     private static final String[] CONTRIBUTOR_COLUMNS = {
             IncomeExpenseContract.ContributorEntry._ID,
             IncomeExpenseContract.ContributorEntry.COLUMN_NAME
     };
-
     private static final String LOG_TAG = ContributorFragment.class.getSimpleName();
-    static final int COL_NAME = 1;
     private static final String SELECTED_KEY = "selected_position";
     private static final int CONTRIBUTOR_LOADER = 0;
 
@@ -45,29 +45,13 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
     // endregion Private Field
 
     // region Public Interface
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface Callback {
-        /**
-         * DetailFragmentCallback for when an item has been selected.
-         */
-        public void onItemSelected(Uri dateUri);
+    public ContributorFragment() {
+        // Required empty public constructor
     }
 
     // endregion Public Interface
 
     // region Constructor
-
-    public ContributorFragment() {
-        // Required empty public constructor
-    }
-
-    // endregion Constructor
-
-    // region Public Method
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,6 +62,10 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
 
     }
 
+    // endregion Constructor
+
+    // region Public Method
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -87,7 +75,6 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
         View rootView = inflater.inflate(R.layout.fragment_contributor, container, false);
 
         setupListView(rootView, inflater, container);
-        setupFAB(rootView);
 
         // If there's instance state, mine it for useful information.
         // The end-goal here is that the user never knows that turning their device sideways
@@ -119,9 +106,6 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
         }
         super.onSaveInstanceState(outState);
     }
-    // endregion Public Method
-
-    // region Private Method
 
     private void setupListView(View v, LayoutInflater inflater, ViewGroup container) {
 
@@ -145,23 +129,9 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
         mListView.setEmptyView(v.findViewById(R.id.textView_no_contributor));
 
     }
+    // endregion Public Method
 
-    private void setupFAB(View v) {
-
-        FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-    }
-
-    // endregion Private Method
-
-    // region LoaderManager.LoaderCallbacks Method
+    // region Private Method
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -181,6 +151,10 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
                 sortOrder);
     }
 
+    // endregion Private Method
+
+    // region LoaderManager.LoaderCallbacks Method
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mContributorAdapter.swapCursor(data);
@@ -195,6 +169,18 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mContributorAdapter.swapCursor(null);
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri dateUri);
     }
 
     // endregion LoaderManager.LoaderCallbacks Method

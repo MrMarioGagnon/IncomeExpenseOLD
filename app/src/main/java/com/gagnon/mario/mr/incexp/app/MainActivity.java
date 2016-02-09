@@ -1,7 +1,11 @@
 package com.gagnon.mario.mr.incexp.app;
 
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -13,8 +17,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
+import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         mFragmentManager = getSupportFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
-        mFragmentTransaction.replace(R.id.containerView,new TransactionFragment()).commit();
+        mFragmentTransaction.replace(R.id.containerView,new TransactionFragment(),"transaction").commit();
 
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         toolbar.setTitle("Transaction");
@@ -77,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                     MainActivity.this.toolbar.setTitle("Contributor");
 
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView,new ContributorFragment()).commit();
+                    fragmentTransaction.replace(R.id.containerView,new ContributorFragment(), "contributor").commit();
 
                 }
 
@@ -87,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
-                    xfragmentTransaction.replace(R.id.containerView,new AccountFragment()).commit();
+                    xfragmentTransaction.replace(R.id.containerView,new AccountFragment(), "account").commit();
                 }
 
                 if (menuItem.getItemId() == R.id.nav_category) {
@@ -97,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
-                    xfragmentTransaction.replace(R.id.containerView,new CategoryFragment()).commit();
+                    xfragmentTransaction.replace(R.id.containerView,new CategoryFragment(), "category").commit();
                 }
 
                 if (menuItem.getItemId() == R.id.nav_transaction) {
@@ -107,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
-                    xfragmentTransaction.replace(R.id.containerView,new TransactionFragment()).commit();
+                    xfragmentTransaction.replace(R.id.containerView,new TransactionFragment(), "transaction").commit();
                 }
 
                 return false;
@@ -123,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerToggle.syncState();
 
-
+        setupFAB();
 // Region tabs
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
@@ -148,6 +155,43 @@ public class MainActivity extends AppCompatActivity {
 //        });
 // endregion tabs
     }
+
+    private void setupFAB() {
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                for(Fragment f : mFragmentManager.getFragments()){
+                    if(f.isVisible()){
+
+                        if(f instanceof TransactionFragment){
+                            Snackbar.make(view, ((TransactionFragment)f).GetCurrentFragment(), Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+
+                        }else{
+                            Snackbar.make(view, f.getTag(), Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+
+                        }
+
+
+                    }
+                }
+
+//                ContentValues contributorValues  = new ContentValues();
+//                contributorValues.put( IncomeExpenseContract.ContributorEntry.COLUMN_NAME, "Mario" );
+//                Uri contributorUri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
+//
+//                MainActivity.this.getContentResolver().insert(contributorUri, contributorValues);
+
+
+            }
+        });
+
+    }
+
 
     private void setupViewPager(ViewPager viewPager){
 
