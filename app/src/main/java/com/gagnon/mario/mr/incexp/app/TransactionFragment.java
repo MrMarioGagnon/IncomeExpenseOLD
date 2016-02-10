@@ -19,10 +19,10 @@ import java.util.List;
 
 public class TransactionFragment extends Fragment {
 
-    public static TabLayout tabLayout;
-    public static ViewPager viewPager;
 
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
+    private TransactionFragment.SectionsPagerAdapter  mAdapter;
+
 
     @Nullable
     @Override
@@ -31,45 +31,42 @@ public class TransactionFragment extends Fragment {
          *Inflate tab_layout and setup Views.
          */
         View x =  inflater.inflate(R.layout.tab_layout, null);
-        tabLayout = (TabLayout) x.findViewById(R.id.tabs);
-        viewPager = (ViewPager) x.findViewById(R.id.container);
+        TabLayout tabLayout = (TabLayout) x.findViewById(R.id.tabs);
+        mViewPager = (ViewPager) x.findViewById(R.id.container);
+        mAdapter = new TransactionFragment.SectionsPagerAdapter(getChildFragmentManager());
 
         /**
          *Set an Apater for the View Pager
          */
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
-        setupViewPager(viewPager);
+        setupViewPager();
 
-        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setupWithViewPager(mViewPager);
 
         return x;
 
     }
 
     public String GetCurrentFragment(){
-        for(Fragment f : getChildFragmentManager().getFragments()){
-            if(f.isVisible()){
-                return "ssss";
-            }
-        }
-        return null;
+        int i = mViewPager.getCurrentItem();
+        Fragment f = mAdapter.getItem(i);
+        Bundle args = f.getArguments();
+        String tag = args.getString("tag");
+        return tag;
     }
 
-    private void setupViewPager(ViewPager viewPager){
+    private void setupViewPager(){
 
-        TransactionFragment.SectionsPagerAdapter adapter = new TransactionFragment.SectionsPagerAdapter(getChildFragmentManager());
-        adapter.addFrag(new OneFragment(), "ONE");
-        adapter.addFrag(new TwoFragment(), "TWO");
-        adapter.addFrag(new ThreeFragment(), "THREE");
-        adapter.addFrag(new FourFragment(), "FOUR");
-        adapter.addFrag(new FiveFragment(), "FIVE");
-        adapter.addFrag(new SixFragment(), "SIX");
-        adapter.addFrag(new SevenFragment(), "SEVEN");
-        adapter.addFrag(new EightFragment(), "EIGHT");
-        adapter.addFrag(new NineFragment(), "NINE");
-        adapter.addFrag(new TenFragment(), "TEN");
-        viewPager.setAdapter(adapter);
-
+        mAdapter.addFrag(new OneFragment(), "ONE");
+        mAdapter.addFrag(new TwoFragment(), "TWO");
+        mAdapter.addFrag(new ThreeFragment(), "THREE");
+        mAdapter.addFrag(new FourFragment(), "FOUR");
+        mAdapter.addFrag(new FiveFragment(), "FIVE");
+        mAdapter.addFrag(new SixFragment(), "SIX");
+        mAdapter.addFrag(new SevenFragment(), "SEVEN");
+        mAdapter.addFrag(new EightFragment(), "EIGHT");
+        mAdapter.addFrag(new NineFragment(), "NINE");
+        mAdapter.addFrag(new TenFragment(), "TEN");
+        mViewPager.setAdapter(mAdapter);
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -83,6 +80,9 @@ public class TransactionFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
+
+            int i = mFragmentList.size();
+
             return mFragmentList.get(position);
         }
 
@@ -92,6 +92,9 @@ public class TransactionFragment extends Fragment {
         }
 
         public void addFrag(Fragment fragment, String title){
+            Bundle args = new Bundle();
+            args.putString("tag", title);
+            fragment.setArguments(args);
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
