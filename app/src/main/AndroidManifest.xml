@@ -18,6 +18,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".contributor.ContributorEditorActivity"
+            android:label="@string/title_contributor_editor"
+            android:parentActivityName=".contributor.ContributorEditorActivity" >
+        </activity>
 
         <provider
             android:authorities="com.gagnon.mario.mr.incexp.app"

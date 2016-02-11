@@ -1,5 +1,6 @@
 package com.gagnon.mario.mr.incexp.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.gagnon.mario.mr.incexp.app.contributor.ContributorEditorActivity;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -133,9 +135,18 @@ public class MainActivity extends AppCompatActivity {
 
                         }else{
 
-                            Snackbar.make(view, f.getTag() , Snackbar.LENGTH_LONG)
-                                    .setAction("Action", null).show();
+                            switch ( f.getTag() ){
+                                case "contributor":
 
+                                    Intent intent = new Intent(MainActivity.this, ContributorEditorActivity.class);
+                                    startActivity(intent);
+
+                                    break;
+                                default:
+                               Snackbar.make(view, f.getTag() , Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                                    break;
+                            }
                         }
 
 

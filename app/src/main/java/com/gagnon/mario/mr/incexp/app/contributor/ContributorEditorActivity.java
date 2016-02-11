@@ -15,34 +15,34 @@
  */
 package com.gagnon.mario.mr.incexp.app.contributor;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.gagnon.mario.mr.incexp.app.R;
 
+public class ContributorEditorActivity extends AppCompatActivity {
 
-public class ContributorEditorActivity extends ActionBarActivity {
+    private static final String LOG_TAG = ContributorEditorActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_contributor_editor);
 
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
 
-            Bundle arguments = new Bundle();
-            arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
+            //Bundle arguments = new Bundle();
+            //arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
 
-            DetailFragment fragment = new DetailFragment();
-            fragment.setArguments(arguments);
+            ContributorEditorFragment fragment = new ContributorEditorFragment();
+            //fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.weather_detail_container, fragment)
+                    .add(R.id.contributor_editor_container, fragment)
                     .commit();
         }
     }
@@ -50,7 +50,7 @@ public class ContributorEditorActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.detail, menu);
+        //getMenuInflater().inflate(R.menu.detail, menu);
         return true;
     }
 
@@ -61,7 +61,7 @@ public class ContributorEditorActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
+          //  startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
