@@ -19,10 +19,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
 
-public class ContributorEditorActivity extends AppCompatActivity {
+public class ContributorEditorActivity extends AppCompatActivity implements ContributorEditorFragment.OnBackButtonClickListener, ContributorEditorFragment.OnSaveButtonClickListener {
 
     private static final String LOG_TAG = ContributorEditorActivity.class.getSimpleName();
 
@@ -32,14 +33,11 @@ public class ContributorEditorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_contributor_editor);
 
         if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
 
-            //Bundle arguments = new Bundle();
-            //arguments.putParcelable(DetailFragment.DETAIL_URI, getIntent().getData());
+            Bundle bundle = getIntent().getExtras();
 
             ContributorEditorFragment fragment = new ContributorEditorFragment();
-            //fragment.setArguments(arguments);
+            fragment.setArguments(bundle);
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.contributor_editor_container, fragment)
@@ -61,9 +59,22 @@ public class ContributorEditorActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-          //  startActivity(new Intent(this, SettingsActivity.class));
+            //  startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackButtonClick() {
+        setResult(RESULT_CANCELED);
+        finish();
+    }
+
+    @Override
+    public void onSaveButtonClick(Contributor contributor) {
+        Toast.makeText(this, contributor.getName(), Toast.LENGTH_SHORT).show();
+        setResult(RESULT_OK);
+        finish();
     }
 }

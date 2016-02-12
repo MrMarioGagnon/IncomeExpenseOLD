@@ -15,13 +15,19 @@
  */
 package com.gagnon.mario.mr.incexp.app.contributor;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
@@ -44,12 +50,32 @@ public class ContributorEditorFragment extends Fragment {
     public static final int COL_NAME = 1;
 
     private TextView mTextViewName;
+    private Button mButtonSave;
+    private Button mButtonBack;
+    private Contributor mContributor;
+
+    private View.OnClickListener mOnButtonClickListener;
 
     public ContributorEditorFragment() {
-        setHasOptionsMenu(true);
+
+        mOnButtonClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Button button = (Button)v;
+
+                switch(button.getId()){
+                    case R.id.button_back:
+                        ((ContributorEditorFragment.OnBackButtonClickListener)getActivity()).onBackButtonClick();
+                        break;
+                    case R.id.button_save:
+                        mContributor.setName( mTextViewName.getText().toString() );
+                        ((ContributorEditorFragment.OnSaveButtonClickListener)getActivity()).onSaveButtonClick(mContributor);
+                        break;
+                }
+            }
+        };
+
     }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,17 +83,39 @@ public class ContributorEditorFragment extends Fragment {
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-//            mUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
+            mContributor = (Contributor)arguments.getSerializable("item");
+        }
+
+        if(null == mContributor) {
+            mContributor = Contributor.createNew();
         }
 
         View rootView = inflater.inflate(R.layout.fragment_contributor_editor, container, false);
         mTextViewName = (TextView) rootView.findViewById(R.id.textview_contributor_name);
+        mTextViewName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                Toast.makeText(ContributorEditorFragment.this.getActivity(), v.getText(), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
 
-        //final android.app.ActionBar actionBar = getActivity().getActionBar();
-        //actionBar.setDisplayUseLogoEnabled(true);
+        mButtonSave = (Button) rootView.findViewById(R.id.button_save);
+        mButtonBack = (Button) rootView.findViewById(R.id.button_back);
 
+        mButtonBack.setOnClickListener(mOnButtonClickListener);
+        mButtonSave.setOnClickListener(mOnButtonClickListener);
+
+        mTextViewName.setText(mContributor.getName());
 
         return rootView;
     }
 
+    public interface OnBackButtonClickListener{
+        public void onBackButtonClick();
+    }
+
+    public interface OnSaveButtonClickListener{
+        public void onSaveButtonClick(Contributor contributor);
+    }
 }

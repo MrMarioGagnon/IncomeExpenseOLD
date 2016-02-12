@@ -14,4 +14,7 @@
 
     <string name="hint_contributor_name">Enter contributor name</string>
 
+    <string name="button_label_back">Back</string>
+    <string name="button_label_save">Save</string>
+
 </resources>

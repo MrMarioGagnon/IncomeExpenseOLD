@@ -23,9 +23,21 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:hint="@string/hint_contributor_name"
-            android:inputType="text"
+            android:inputType="text|textNoSuggestions"
             android:imeOptions="actionGo"
             />
+
+        <LinearLayout android:layout_height="fill_parent"
+                      android:layout_width="fill_parent">
+
+            <Button android:text="@string/button_label_save" android:id="@+id/button_save"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_gravity="bottom" />
+            <Button android:text="@string/button_label_back" android:id="@+id/button_back"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_gravity="bottom" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

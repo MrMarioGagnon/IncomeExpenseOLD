@@ -18,12 +18,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorEditorActivity;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    private static final int ACTIVITY_CONTRIBUTOR = 100;
 
     DrawerLayout mDrawerLayout;
     NavigationView mNavigationView;
@@ -138,8 +141,15 @@ public class MainActivity extends AppCompatActivity {
                             switch ( f.getTag() ){
                                 case "contributor":
 
+                                    Log.d(LOG_TAG, "Building Contributor Editor Screen");
+                                    Contributor contributor = Contributor.createNew();
+
+                                    Bundle arguments = new Bundle();
+                                    arguments.putSerializable("item", contributor);
+
                                     Intent intent = new Intent(MainActivity.this, ContributorEditorActivity.class);
-                                    startActivity(intent);
+                                    intent.putExtras(arguments);
+                                    startActivityForResult(intent, ACTIVITY_CONTRIBUTOR);
 
                                     break;
                                 default:
@@ -163,6 +173,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
