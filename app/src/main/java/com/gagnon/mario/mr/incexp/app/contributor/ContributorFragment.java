@@ -21,8 +21,9 @@ import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
  */
 public class ContributorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    static final int COL_NAME = 1;
     // region Static Field
+
+    public static final int COL_NAME = 1;
     private static final String[] CONTRIBUTOR_COLUMNS = {
             IncomeExpenseContract.ContributorEntry._ID,
             IncomeExpenseContract.ContributorEntry.COLUMN_NAME
@@ -117,6 +118,13 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
                 Cursor cursor = (Cursor)adapterView.getItemAtPosition(position);
                 if(null != cursor){
 
+                    long id = cursor.getLong(  cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_ID)  );
+                    String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_NAME));
+
+                    Contributor contributor = Contributor.create(id, name);
+
+                    ((ContributorFragment.OnItemSelectedListener)getActivity()).onItemSelected(contributor);
+
                 }
 
                 mPosition = position;
@@ -173,11 +181,11 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
      * implement. This mechanism allows activities to be notified of item
      * selections.
      */
-    public interface Callback {
+    public interface OnItemSelectedListener {
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Uri dateUri);
+        public void onItemSelected(Contributor contributor);
     }
 
     // endregion LoaderManager.LoaderCallbacks Method

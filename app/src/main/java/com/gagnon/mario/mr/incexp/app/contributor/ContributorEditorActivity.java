@@ -15,17 +15,27 @@
  */
 package com.gagnon.mario.mr.incexp.app.contributor;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
+import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
 
-public class ContributorEditorActivity extends AppCompatActivity implements ContributorEditorFragment.OnBackButtonClickListener, ContributorEditorFragment.OnSaveButtonClickListener {
+public class ContributorEditorActivity extends AppCompatActivity implements ContributorEditorFragment.OnButtonClickListener {
+
+    // region Private Fields
 
     private static final String LOG_TAG = ContributorEditorActivity.class.getSimpleName();
+
+    // endregion
+
+    // region Protected Method
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +55,10 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
         }
     }
 
+    // endregion Protected Method
+
+    // region Public Method
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -52,18 +66,22 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            //  startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//        if (id == R.id.action_settings) {
+//            //  startActivity(new Intent(this, SettingsActivity.class));
+//            return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
+
+    // endregion Public Method
+
+    // region ContributorEditorFragment.OnButtonClickListener
 
     @Override
     public void onBackButtonClick() {
@@ -71,10 +89,89 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
         finish();
     }
 
+
+    @Override
+    public void onDeleteButtonClick(Contributor contributor) {
+
+        if(null == contributor || null == contributor.getId()){
+            setResult(RESULT_OK);
+            finish();
+            return;
+        }
+
+        if (contributor.isDirty()) {
+
+            Uri contributorUri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
+
+            ContentResolver contentResolver = getContentResolver();
+
+            if (contributor.isDead()) {
+                // Delete contributor
+                long id = contributor.getId();
+                String name = contributor.getName();
+                try {
+
+                    Log.i(LOG_TAG, getString(R.string.log_info_deleting_contributor, id));
+                    int rowsDeleted = contentResolver.delete(contributorUri, IncomeExpenseContract.ContributorEntry.COLUMN_ID + "=?", new String[]{String.valueOf(id)});
+                    Log.i(LOG_TAG, getString(R.string.log_info_number_deleted_contributor, rowsDeleted));
+
+                } catch (Exception ex) {
+                    String message_log = this.getString(R.string.error_log_deleting_item, getString(R.string.contributor), id);
+                    Log.e(LOG_TAG, message_log, ex);
+
+                    String message_user = this.getString(R.string.error_to_user_deleting_item, getString(R.string.contributor), name);
+                    Toast.makeText(this, message_user, Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+        }
+
+        setResult(RESULT_OK);
+        finish();
+
+    }
+
     @Override
     public void onSaveButtonClick(Contributor contributor) {
-        Toast.makeText(this, contributor.getName(), Toast.LENGTH_SHORT).show();
+
+        if(null == contributor)
+            return;
+
+        if (contributor.isDirty()) {
+
+            Uri contributorUri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
+            ContentResolver contentResolver = getContentResolver();
+
+            try {
+                if (contributor.isNew()) {
+                    // Add contributor
+                    ContentValues contributorValues = new ContentValues();
+                    contributorValues.put(IncomeExpenseContract.ContributorEntry.COLUMN_NAME, contributor.getName());
+                    Uri newUri = contentResolver.insert(contributorUri, contributorValues);
+                    long newID = IncomeExpenseContract.ContributorEntry.getIdFromUri(newUri);
+                    contributor.setId(newID);
+                } else {
+                    // Update contributor
+
+                    long id = contributor.getId();
+
+                    ContentValues contributorValues = new ContentValues();
+                    contributorValues.put(IncomeExpenseContract.ContributorEntry.COLUMN_NAME, contributor.getName());
+                    Log.i(LOG_TAG, getString(R.string.log_info_updating_contributor, id));
+                    int rowsUpdated = contentResolver.update(contributorUri, contributorValues, IncomeExpenseContract.ContributorEntry.COLUMN_ID + "=?", new String[]{contributor.getId().toString()});
+                    Log.i(LOG_TAG, getString(R.string.log_info_number_updated_contributor, rowsUpdated));
+                }
+            }catch(Exception ex){
+
+            }
+
+        }
+
         setResult(RESULT_OK);
         finish();
     }
+
+    // endregion ContributorEditorFragment.OnButtonClickListener
+
 }

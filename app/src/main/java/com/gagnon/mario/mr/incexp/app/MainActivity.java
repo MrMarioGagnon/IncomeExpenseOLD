@@ -22,11 +22,11 @@ import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorEditorActivity;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    private static final int ACTIVITY_CONTRIBUTOR = 100;
+    private final int ACTIVITY_CONTRIBUTOR = 100;
 
     DrawerLayout mDrawerLayout;
     NavigationView mNavigationView;
@@ -163,13 +163,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-//                ContentValues contributorValues  = new ContentValues();
-//                contributorValues.put( IncomeExpenseContract.ContributorEntry.COLUMN_NAME, "Mario" );
-//                Uri contributorUri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
-//
-//                MainActivity.this.getContentResolver().insert(contributorUri, contributorValues);
-
-
             }
         });
 
@@ -177,6 +170,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        Bundle extras = null;
+        if (null != data)
+            extras = data.getExtras();
+
+        switch(requestCode){
+            case ACTIVITY_CONTRIBUTOR:
+
+                if(resultCode == RESULT_OK){
+
+                }
+
+                break;
+            default:
+                break;
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -202,4 +212,15 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onItemSelected(Contributor contributor) {
+
+        Bundle arguments = new Bundle();
+        arguments.putSerializable("item", contributor);
+
+        Intent intent = new Intent(MainActivity.this, ContributorEditorActivity.class);
+        intent.putExtras(arguments);
+        startActivityForResult(intent, ACTIVITY_CONTRIBUTOR);
+
+    }
 }

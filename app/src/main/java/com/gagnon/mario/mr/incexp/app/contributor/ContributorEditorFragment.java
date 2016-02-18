@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
+import com.gagnon.mario.mr.incexp.app.core.ValidationStatus;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
 
 /**
@@ -37,45 +38,73 @@ import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
  */
 public class ContributorEditorFragment extends Fragment {
 
+    // region Public Interface
+
+    public interface OnButtonClickListener{
+        public void onBackButtonClick();
+        public void onSaveButtonClick(Contributor contributor);
+        public void onDeleteButtonClick(Contributor contributor);
+    }
+
+    // endregion Public Interface
+
+    // region Private Field
+
     private static final String LOG_TAG = ContributorEditorFragment.class.getSimpleName();
-
-    private static final String[] DETAIL_COLUMNS = {
-            IncomeExpenseContract.ContributorEntry._ID,
-            IncomeExpenseContract.ContributorEntry.COLUMN_NAME
-    };
-
-    // These indices are tied to DETAIL_COLUMNS.  If DETAIL_COLUMNS changes, these
-    // must change.
-    public static final int COL_ID = 0;
-    public static final int COL_NAME = 1;
 
     private TextView mTextViewName;
     private Button mButtonSave;
     private Button mButtonBack;
+    private Button mButtonDelete;
     private Contributor mContributor;
 
+    private TextView mTextViewValidationErrorMessage;
+
     private View.OnClickListener mOnButtonClickListener;
+
+    // endregion Private Field
+
+    // region Constructor
 
     public ContributorEditorFragment() {
 
         mOnButtonClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Button button = (Button)v;
 
                 switch(button.getId()){
                     case R.id.button_back:
-                        ((ContributorEditorFragment.OnBackButtonClickListener)getActivity()).onBackButtonClick();
+                        ((ContributorEditorFragment.OnButtonClickListener)getActivity()).onBackButtonClick();
+                        break;
+                    case R.id.button_delete:
+                        mContributor.setDead(true);
+                        ((ContributorEditorFragment.OnButtonClickListener)getActivity()).onDeleteButtonClick(mContributor);
                         break;
                     case R.id.button_save:
+
                         mContributor.setName( mTextViewName.getText().toString() );
-                        ((ContributorEditorFragment.OnSaveButtonClickListener)getActivity()).onSaveButtonClick(mContributor);
+
+                        ValidationStatus validationStatus = ContributorValidator.Validate(mContributor);
+
+                        if(validationStatus.isValid()) {
+                            ((ContributorEditorFragment.OnButtonClickListener) getActivity()).onSaveButtonClick(mContributor);
+                        }else{
+                            mTextViewValidationErrorMessage.setText(validationStatus.getMessage());
+                            mTextViewValidationErrorMessage.setVisibility(View.VISIBLE);
+                        }
+
                         break;
                 }
             }
         };
 
     }
+
+    // endregion Constructor
+
+    // region Public Method
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,30 +121,23 @@ public class ContributorEditorFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_contributor_editor, container, false);
         mTextViewName = (TextView) rootView.findViewById(R.id.textview_contributor_name);
-        mTextViewName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                Toast.makeText(ContributorEditorFragment.this.getActivity(), v.getText(), Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
+        mTextViewName.setText(mContributor.getName());
+
+        mTextViewValidationErrorMessage = (TextView) rootView.findViewById(R.id.textViewValidationErrorMessage);
 
         mButtonSave = (Button) rootView.findViewById(R.id.button_save);
-        mButtonBack = (Button) rootView.findViewById(R.id.button_back);
-
-        mButtonBack.setOnClickListener(mOnButtonClickListener);
+        mButtonSave.setText(mContributor.isNew() ? R.string.button_label_add : R.string.button_label_save);
         mButtonSave.setOnClickListener(mOnButtonClickListener);
 
-        mTextViewName.setText(mContributor.getName());
+        mButtonBack = (Button) rootView.findViewById(R.id.button_back);
+        mButtonBack.setOnClickListener(mOnButtonClickListener);
+
+        mButtonDelete = (Button) rootView.findViewById(R.id.button_delete);
+        mButtonDelete.setOnClickListener(mOnButtonClickListener);
 
         return rootView;
     }
 
-    public interface OnBackButtonClickListener{
-        public void onBackButtonClick();
-    }
+    // endregion Public Method
 
-    public interface OnSaveButtonClickListener{
-        public void onSaveButtonClick(Contributor contributor);
-    }
 }

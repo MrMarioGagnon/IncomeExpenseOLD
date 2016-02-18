@@ -14,7 +14,21 @@
 
     <string name="hint_contributor_name">Enter contributor name</string>
 
+    <string name="button_label_add">Add New</string>
     <string name="button_label_back">Back</string>
+    <string name="button_label_delete">Delete</string>
     <string name="button_label_save">Save</string>
+
+    <string name="error_log_deleting_item">Unable to delete %1$s with id %2$d</string>
+
+    <string name="error_to_user_deleting_item">Problem deleting %1$s \'%2$s\'.</string>
+
+    <string name="contributor">Contributor</string>
+
+    <string name="log_info_deleting_contributor">Deleting contributor with id \'%1$s\'</string>
+    <string name="log_info_number_deleted_contributor">Number of deleted contributor %1$d</string>
+
+    <string name="log_info_updating_contributor">Updating contributor with id \'%1$s\'</string>
+    <string name="log_info_number_updated_contributor">Number of updated contributor %1$d</string>
 
 </resources>

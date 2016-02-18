@@ -13,6 +13,11 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <TextView android:layout_width="fill_parent" android:id="@+id/textViewValidationErrorMessage"
+                  android:layout_height="wrap_content" android:textColor="@android:color/white"
+                  android:background="@android:color/holo_red_dark"
+                  android:visibility="gone" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,6 +35,9 @@
         <LinearLayout android:layout_height="fill_parent"
                       android:layout_width="fill_parent">
 
+            <Button android:text="@string/button_label_delete" android:id="@+id/button_delete"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_gravity="bottom" />
             <Button android:text="@string/button_label_save" android:id="@+id/button_save"
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:layout_weight="1" android:layout_gravity="bottom" />
