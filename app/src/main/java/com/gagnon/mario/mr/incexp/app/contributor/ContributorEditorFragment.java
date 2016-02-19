@@ -15,23 +15,17 @@
  */
 package com.gagnon.mario.mr.incexp.app.contributor;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
+import com.gagnon.mario.mr.incexp.app.core.ObjectValidator;
 import com.gagnon.mario.mr.incexp.app.core.ValidationStatus;
-import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -41,16 +35,16 @@ public class ContributorEditorFragment extends Fragment {
     // region Public Interface
 
     public interface OnButtonClickListener{
-        public void onBackButtonClick();
-        public void onSaveButtonClick(Contributor contributor);
-        public void onDeleteButtonClick(Contributor contributor);
+        void onBackButtonClick();
+        void onSaveButtonClick(Contributor contributor);
+        void onDeleteButtonClick(Contributor contributor);
     }
 
     // endregion Public Interface
 
     // region Private Field
 
-    private static final String LOG_TAG = ContributorEditorFragment.class.getSimpleName();
+    //private static final String LOG_TAG = ContributorEditorFragment.class.getSimpleName();
 
     private TextView mTextViewName;
     private Button mButtonSave;
@@ -61,6 +55,9 @@ public class ContributorEditorFragment extends Fragment {
     private TextView mTextViewValidationErrorMessage;
 
     private View.OnClickListener mOnButtonClickListener;
+
+
+    private ObjectValidator mObjectValidator = null;
 
     // endregion Private Field
 
@@ -84,9 +81,9 @@ public class ContributorEditorFragment extends Fragment {
                         break;
                     case R.id.button_save:
 
-                        mContributor.setName( mTextViewName.getText().toString() );
+                        mContributor.setName(mTextViewName.getText().toString());
 
-                        ValidationStatus validationStatus = ContributorValidator.Validate(mContributor);
+                        ValidationStatus validationStatus = getObjectValidator().Validate(mContributor);
 
                         if(validationStatus.isValid()) {
                             ((ContributorEditorFragment.OnButtonClickListener) getActivity()).onSaveButtonClick(mContributor);
@@ -105,6 +102,19 @@ public class ContributorEditorFragment extends Fragment {
     // endregion Constructor
 
     // region Public Method
+
+    public ObjectValidator getObjectValidator() {
+
+        if(null == mObjectValidator){
+            mObjectValidator = new ContributorValidator(getActivity().getContentResolver());
+        }
+
+        return mObjectValidator;
+    }
+
+    public void setObjectValidator(ObjectValidator mObjectValidator) {
+        this.mObjectValidator = mObjectValidator;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -134,6 +144,10 @@ public class ContributorEditorFragment extends Fragment {
 
         mButtonDelete = (Button) rootView.findViewById(R.id.button_delete);
         mButtonDelete.setOnClickListener(mOnButtonClickListener);
+
+        if(mContributor.isNew()){
+            mButtonDelete.setVisibility(View.GONE);
+        }
 
         return rootView;
     }

@@ -93,7 +93,7 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
     @Override
     public void onDeleteButtonClick(Contributor contributor) {
 
-        if(null == contributor || null == contributor.getId()){
+        if (null == contributor || null == contributor.getId()) {
             setResult(RESULT_OK);
             finish();
             return;
@@ -135,7 +135,7 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
     @Override
     public void onSaveButtonClick(Contributor contributor) {
 
-        if(null == contributor)
+        if (null == contributor)
             return;
 
         if (contributor.isDirty()) {
@@ -143,27 +143,35 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
             Uri contributorUri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
             ContentResolver contentResolver = getContentResolver();
 
-            try {
-                if (contributor.isNew()) {
-                    // Add contributor
+            if (contributor.isNew()) {
+                // Add contributor
+
+                try {
                     ContentValues contributorValues = new ContentValues();
                     contributorValues.put(IncomeExpenseContract.ContributorEntry.COLUMN_NAME, contributor.getName());
                     Uri newUri = contentResolver.insert(contributorUri, contributorValues);
                     long newID = IncomeExpenseContract.ContributorEntry.getIdFromUri(newUri);
                     contributor.setId(newID);
-                } else {
-                    // Update contributor
+                } catch (Exception ex) {
 
-                    long id = contributor.getId();
+                    String message_log = this.getString(R.string.error_log_adding_item, getString(R.string.contributor));
+                    Log.e(LOG_TAG, message_log, ex);
 
-                    ContentValues contributorValues = new ContentValues();
-                    contributorValues.put(IncomeExpenseContract.ContributorEntry.COLUMN_NAME, contributor.getName());
-                    Log.i(LOG_TAG, getString(R.string.log_info_updating_contributor, id));
-                    int rowsUpdated = contentResolver.update(contributorUri, contributorValues, IncomeExpenseContract.ContributorEntry.COLUMN_ID + "=?", new String[]{contributor.getId().toString()});
-                    Log.i(LOG_TAG, getString(R.string.log_info_number_updated_contributor, rowsUpdated));
+                    String message_user = this.getString(R.string.error_to_user_adding_item, getString(R.string.contributor));
+                    Toast.makeText(this, message_user, Toast.LENGTH_SHORT).show();
+
                 }
-            }catch(Exception ex){
+            } else {
 
+                // Update contributor
+
+                long id = contributor.getId();
+
+                ContentValues contributorValues = new ContentValues();
+                contributorValues.put(IncomeExpenseContract.ContributorEntry.COLUMN_NAME, contributor.getName());
+                Log.i(LOG_TAG, getString(R.string.log_info_updating_contributor, id));
+                int rowsUpdated = contentResolver.update(contributorUri, contributorValues, IncomeExpenseContract.ContributorEntry.COLUMN_ID + "=?", new String[]{contributor.getId().toString()});
+                Log.i(LOG_TAG, getString(R.string.log_info_number_updated_contributor, rowsUpdated));
             }
 
         }
