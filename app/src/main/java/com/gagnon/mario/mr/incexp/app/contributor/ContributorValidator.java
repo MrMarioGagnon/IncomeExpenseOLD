@@ -1,14 +1,9 @@
 package com.gagnon.mario.mr.incexp.app.contributor;
 
-import android.content.ContentResolver;
-import android.database.Cursor;
-import android.net.Uri;
-
 import com.gagnon.mario.mr.incexp.app.core.ObjectBase;
 import com.gagnon.mario.mr.incexp.app.core.ObjectValidator;
 import com.gagnon.mario.mr.incexp.app.core.Tools;
 import com.gagnon.mario.mr.incexp.app.core.ValidationStatus;
-import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,61 +14,52 @@ import java.util.List;
 public class ContributorValidator implements ObjectValidator{
 
     // region Private Field
-    private ContentResolver mContentResolver;
+    private final List<String> mNames = new ArrayList<>();
     // endregion
 
     // region Private Method
     private boolean isNameExists(String name){
 
-        Uri contributorUri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
+        return mNames.contains(name.toUpperCase());
 
-        String selection =IncomeExpenseContract.ContributorEntry.COLUMN_NAME + "=?";
-
-        Cursor cursor = null;
-        boolean asRows = false;
-        try {
-            cursor = mContentResolver.query(contributorUri, new String[]{IncomeExpenseContract.ContributorEntry.COLUMN_ID}, selection, new String[]{name}, null);
-            asRows = cursor.moveToFirst();
-        }finally{
-            if(null != cursor) {
-                cursor.close();
-            }
-        }
-
-        return asRows;
     }
 
     // endregion
 
     // region Constructor
 
-    public ContributorValidator(ContentResolver contentResolver){
-        mContentResolver = contentResolver;
+    public ContributorValidator(List<String> names){
+
+        if(null == names){
+            throw new NullPointerException("Parameter names of type List<String> is mandatory.");
+        }
+
+        mNames.addAll(names);
     }
     // endregion
 
     // region Public Method
 
-    public ValidationStatus Validate(ObjectBase objectToValidate){
+    public ValidationStatus Validate(ObjectBase objectToValidate) throws Exception {
+
+        if(null == objectToValidate){
+            throw new NullPointerException("Parameter objectToValidate of type ObjectBase is mandatory.");
+        }
+
+        if(!(objectToValidate instanceof Contributor)){
+            throw new IllegalArgumentException("Parameter objectToValidate must be an instance of Contributor");
+        }
 
         List<String> messages = new ArrayList<>();
 
-        if(null == objectToValidate) {
-            messages.add("Null contributor");
-        }else if(! (objectToValidate instanceof Contributor)){
-            messages.add("Not a contributor");
-        }else {
+        Contributor contributor = (Contributor) objectToValidate;
+        String name = contributor.getName().trim();
 
-            Contributor contributor = (Contributor) objectToValidate;
-            String name = contributor.getName().trim();
-
-            if (name.length() == 0) {
-                messages.add("Name is mandatory");
-            }else if(isNameExists(name)){
-                messages.add("Name already exists");
-            }
-
-        }
+         if (name.length() == 0) {
+             messages.add("Name is mandatory");
+         }else if(isNameExists(name)){
+             messages.add("Name already exists");
+         }
 
         return ValidationStatus.create(Tools.join(messages, "\n"));
     }

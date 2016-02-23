@@ -33,4 +33,17 @@
     <string name="log_info_updating_contributor">Updating contributor with id \'%1$s\'</string>
     <string name="log_info_number_updated_contributor">Number of updated contributor %1$d</string>
 
+    <!-- Label for the default currency preference [CHAR LIMIT=30] -->
+    <string name="pref_currency_label">Default Currency</string>
+
+    <!-- Key name for default currency preference in SharedPreferences [CHAR LIMIT=NONE] -->
+    <string name="pref_default_currency_key" translatable="false">default_currency</string>
+
+    <!-- Value in SharedPreferences for default currency option [CHAR LIMIT=NONE] -->
+    <string name="pref_CAD_currency" translatable="false">CAD</string>
+    <string name="pref_USD_currency" translatable="false">USD</string>
+    <string name="pref_EUR_currency" translatable="false">EUR</string>
+
+    <string name="title_activity_settings">Settings</string>
+
 </resources>

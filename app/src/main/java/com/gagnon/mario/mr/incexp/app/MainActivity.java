@@ -104,6 +104,14 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                     xfragmentTransaction.replace(R.id.containerView,new TransactionFragment(), "transaction").commit();
                 }
 
+                if (menuItem.getItemId() == R.id.nav_settings) {
+
+                    MainActivity.this.toolbar.setTitle("Settings");
+
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                }
+
+
                 return false;
             }
 

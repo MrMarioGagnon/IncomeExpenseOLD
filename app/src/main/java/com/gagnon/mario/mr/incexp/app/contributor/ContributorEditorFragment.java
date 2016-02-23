@@ -27,6 +27,8 @@ import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.core.ObjectValidator;
 import com.gagnon.mario.mr.incexp.app.core.ValidationStatus;
 
+import java.util.ArrayList;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -58,6 +60,7 @@ public class ContributorEditorFragment extends Fragment {
 
 
     private ObjectValidator mObjectValidator = null;
+    private ArrayList<String> mNames;
 
     // endregion Private Field
 
@@ -83,13 +86,17 @@ public class ContributorEditorFragment extends Fragment {
 
                         mContributor.setName(mTextViewName.getText().toString());
 
-                        ValidationStatus validationStatus = getObjectValidator().Validate(mContributor);
+                        try {
+                            ValidationStatus validationStatus = getObjectValidator().Validate(mContributor);
 
-                        if(validationStatus.isValid()) {
-                            ((ContributorEditorFragment.OnButtonClickListener) getActivity()).onSaveButtonClick(mContributor);
-                        }else{
-                            mTextViewValidationErrorMessage.setText(validationStatus.getMessage());
-                            mTextViewValidationErrorMessage.setVisibility(View.VISIBLE);
+                            if (validationStatus.isValid()) {
+                                ((ContributorEditorFragment.OnButtonClickListener) getActivity()).onSaveButtonClick(mContributor);
+                            } else {
+                                mTextViewValidationErrorMessage.setText(validationStatus.getMessage());
+                                mTextViewValidationErrorMessage.setVisibility(View.VISIBLE);
+                            }
+                        }catch(Exception ex){
+                            // TODO Add code
                         }
 
                         break;
@@ -106,7 +113,7 @@ public class ContributorEditorFragment extends Fragment {
     public ObjectValidator getObjectValidator() {
 
         if(null == mObjectValidator){
-            mObjectValidator = new ContributorValidator(getActivity().getContentResolver());
+            mObjectValidator = new ContributorValidator(mNames);
         }
 
         return mObjectValidator;
@@ -123,6 +130,9 @@ public class ContributorEditorFragment extends Fragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             mContributor = (Contributor)arguments.getSerializable("item");
+            mNames = (ArrayList<String>)arguments.getSerializable("names");
+        }else{
+            mNames = new ArrayList<>();
         }
 
         if(null == mContributor) {

@@ -17,6 +17,7 @@ package com.gagnon.mario.mr.incexp.app.contributor;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,9 @@ import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ContributorEditorActivity extends AppCompatActivity implements ContributorEditorFragment.OnButtonClickListener {
 
@@ -44,10 +48,23 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
 
         if (savedInstanceState == null) {
 
+            Contributor contributor = null;
+
             Bundle bundle = getIntent().getExtras();
+            if (bundle != null) {
+                contributor = (Contributor)bundle.getSerializable("item");
+            }
+
+            if(null == contributor) {
+                contributor = Contributor.createNew();
+            }
+
+            Bundle arguments = new Bundle();
+            arguments.putSerializable("item", contributor);
+            arguments.putSerializable("names", getAvailableContributorsName(contributor));
 
             ContributorEditorFragment fragment = new ContributorEditorFragment();
-            fragment.setArguments(bundle);
+            fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.contributor_editor_container, fragment)
@@ -56,6 +73,37 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
     }
 
     // endregion Protected Method
+
+    // region Private Method
+    private ArrayList<String> getAvailableContributorsName(Contributor contributor)
+    {
+
+        ArrayList<String> names = new ArrayList<>();
+
+        Uri uri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
+        ContentResolver contentResolver = getContentResolver();
+
+        Cursor cursor = null;
+        try {
+
+            String selection = String.format("%1$s !=?", IncomeExpenseContract.ContributorEntry.COLUMN_ID);
+            // Si contributor est new le id va etre null, donc remplacer par -1
+            String[] selectionArgument = new String[] { contributor.isNew() ? "-1" : contributor.getId().toString()};
+
+            cursor = contentResolver.query(uri, new String[] {IncomeExpenseContract.ContributorEntry.COLUMN_NAME}, selection, selectionArgument, null);
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_NAME));
+                names.add(name.toUpperCase());
+            }
+        }finally {
+            if(null != cursor) {
+                cursor.close();
+            }
+        }
+
+        return names;
+    }
+    // endregion Private Method
 
     // region Public Method
 
