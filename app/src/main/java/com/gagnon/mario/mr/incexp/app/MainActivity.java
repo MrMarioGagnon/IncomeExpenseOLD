@@ -1,6 +1,9 @@
 package com.gagnon.mario.mr.incexp.app;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -18,11 +21,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.gagnon.mario.mr.incexp.app.account.Account;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorEditorActivity;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
 
-public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener {
+import com.gagnon.mario.mr.incexp.app.account.AccountFragment;
+import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
+
+public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener, AccountFragment.OnItemSelectedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -69,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
                 if (menuItem.getItemId() == R.id.nav_contributor) {
 
-                    //Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
                     MainActivity.this.toolbar.setTitle("Contributor");
 
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
@@ -78,12 +84,10 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                 }
 
                 if (menuItem.getItemId() == R.id.nav_account) {
-                    //Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
                     MainActivity.this.toolbar.setTitle("Account");
 
-
-                    FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
-                    xfragmentTransaction.replace(R.id.containerView,new AccountFragment(), "account").commit();
+                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.containerView,new AccountFragment(), "account").commit();
                 }
 
                 if (menuItem.getItemId() == R.id.nav_category) {
@@ -149,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                             switch ( f.getTag() ){
                                 case "contributor":
 
-                                    Log.d(LOG_TAG, "Building Contributor Editor Screen");
                                     Contributor contributor = Contributor.createNew();
 
                                     Bundle arguments = new Bundle();
@@ -158,6 +161,19 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                                     Intent intent = new Intent(MainActivity.this, ContributorEditorActivity.class);
                                     intent.putExtras(arguments);
                                     startActivityForResult(intent, ACTIVITY_CONTRIBUTOR);
+
+                                    break;
+                                case "account":
+
+                                    ContentResolver contentResolver = getContentResolver();
+                                    Uri accountUri = IncomeExpenseContract.AccountEntry.CONTENT_URI;
+
+                                    ContentValues contentValues = new ContentValues();
+                                    contentValues.put(IncomeExpenseContract.AccountEntry.COLUMN_NAME, "Account1");
+                                    contentValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY, "CAD");
+                                    contentValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE, false);
+
+                                    contentResolver.insert(accountUri, contentValues);
 
                                     break;
                                 default:
@@ -229,6 +245,11 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
         Intent intent = new Intent(MainActivity.this, ContributorEditorActivity.class);
         intent.putExtras(arguments);
         startActivityForResult(intent, ACTIVITY_CONTRIBUTOR);
+
+    }
+
+    @Override
+    public void onItemSelected(Account account) {
 
     }
 }

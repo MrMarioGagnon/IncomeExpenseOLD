@@ -12,7 +12,7 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/listview_contributor"/>
+        android:id="@+id/listview_account"/>
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -21,9 +21,9 @@
         android:gravity="center_vertical"
         android:paddingLeft="6dip"
         android:minHeight="?android:attr/listPreferredItemHeight"
-        android:text="@string/message_contributor_no_data"
+        android:text="@string/message_account_no_data"
         android:visibility="gone"
-        android:id="@+id/textView_no_contributor"
+        android:id="@+id/textView_no_account"
         />
 
 </android.support.design.widget.CoordinatorLayout>

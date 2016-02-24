@@ -57,13 +57,12 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
 		return mId;
 	}
 
-	public String getName() {
-		return mName;
-	}
-
-
 	public void setId(Long id) {
 		mId = id;
+	}
+
+	public String getName() {
+		return mName;
 	}
 
 	public void setName(String name) {
@@ -74,18 +73,37 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
 		}
 	}
 
-	// endregion Getter/Setter
+	public String getCurrency() {
+		return mCurrency;
+	}
+
+	public void setCurrency(String currency) {
+		mCurrency = currency;
+	}
+
+	public Boolean getIsClose() {
+		return mIsClose;
+	}
+
+	public void setIsClose(Boolean isClose) {
+		mIsClose = isClose;
+	}
+// endregion Getter/Setter
 
 	// region Public Method
+
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof Account)) return false;
 
-		Account that = (Account) o;
+		Account account = (Account) o;
 
-		return mId.equals(that.mId) && mName.equals(that.mName);
+		if (!mId.equals(account.mId)) return false;
+		if (!mName.equals(account.mName)) return false;
+		if (!mCurrency.equals(account.mCurrency)) return false;
+		return mIsClose.equals(account.mIsClose);
 
 	}
 
@@ -93,12 +111,15 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
 	public int hashCode() {
 		int result = mId.hashCode();
 		result = 31 * result + mName.hashCode();
+		result = 31 * result + mCurrency.hashCode();
+		result = 31 * result + mIsClose.hashCode();
 		return result;
 	}
 
 	@Override
 	public String toString() {
-		return getName();
+		String toString = String.format("%1$s(%2$s)", getName(), getCurrency() );
+		return toString;
 	}
 
 	@Override

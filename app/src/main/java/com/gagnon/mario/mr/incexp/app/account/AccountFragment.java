@@ -1,4 +1,4 @@
-package com.gagnon.mario.mr.incexp.app.contributor;
+package com.gagnon.mario.mr.incexp.app.account;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,31 +19,35 @@ import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
 /**
  * Created by mario on 2/1/2016.
  */
-public class ContributorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AccountFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     // region Static Field
 
     public static final int COL_NAME = 1;
-    private static final String[] CONTRIBUTOR_COLUMNS = {
-            IncomeExpenseContract.ContributorEntry._ID,
-            IncomeExpenseContract.ContributorEntry.COLUMN_NAME
+    public static final int COL_CURRENCY = 2;
+
+    private static final String[] ACCOUNT_COLUMNS = {
+            IncomeExpenseContract.AccountEntry.COLUMN_ID,
+            IncomeExpenseContract.AccountEntry.COLUMN_NAME,
+            IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY,
+            IncomeExpenseContract.AccountEntry.COLUMN_CLOSE
     };
-    private static final String LOG_TAG = ContributorFragment.class.getSimpleName();
+    private static final String LOG_TAG = AccountFragment.class.getSimpleName();
     private static final String SELECTED_KEY = "selected_position";
-    private static final int CONTRIBUTOR_LOADER = 0;
+    private static final int ACCOUNT_LOADER = 0;
 
     // endregion Private Static Field
 
     // region Private Field
 
-    private ContributorAdapter mContributorAdapter;
+    private AccountAdapter mAccountAdapter;
     private int mPosition = ListView.INVALID_POSITION;
     private ListView mListView;
 
     // endregion Private Field
 
     // region Public Interface
-    public ContributorFragment() {
+    public AccountFragment() {
         // Required empty public constructor
     }
 
@@ -68,9 +72,9 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mContributorAdapter = new ContributorAdapter(getActivity(), null, 0);
+        mAccountAdapter = new AccountAdapter(getActivity(), null, 0);
 
-        View rootView = inflater.inflate(R.layout.fragment_contributor, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_account, container, false);
 
         setupListView(rootView, inflater, container);
 
@@ -90,7 +94,7 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(CONTRIBUTOR_LOADER, null, this);
+        getLoaderManager().initLoader(ACCOUNT_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -107,8 +111,8 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
 
     private void setupListView(View v, LayoutInflater inflater, ViewGroup container) {
 
-        mListView = (ListView) v.findViewById(R.id.listview_contributor);
-        mListView.setAdapter(mContributorAdapter);
+        mListView = (ListView) v.findViewById(R.id.listview_account);
+        mListView.setAdapter(mAccountAdapter);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -120,10 +124,13 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
 
                     long id = cursor.getLong(  cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_ID)  );
                     String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_NAME));
+                    String currency = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY));
+                    int close = cursor.getInt(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE));
+                    Boolean isClose = (close == 1);
 
-                    Contributor contributor = Contributor.create(id, name);
+                    Account account = Account.create(id, name, currency, isClose);
 
-                    ((ContributorFragment.OnItemSelectedListener)getActivity()).onItemSelected(contributor);
+                    ((AccountFragment.OnItemSelectedListener)getActivity()).onItemSelected(account);
 
                 }
 
@@ -131,7 +138,7 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
             }
         });
 
-        mListView.setEmptyView(v.findViewById(R.id.textView_no_contributor));
+        mListView.setEmptyView(v.findViewById(R.id.textView_no_account));
 
     }
     // endregion Public Method
@@ -144,13 +151,13 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
         // fragment only uses one loader, so we don't care about checking the id.
 
         // Sort order:  Ascending, by date.
-        String sortOrder = IncomeExpenseContract.ContributorEntry.COLUMN_NAME + " ASC";
+        String sortOrder = IncomeExpenseContract.AccountEntry.COLUMN_NAME + " ASC";
 
-        Uri contributorUri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
+        Uri accountUri = IncomeExpenseContract.AccountEntry.CONTENT_URI;
 
         return new CursorLoader(getActivity(),
-                contributorUri,
-                CONTRIBUTOR_COLUMNS,
+                accountUri,
+                ACCOUNT_COLUMNS,
                 null,
                 null,
                 sortOrder);
@@ -162,7 +169,7 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mContributorAdapter.swapCursor(data);
+        mAccountAdapter.swapCursor(data);
         if (mPosition != ListView.INVALID_POSITION) {
             // If we don't need to restart the loader, and there's a desired position to restore
             // to, do so now.
@@ -173,7 +180,7 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mContributorAdapter.swapCursor(null);
+        mAccountAdapter.swapCursor(null);
     }
 
     // endregion LoaderManager.LoaderCallbacks Method
@@ -184,9 +191,7 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
      * selections.
      */
     public interface OnItemSelectedListener {
-        void onItemSelected(Contributor contributor);
+        void onItemSelected(Account account);
     }
-
-
 
 }
