@@ -24,7 +24,7 @@ public class ThreeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View x = inflater.inflate(R.layout.fragment_main, container, false);
+        View x = inflater.inflate(R.layout.main_fragment, container, false);
 
         TextView textView = (TextView)x.findViewById(R.id.section_label);
         if(null != textView){

@@ -1,9 +1,6 @@
 package com.gagnon.mario.mr.incexp.app;
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -22,18 +19,19 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.gagnon.mario.mr.incexp.app.account.Account;
+import com.gagnon.mario.mr.incexp.app.account.AccountEditorActivity;
+import com.gagnon.mario.mr.incexp.app.account.AccountFragment;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorEditorActivity;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
-
-import com.gagnon.mario.mr.incexp.app.account.AccountFragment;
-import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
+import com.gagnon.mario.mr.incexp.app.helper.Utility;
 
 public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener, AccountFragment.OnItemSelectedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private final int ACTIVITY_CONTRIBUTOR = 100;
+    private final int ACTIVITY_ACCOUNT = 200;
 
     DrawerLayout mDrawerLayout;
     NavigationView mNavigationView;
@@ -49,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity);
 
         /**
          *Setup the DrawerLayout and NavigationView
@@ -165,15 +163,25 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                                     break;
                                 case "account":
 
-                                    ContentResolver contentResolver = getContentResolver();
-                                    Uri accountUri = IncomeExpenseContract.AccountEntry.CONTENT_URI;
+//                                    ContentResolver contentResolver = getContentResolver();
+//                                    Uri accountUri = IncomeExpenseContract.AccountEntry.CONTENT_URI;
+//
+//                                    ContentValues contentValues = new ContentValues();
+//                                    contentValues.put(IncomeExpenseContract.AccountEntry.COLUMN_NAME, "Account1");
+//                                    contentValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY, "CAD");
+//                                    contentValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE, false);
+//
+//                                    contentResolver.insert(accountUri, contentValues);
 
-                                    ContentValues contentValues = new ContentValues();
-                                    contentValues.put(IncomeExpenseContract.AccountEntry.COLUMN_NAME, "Account1");
-                                    contentValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY, "CAD");
-                                    contentValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE, false);
+                                    Account account = Account.createNew();
+                                    account.setCurrency(Utility.getPreferredDefaultCurrency(MainActivity.this) );
+                                    arguments = new Bundle();
+                                    arguments.putSerializable("item", account);
 
-                                    contentResolver.insert(accountUri, contentValues);
+                                    intent = new Intent(MainActivity.this, AccountEditorActivity.class);
+                                    intent.putExtras(arguments);
+                                    startActivityForResult(intent, ACTIVITY_ACCOUNT);
+
 
                                     break;
                                 default:
@@ -207,6 +215,14 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                 }
 
                 break;
+            case ACTIVITY_ACCOUNT:
+
+                if(resultCode == RESULT_OK){
+
+                }
+
+                break;
+
             default:
                 break;
         }
@@ -250,6 +266,13 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
     @Override
     public void onItemSelected(Account account) {
+
+        Bundle arguments = new Bundle();
+        arguments.putSerializable("item", account);
+
+        Intent intent = new Intent(MainActivity.this, AccountEditorActivity.class);
+        intent.putExtras(arguments);
+        startActivityForResult(intent, ACTIVITY_ACCOUNT);
 
     }
 }

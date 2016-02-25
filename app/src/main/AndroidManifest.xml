@@ -23,6 +23,12 @@
             android:label="@string/title_contributor_editor"
             android:parentActivityName=".contributor.ContributorEditorActivity" >
         </activity>
+        <activity
+            android:name=".account.AccountEditorActivity"
+            android:label="@string/title_account_editor"
+            android:parentActivityName=".account.AccountEditorActivity" >
+        </activity>
+
 
         <activity
             android:name=".SettingsActivity"

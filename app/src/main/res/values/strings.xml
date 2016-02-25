@@ -9,10 +9,9 @@
     <string name="message_contributor_no_data">No Contributor Available.</string>
     <string name="message_account_no_data">No Account Available.</string>
 
-    <string name="title_contributor_editor">Contributor Editor</string>
-
     <string name="label_name">Name :</string>
 
+    <string name="hint_account_name">Enter account name</string>
     <string name="hint_contributor_name">Enter contributor name</string>
 
     <string name="button_label_add">Add New</string>
@@ -22,16 +21,23 @@
 
     <string name="error_log_adding_item">Unable to add %1$s</string>
     <string name="error_log_deleting_item">Unable to delete %1$s with id %2$d</string>
+    <string name="error_log_saving_item">Unable to save %1$s</string>
 
     <string name="error_to_user_adding_item">Problem adding %1$s.</string>
     <string name="error_to_user_deleting_item">Problem deleting %1$s \'%2$s\'.</string>
+    <string name="error_to_user_saving_item">Problem saving %1$s.</string>
 
+    <string name="account">Account</string>
     <string name="contributor">Contributor</string>
 
+    <string name="log_info_deleting_account">Deleting account with id \'%1$s\'</string>
     <string name="log_info_deleting_contributor">Deleting contributor with id \'%1$s\'</string>
+    <string name="log_info_number_deleted_account">Number of deleted account %1$d</string>
     <string name="log_info_number_deleted_contributor">Number of deleted contributor %1$d</string>
 
+    <string name="log_info_updating_account">Updating account with id \'%1$s\'</string>
     <string name="log_info_updating_contributor">Updating contributor with id \'%1$s\'</string>
+    <string name="log_info_number_updated_account">Number of updated account %1$d</string>
     <string name="log_info_number_updated_contributor">Number of updated contributor %1$d</string>
 
     <!-- Label for the default currency preference [CHAR LIMIT=30] -->
@@ -45,6 +51,8 @@
     <string name="pref_USD_currency" translatable="false">USD</string>
     <string name="pref_EUR_currency" translatable="false">EUR</string>
 
+    <string name="title_account_editor">Account Editor</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="title_contributor_editor">Contributor Editor</string>
 
 </resources>

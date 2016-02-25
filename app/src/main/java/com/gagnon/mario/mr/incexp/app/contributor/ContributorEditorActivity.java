@@ -29,7 +29,6 @@ import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ContributorEditorActivity extends AppCompatActivity implements ContributorEditorFragment.OnButtonClickListener {
 
@@ -44,7 +43,7 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contributor_editor);
+        setContentView(R.layout.contributor_editor_activity);
 
         if (savedInstanceState == null) {
 

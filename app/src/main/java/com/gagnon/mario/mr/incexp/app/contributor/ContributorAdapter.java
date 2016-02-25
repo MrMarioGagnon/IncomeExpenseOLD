@@ -6,7 +6,6 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gagnon.mario.mr.incexp.app.R;
@@ -50,7 +49,7 @@ public class ContributorAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         int viewType = getItemViewType(cursor.getPosition());
-        int layoutId = R.layout.list_item_contributor;
+        int layoutId = R.layout.contributor_list_item;
 
         View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
 

@@ -74,7 +74,7 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
 
         mAccountAdapter = new AccountAdapter(getActivity(), null, 0);
 
-        View rootView = inflater.inflate(R.layout.fragment_account, container, false);
+        View rootView = inflater.inflate(R.layout.account_fragment, container, false);
 
         setupListView(rootView, inflater, container);
 

@@ -24,7 +24,7 @@
             android:text="@string/label_name"/>
 
         <EditText
-            android:id="@+id/textview_contributor_name"
+            android:id="@+id/edittext_contributor_name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:hint="@string/hint_contributor_name"

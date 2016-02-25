@@ -25,7 +25,7 @@ public class CategoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View x = inflater.inflate(R.layout.fragment_main, container, false);
+        View x = inflater.inflate(R.layout.main_fragment, container, false);
 
         TextView textView = (TextView)x.findViewById(R.id.section_label);
         if(null != textView){

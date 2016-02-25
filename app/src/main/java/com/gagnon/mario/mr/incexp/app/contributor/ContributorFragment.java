@@ -70,7 +70,7 @@ public class ContributorFragment extends Fragment implements LoaderManager.Loade
 
         mContributorAdapter = new ContributorAdapter(getActivity(), null, 0);
 
-        View rootView = inflater.inflate(R.layout.fragment_contributor, container, false);
+        View rootView = inflater.inflate(R.layout.contributor_fragment, container, false);
 
         setupListView(rootView, inflater, container);
 

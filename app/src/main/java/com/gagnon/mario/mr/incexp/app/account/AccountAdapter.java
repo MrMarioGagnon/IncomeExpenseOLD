@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gagnon.mario.mr.incexp.app.*;
-import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
 
 /**
  * {@link AccountAdapter} exposes a list of weather forecasts
@@ -52,7 +51,7 @@ public class AccountAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         int viewType = getItemViewType(cursor.getPosition());
-        int layoutId = R.layout.list_item_account;
+        int layoutId = R.layout.account_list_item;
 
         View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
 
