@@ -17,6 +17,8 @@ package com.gagnon.mario.mr.incexp.app.contributor;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +61,7 @@ public class ContributorEditorFragment extends Fragment {
     private TextView mTextViewValidationErrorMessage;
 
     private View.OnClickListener mOnButtonClickListener;
+    private TextWatcher mOnTextChangeListener;
 
     private ObjectValidator mObjectValidator = null;
     private ArrayList<String> mNames;
@@ -68,6 +71,23 @@ public class ContributorEditorFragment extends Fragment {
     // region Constructor
 
     public ContributorEditorFragment() {
+
+        mOnTextChangeListener = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mButtonSave.setEnabled(true);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
 
         mOnButtonClickListener = new View.OnClickListener() {
             @Override
@@ -116,7 +136,7 @@ public class ContributorEditorFragment extends Fragment {
     public ObjectValidator getObjectValidator() {
 
         if(null == mObjectValidator){
-            mObjectValidator = new ContributorValidator(mNames);
+            mObjectValidator = ContributorValidator.create(getActivity(), mNames);
         }
 
         return mObjectValidator;
@@ -145,13 +165,13 @@ public class ContributorEditorFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.contributor_editor_fragment, container, false);
         mEditTextName = (EditText) rootView.findViewById(R.id.edittext_contributor_name);
         mEditTextName.setText(mContributor.getName());
+        mEditTextName.addTextChangedListener(mOnTextChangeListener);
 
         mTextViewValidationErrorMessage = (TextView) rootView.findViewById(R.id.textViewValidationErrorMessage);
 
         mButtonSave = (Button) rootView.findViewById(R.id.button_save);
         mButtonSave.setText(mContributor.isNew() ? R.string.button_label_add : R.string.button_label_save);
         mButtonSave.setOnClickListener(mOnButtonClickListener);
-        //mButtonSave.setEnabled(false);
 
         mButtonBack = (Button) rootView.findViewById(R.id.button_back);
         mButtonBack.setOnClickListener(mOnButtonClickListener);
@@ -161,6 +181,8 @@ public class ContributorEditorFragment extends Fragment {
 
         if(mContributor.isNew()){
             mButtonDelete.setVisibility(View.GONE);
+        }else{
+            mButtonSave.setEnabled(false);
         }
 
         return rootView;

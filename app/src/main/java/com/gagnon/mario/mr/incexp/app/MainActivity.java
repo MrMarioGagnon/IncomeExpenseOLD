@@ -174,6 +174,9 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 //                                    contentResolver.insert(accountUri, contentValues);
 
                                     Account account = Account.createNew();
+
+                                    String defaultCurrency = Utility.getPreferredDefaultCurrency(MainActivity.this);
+                                    Log.d(LOG_TAG, defaultCurrency);
                                     account.setCurrency(Utility.getPreferredDefaultCurrency(MainActivity.this) );
                                     arguments = new Bundle();
                                     arguments.putSerializable("item", account);

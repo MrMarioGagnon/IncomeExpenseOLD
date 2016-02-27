@@ -6,101 +6,100 @@ import java.io.Serializable;
 
 public class Contributor extends ObjectBase implements Serializable, Comparable<Contributor> {
 
-	// region Static Method
+    // region Static Method
 
-	public static Contributor create(Long id, String name) {
+    private Long mId = null;
+    private String mName;
 
-		Contributor newInstance = new Contributor();
-		newInstance.mNew = false;
-		newInstance.mDirty = false;
-		newInstance.mId = id;
-		newInstance.mName = name;
+    // endregion Static Method
 
-		return newInstance;
-	}
+    // region Private Field
 
-	public static Contributor createNew() {
+    private Contributor() {
 
-		Contributor newInstance = new Contributor();
-		newInstance.mNew = true;
-		newInstance.mDirty = true;
-		newInstance.mName = "";
+    }
 
-		return newInstance;
+    public static Contributor create(Long id, String name) {
 
-	}
+        Contributor newInstance = new Contributor();
+        newInstance.mNew = false;
+        newInstance.mDirty = false;
+        newInstance.mId = id;
+        newInstance.mName = name;
 
-	// endregion Static Method
+        return newInstance;
+    }
 
-	// region Private Field
+    // endregion Private Field
 
-	private Long mId = null;
-	private String mName;
+    // region Constructor
 
-	// endregion Private Field
+    public static Contributor createNew() {
 
-	// region Constructor
+        Contributor newInstance = new Contributor();
+        newInstance.mNew = true;
+        newInstance.mDirty = true;
+        newInstance.mName = "";
 
-	private Contributor() {
+        return newInstance;
 
-	}
+    }
 
-	// endregion Constructor
+    // endregion Constructor
 
-	// region Getter/Setter
+    // region Getter/Setter
 
-	public Long getId() {
-		return mId;
-	}
+    public Long getId() {
+        return mId;
+    }
 
-	public String getName() {
-		return mName;
-	}
+    public void setId(Long id) {
+        mId = id;
+    }
 
+    public String getName() {
+        return null == mName ? "" : mName;
+    }
 
-	public void setId(Long id) {
-		mId = id;
-	}
+    public void setName(String name) {
 
-	public void setName(String name) {
+        if (!mName.equals(name)) {
+            mDirty = true;
+            mName = name;
+        }
+    }
 
-		if (!mName.equals(name)) {
-			mDirty = true;
-			mName = name;
-		}
-	}
+    // endregion Getter/Setter
 
-	// endregion Getter/Setter
+    // region Public Method
 
-	// region Public Method
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Contributor)) return false;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Contributor)) return false;
+        Contributor that = (Contributor) o;
 
-		Contributor that = (Contributor) o;
+        return mId.equals(that.mId) && mName.equals(that.mName);
 
-		return mId.equals(that.mId) && mName.equals(that.mName);
+    }
 
-	}
+    @Override
+    public int hashCode() {
+        int result = mId.hashCode();
+        result = 31 * result + mName.hashCode();
+        return result;
+    }
 
-	@Override
-	public int hashCode() {
-		int result = mId.hashCode();
-		result = 31 * result + mName.hashCode();
-		return result;
-	}
+    @Override
+    public String toString() {
+        return getName();
+    }
 
-	@Override
-	public String toString() {
-		return getName();
-	}
+    @Override
+    public int compareTo(Contributor instanceToCompare) {
+        return getName().compareToIgnoreCase(instanceToCompare.getName());
+    }
 
-	@Override
-	public int compareTo(Contributor instanceToCompare) {
-		return getName().compareToIgnoreCase(instanceToCompare.getName());
-	}
-
-	// endregion Public Method
+    // endregion Public Method
 }

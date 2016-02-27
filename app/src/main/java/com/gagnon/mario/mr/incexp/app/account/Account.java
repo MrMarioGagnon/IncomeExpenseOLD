@@ -27,6 +27,7 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
 		newInstance.mNew = true;
 		newInstance.mDirty = true;
 		newInstance.mName = "";
+        newInstance.mCurrency = "";
 
 		return newInstance;
 
@@ -62,7 +63,8 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
 	}
 
 	public String getName() {
-		return mName;
+
+		return null == mName ? "" : mName;
 	}
 
 	public void setName(String name) {
@@ -71,14 +73,19 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
 			mDirty = true;
 			mName = name;
 		}
+
 	}
 
 	public String getCurrency() {
-		return mCurrency;
+		return null == mCurrency ? "" : mCurrency;
 	}
 
 	public void setCurrency(String currency) {
-		mCurrency = currency;
+
+        if (!mCurrency.equals(currency)){
+            mDirty = true;
+            mCurrency = currency;
+        }
 	}
 
 	public Boolean getIsClose() {
