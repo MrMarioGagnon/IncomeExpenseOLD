@@ -64,6 +64,7 @@ public class AccountEditorActivity extends AppCompatActivity implements AccountE
 
             AccountEditorFragment fragment = new AccountEditorFragment();
             fragment.setArguments(arguments);
+            fragment.setRetainInstance(true);
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.account_editor_container, fragment)

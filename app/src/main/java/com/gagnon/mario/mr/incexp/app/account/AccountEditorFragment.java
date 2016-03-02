@@ -41,13 +41,12 @@ import java.util.ArrayList;
  */
 public class AccountEditorFragment extends Fragment {
 
-    // region Public Interface
+    // region Private Field
 
     private static final String LOG_TAG = AccountEditorFragment.class.getSimpleName();
+    private static final String KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE = "key1";
+    private static final String KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION = "key2";
 
-    // endregion Public Interface
-    private static Boolean mIsCreatingView = true;
-    // region Private Field
     private EditText mEditTextName;
     private Button mButtonSave;
     private Button mButtonBack;
@@ -60,19 +59,18 @@ public class AccountEditorFragment extends Fragment {
     private ObjectValidator mObjectValidator = null;
     private ArrayList<String> mNames;
     private AdapterView.OnItemSelectedListener mOnItemSelectedListener;
+    private ArrayAdapter<CharSequence> mSpinnerCurrencyAdapter;
+
+    // endregion Private Field
+
+// region Constructor
 
     public AccountEditorFragment() {
 
         mOnItemSelectedListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                if (mIsCreatingView) {
-                    // TODO Fix Ne fonctionne pas a tous les coups, si reviens dans le fragment
-                    mIsCreatingView = false;
-                } else {
                     mButtonSave.setEnabled(true);
-                }
             }
 
             @Override
@@ -140,9 +138,33 @@ public class AccountEditorFragment extends Fragment {
 
     }
 
-    // endregion Private Field
+    // endregion Constructor
 
-    // region Constructor
+    // region Private Method
+
+    // endregion Private method
+
+    // region Public Method
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mAccount = (Account) arguments.getSerializable("item");
+            mNames = (ArrayList<String>) arguments.getSerializable("names");
+        } else {
+            mAccount = Account.createNew();
+            mNames = new ArrayList<>();
+        }
+
+        mSpinnerCurrencyAdapter = ArrayAdapter.createFromResource(
+                getActivity(), R.array.currency_array,
+                android.R.layout.simple_spinner_item);
+        mSpinnerCurrencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+    }
 
     public ObjectValidator getObjectValidator() {
 
@@ -153,76 +175,81 @@ public class AccountEditorFragment extends Fragment {
         return mObjectValidator;
     }
 
-    // endregion Constructor
-
-    // region Public Method
-
     public void setObjectValidator(ObjectValidator mObjectValidator) {
         this.mObjectValidator = mObjectValidator;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            mAccount = (Account) arguments.getSerializable("item");
-            mNames = (ArrayList<String>) arguments.getSerializable("names");
-        } else {
-            mNames = new ArrayList<>();
-        }
-
-        if (null == mAccount) {
-            mAccount = Account.createNew();
-        }
-
         View rootView = inflater.inflate(R.layout.account_editor_fragment, container, false);
-        mEditTextName = (EditText) rootView.findViewById(R.id.edittext_account_name);
-        mEditTextName.setText(mAccount.getName());
-        mEditTextName.addTextChangedListener(mOnTextChangeListener);
 
         mTextViewValidationErrorMessage = (TextView) rootView.findViewById(R.id.textViewValidationErrorMessage);
 
+        mEditTextName = (EditText) rootView.findViewById(R.id.edittext_account_name);
+
+        mSpinnerCurrency = (Spinner) rootView.findViewById(R.id.spinner_currency);
+        mSpinnerCurrency.setAdapter(mSpinnerCurrencyAdapter);
+
+        mButtonDelete = (Button) rootView.findViewById(R.id.button_delete);
+        mButtonDelete.setOnClickListener(mOnButtonClickListener);
+
         mButtonSave = (Button) rootView.findViewById(R.id.button_save);
-        mButtonSave.setText(mAccount.isNew() ? R.string.button_label_add : R.string.button_label_save);
         mButtonSave.setOnClickListener(mOnButtonClickListener);
 
         mButtonBack = (Button) rootView.findViewById(R.id.button_back);
         mButtonBack.setOnClickListener(mOnButtonClickListener);
 
-        mButtonDelete = (Button) rootView.findViewById(R.id.button_delete);
-        mButtonDelete.setOnClickListener(mOnButtonClickListener);
+        if (null == savedInstanceState) {
 
-        setupSpinnerCurrency(rootView);
-        mSpinnerCurrency.setSelection(((ArrayAdapter) mSpinnerCurrency.getAdapter()).getPosition(mAccount.getCurrency()));
+            mEditTextName.setText(mAccount.getName());
 
-        if (mAccount.isNew()) {
-            mButtonDelete.setVisibility(View.GONE);
-        } else {
+            if (mAccount.isNew()) {
+                mButtonDelete.setVisibility(View.GONE);
+                mButtonSave.setText(R.string.button_label_add);
+            } else {
+                mButtonSave.setText(R.string.button_label_save);
+            }
+
+            mSpinnerCurrency.setSelection(((ArrayAdapter<String>) mSpinnerCurrency.getAdapter()).getPosition(mAccount.getCurrency()), false);
+
             mButtonSave.setEnabled(false);
+
+        }else{
+            if(savedInstanceState.containsKey(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE)){
+                mButtonSave.setEnabled(savedInstanceState.getBoolean(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE));
+            }
+            if(savedInstanceState.containsKey(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION)){
+                int position = savedInstanceState.getInt(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION);
+                mSpinnerCurrency.setOnItemSelectedListener(null);
+                mSpinnerCurrency.setSelection(position, false);
+            }
+
         }
 
         return rootView;
     }
 
-    private void setupSpinnerCurrency(View view) {
+    @Override
+    public void onResume() {
+        super.onResume();
 
-        mSpinnerCurrency = (Spinner) view.findViewById(R.id.spinner_currency);
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                getActivity(), R.array.currency_array,
-                android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinnerCurrency.setAdapter(adapter);
+        mEditTextName.addTextChangedListener(mOnTextChangeListener);
         mSpinnerCurrency.setOnItemSelectedListener(mOnItemSelectedListener);
 
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE, mButtonSave.isEnabled());
+        outState.putInt(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION, mSpinnerCurrency.getSelectedItemPosition());
+    }
+
+    // endregion Public Method
+
+    // region Public Interface
 
     public interface OnButtonClickListener {
         void onBackButtonClick();
@@ -232,7 +259,6 @@ public class AccountEditorFragment extends Fragment {
         void onDeleteButtonClick(Account account);
     }
 
-
-    // endregion Public Method
+    // endregion Public Interface
 
 }
