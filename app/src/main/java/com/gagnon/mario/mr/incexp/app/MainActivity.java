@@ -138,17 +138,17 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
                 Log.d(LOG_TAG, String.valueOf(mFragmentManager.getFragments().size()));
 
-                for(Fragment f : mFragmentManager.getFragments()){
+                for (Fragment f : mFragmentManager.getFragments()) {
 
-                    if(null != f && f.isVisible()){
+                    if (null != f && f.isVisible()) {
 
-                        if(f instanceof TransactionFragment){
-                            Snackbar.make(view, ((TransactionFragment)f).GetCurrentFragment(), Snackbar.LENGTH_LONG)
+                        if (f instanceof TransactionFragment) {
+                            Snackbar.make(view, ((TransactionFragment) f).GetCurrentFragment(), Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
 
-                        }else{
+                        } else {
 
-                            switch ( f.getTag() ){
+                            switch (f.getTag()) {
                                 case "contributor":
 
                                     Contributor contributor = Contributor.createNew();
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
                                     String defaultCurrency = Utility.getPreferredDefaultCurrency(MainActivity.this);
                                     Log.d(LOG_TAG, defaultCurrency);
-                                    account.setCurrency(Utility.getPreferredDefaultCurrency(MainActivity.this) );
+                                    account.setCurrency(Utility.getPreferredDefaultCurrency(MainActivity.this));
                                     arguments = new Bundle();
                                     arguments.putSerializable("item", account);
 
@@ -188,8 +188,8 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
                                     break;
                                 default:
-                               Snackbar.make(view, f.getTag() , Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
+                                    Snackbar.make(view, f.getTag(), Snackbar.LENGTH_LONG)
+                                            .setAction("Action", null).show();
                                     break;
                             }
                         }
