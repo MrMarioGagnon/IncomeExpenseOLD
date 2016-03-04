@@ -23,11 +23,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.gagnon.mario.mr.incexp.app.R;
+import com.gagnon.mario.mr.incexp.app.account.Account;
 import com.gagnon.mario.mr.incexp.app.core.ObjectValidator;
 import com.gagnon.mario.mr.incexp.app.core.ValidationStatus;
 
@@ -51,6 +53,7 @@ public class ContributorEditorFragment extends Fragment {
     // region Private Field
 
     private static final String LOG_TAG = ContributorEditorFragment.class.getSimpleName();
+    private static final String KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE = "key1";
 
     private EditText mEditTextName;
     private Button mButtonSave;
@@ -133,6 +136,21 @@ public class ContributorEditorFragment extends Fragment {
 
     // region Public Method
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mContributor = (Contributor) arguments.getSerializable("item");
+            mNames = (ArrayList<String>) arguments.getSerializable("names");
+        } else {
+            mContributor = Contributor.createNew();
+            mNames = new ArrayList<>();
+        }
+
+    }
+
     public ObjectValidator getObjectValidator() {
 
         if(null == mObjectValidator){
@@ -150,22 +168,8 @@ public class ContributorEditorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            mContributor = (Contributor)arguments.getSerializable("item");
-            mNames = (ArrayList<String>)arguments.getSerializable("names");
-        }else{
-            mNames = new ArrayList<>();
-        }
-
-        if(null == mContributor) {
-            mContributor = Contributor.createNew();
-        }
-
         View rootView = inflater.inflate(R.layout.contributor_editor_fragment, container, false);
         mEditTextName = (EditText) rootView.findViewById(R.id.edittext_contributor_name);
-        mEditTextName.setText(mContributor.getName());
-        mEditTextName.addTextChangedListener(mOnTextChangeListener);
 
         mTextViewValidationErrorMessage = (TextView) rootView.findViewById(R.id.textViewValidationErrorMessage);
 
@@ -179,13 +183,40 @@ public class ContributorEditorFragment extends Fragment {
         mButtonDelete = (Button) rootView.findViewById(R.id.button_delete);
         mButtonDelete.setOnClickListener(mOnButtonClickListener);
 
-        if(mContributor.isNew()){
-            mButtonDelete.setVisibility(View.GONE);
-        }else{
+        if (null == savedInstanceState) {
+
+            mEditTextName.setText(mContributor.getName());
+
+            if (mContributor.isNew()) {
+                mButtonDelete.setVisibility(View.GONE);
+                mButtonSave.setText(R.string.button_label_add);
+            } else {
+                mButtonSave.setText(R.string.button_label_save);
+            }
+
             mButtonSave.setEnabled(false);
+
+        }else{
+            if(savedInstanceState.containsKey(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE)){
+                mButtonSave.setEnabled(savedInstanceState.getBoolean(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE));
+            }
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mEditTextName.addTextChangedListener(mOnTextChangeListener);
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE, mButtonSave.isEnabled());
     }
 
     // endregion Public Method

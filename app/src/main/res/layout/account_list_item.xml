@@ -3,24 +3,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:descendantFocusability="blocksDescendants"
               android:gravity="center_vertical"
               android:minHeight="?android:attr/listPreferredItemHeight"
               android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/textView_account_name"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="left"
-        android:minHeight="?android:attr/listPreferredItemHeight"/>
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView_account_currency"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+        <TextView
+            android:id="@+id/textView_account_name"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/textView_account_currency"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/imageButton_contributor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="end"
-        android:minHeight="?android:attr/listPreferredItemHeight"/>
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_person_black_24dp"/>
 
 </LinearLayout>

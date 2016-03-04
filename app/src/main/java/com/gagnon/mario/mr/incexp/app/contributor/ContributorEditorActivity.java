@@ -64,6 +64,7 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
 
             ContributorEditorFragment fragment = new ContributorEditorFragment();
             fragment.setArguments(arguments);
+            fragment.setRetainInstance(true);
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.contributor_editor_container, fragment)

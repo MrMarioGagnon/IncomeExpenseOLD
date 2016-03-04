@@ -7,11 +7,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
@@ -19,12 +21,14 @@ import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
 /**
  * Created by mario on 2/1/2016.
  */
-public class AccountFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AccountFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     // region Static Field
 
+    public static final int COL_ID = 0;
     public static final int COL_NAME = 1;
     public static final int COL_CURRENCY = 2;
+    public static final int COL_CLOSE = 3;
 
     private static final String[] ACCOUNT_COLUMNS = {
             IncomeExpenseContract.AccountEntry.COLUMN_ID,
@@ -119,10 +123,10 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
-                Cursor cursor = (Cursor)adapterView.getItemAtPosition(position);
-                if(null != cursor){
+                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                if (null != cursor) {
 
-                    long id = cursor.getLong(  cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_ID)  );
+                    long id = cursor.getLong(cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_ID));
                     String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_NAME));
                     String currency = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY));
                     int close = cursor.getInt(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE));
@@ -130,7 +134,7 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
 
                     Account account = Account.create(id, name, currency, isClose);
 
-                    ((AccountFragment.OnItemSelectedListener)getActivity()).onItemSelected(account);
+                    ((AccountFragment.OnItemSelectedListener) getActivity()).onItemSelected(account);
 
                 }
 
@@ -193,5 +197,6 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
     public interface OnItemSelectedListener {
         void onItemSelected(Account account);
     }
+
 
 }

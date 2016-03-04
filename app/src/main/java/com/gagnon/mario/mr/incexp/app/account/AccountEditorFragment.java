@@ -63,7 +63,7 @@ public class AccountEditorFragment extends Fragment {
 
     // endregion Private Field
 
-// region Constructor
+    // region Constructor
 
     public AccountEditorFragment() {
 
