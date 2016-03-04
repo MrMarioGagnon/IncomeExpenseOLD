@@ -1,7 +1,5 @@
 package com.gagnon.mario.mr.incexp.app.Helper;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -9,12 +7,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
-import android.telephony.TelephonyManager;
-import android.util.Patterns;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 
 /**
  * A collection of authentication and account connection utilities. With strong inspiration from the Google IO session
