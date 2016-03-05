@@ -1,4 +1,4 @@
-package com.gagnon.mario.mr.incexp.app.outil;
+package com.gagnon.mario.mr.incexp.app.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
