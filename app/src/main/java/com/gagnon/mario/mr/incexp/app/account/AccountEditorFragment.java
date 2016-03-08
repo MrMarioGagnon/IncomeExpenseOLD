@@ -15,6 +15,7 @@
  */
 package com.gagnon.mario.mr.incexp.app.account;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -27,21 +28,26 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
+import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.core.ObjectValidator;
 import com.gagnon.mario.mr.incexp.app.core.ValidationStatus;
+import com.gagnon.mario.mr.incexp.app.core.dialog.DialogUtils;
+import com.gagnon.mario.mr.incexp.app.core.dialog.MultipleChoiceEventHandler;
 
 import java.util.ArrayList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class AccountEditorFragment extends Fragment {
-
-    // region Private Field
+public class AccountEditorFragment extends Fragment{
 
     private static final String LOG_TAG = AccountEditorFragment.class.getSimpleName();
     private static final String KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE = "key1";
@@ -51,26 +57,28 @@ public class AccountEditorFragment extends Fragment {
     private Button mButtonSave;
     private Button mButtonBack;
     private Button mButtonDelete;
+    private ImageButton mImageButtonContributors;
     private Account mAccount;
     private TextView mTextViewValidationErrorMessage;
     private Spinner mSpinnerCurrency;
     private View.OnClickListener mOnButtonClickListener;
+    private View.OnClickListener mOnImageButtonClickListener;
     private TextWatcher mOnTextChangeListener;
     private ObjectValidator mObjectValidator = null;
     private ArrayList<String> mNames;
+    private SortedSet<Contributor> mContributors;
     private AdapterView.OnItemSelectedListener mOnItemSelectedListener;
     private ArrayAdapter<CharSequence> mSpinnerCurrencyAdapter;
-
-    // endregion Private Field
-
-    // region Constructor
+    private MultipleChoiceEventHandler mContributorMultipleChoiceEventHandler;
+    private boolean[] mSelectedContributor;
+    private TextView mTextViewContributors;
 
     public AccountEditorFragment() {
 
         mOnItemSelectedListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    mButtonSave.setEnabled(true);
+                mButtonSave.setEnabled(true);
             }
 
             @Override
@@ -116,6 +124,8 @@ public class AccountEditorFragment extends Fragment {
                         mAccount.setCurrency((String) mSpinnerCurrency
                                 .getSelectedItem());
 
+                        // TODO set contributors of account
+
                         try {
                             ValidationStatus validationStatus = getObjectValidator().Validate(mAccount);
 
@@ -136,15 +146,32 @@ public class AccountEditorFragment extends Fragment {
             }
         };
 
+        mOnImageButtonClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showContributorSetterDialog();
+//                Toast.makeText(v.getContext(), "Image Button was click", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        mContributorMultipleChoiceEventHandler = new MultipleChoiceEventHandler() { // Creating an anonymous Class Object
+            @Override
+            public void execute(boolean[] idSelected) {
+                Contributor[] a = new Contributor[mContributors.size()];
+                mContributors.toArray(a);
+
+                StringBuffer sb = new StringBuffer();
+                for(int i = 0; i < idSelected.length; i++){
+                    if(idSelected[i]){
+                        sb.append(  String.format("%1$s%2$s", (sb.length() == 0 ? "" : ","),  a[i].getName()) );
+                    }
+                }
+                mTextViewContributors.setText( sb.toString() );
+                mSelectedContributor = idSelected;
+            }
+        };
+
     }
-
-    // endregion Constructor
-
-    // region Private Method
-
-    // endregion Private method
-
-    // region Public Method
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -154,9 +181,11 @@ public class AccountEditorFragment extends Fragment {
         if (arguments != null) {
             mAccount = (Account) arguments.getSerializable("item");
             mNames = (ArrayList<String>) arguments.getSerializable("names");
+            mContributors = (SortedSet<Contributor>) arguments.getSerializable("contributors");
         } else {
             mAccount = Account.createNew();
             mNames = new ArrayList<>();
+            mContributors = new TreeSet<>();
         }
 
         mSpinnerCurrencyAdapter = ArrayAdapter.createFromResource(
@@ -201,6 +230,11 @@ public class AccountEditorFragment extends Fragment {
         mButtonBack = (Button) rootView.findViewById(R.id.button_back);
         mButtonBack.setOnClickListener(mOnButtonClickListener);
 
+        mImageButtonContributors = (ImageButton) rootView.findViewById(R.id.imagebutton_contributors);
+        mImageButtonContributors.setOnClickListener(mOnImageButtonClickListener);
+
+        mTextViewContributors = (TextView) rootView.findViewById(R.id.textview_contributors);
+
         if (null == savedInstanceState) {
 
             mEditTextName.setText(mAccount.getName());
@@ -216,11 +250,11 @@ public class AccountEditorFragment extends Fragment {
 
             mButtonSave.setEnabled(false);
 
-        }else{
-            if(savedInstanceState.containsKey(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE)){
+        } else {
+            if (savedInstanceState.containsKey(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE)) {
                 mButtonSave.setEnabled(savedInstanceState.getBoolean(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE));
             }
-            if(savedInstanceState.containsKey(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION)){
+            if (savedInstanceState.containsKey(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION)) {
                 int position = savedInstanceState.getInt(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION);
                 mSpinnerCurrency.setOnItemSelectedListener(null);
                 mSpinnerCurrency.setSelection(position, false);
@@ -247,9 +281,49 @@ public class AccountEditorFragment extends Fragment {
         outState.putInt(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION, mSpinnerCurrency.getSelectedItemPosition());
     }
 
-    // endregion Public Method
+    private boolean[] buildContributorsCheckedArray(SortedSet<Contributor> contributors,
+                                                    String contributorsName) {
 
-    // region Public Interface
+        boolean[] checked = new boolean[contributors.size()];
+
+        int i = 0;
+        for (Contributor contributor : contributors) {
+
+            checked[i] = contributorsName.contains(contributor.getName());
+            i++;
+        }
+
+        return checked;
+
+    }
+
+    private void showContributorSetterDialog() {
+
+        try {
+
+            CharSequence[] contributorArray = new CharSequence[mContributors.size()];
+            int i = 0;
+            for (Contributor contributor : mContributors) {
+                contributorArray[i++] = contributor.getName();
+            }
+
+            Dialog dialog = DialogUtils.childSetterDialog(
+                    this.getContext(),
+                    contributorArray,
+                    mContributorMultipleChoiceEventHandler,
+                    buildContributorsCheckedArray(mContributors, mAccount.getContributorsForDisplay()),
+                    getString(R.string.dialog_title_contributor_setter));
+
+            dialog.setOwnerActivity(this.getActivity());
+            dialog.show();
+        } catch (Exception exception) {
+            DialogUtils.messageBox(this.getContext(),
+                    getString(R.string.error_unable_to_fetch_all_contributor),
+                    getString(R.string.dialog_title_contributor_setter)).show();
+
+        }
+
+    }
 
     public interface OnButtonClickListener {
         void onBackButtonClick();
@@ -258,7 +332,5 @@ public class AccountEditorFragment extends Fragment {
 
         void onDeleteButtonClick(Account account);
     }
-
-    // endregion Public Interface
 
 }

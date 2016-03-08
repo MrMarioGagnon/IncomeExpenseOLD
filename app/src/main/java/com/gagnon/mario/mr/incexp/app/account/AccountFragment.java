@@ -16,7 +16,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
+import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
+
+import java.util.ArrayList;
 
 /**
  * Created by mario on 2/1/2016.
@@ -132,7 +135,7 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
                     int close = cursor.getInt(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE));
                     Boolean isClose = (close == 1);
 
-                    Account account = Account.create(id, name, currency, isClose);
+                    Account account = Account.create(id, name, currency, isClose, new ArrayList<Contributor>());
 
                     ((AccountFragment.OnItemSelectedListener) getActivity()).onItemSelected(account);
 

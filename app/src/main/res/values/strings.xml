@@ -1,4 +1,7 @@
 <resources>
+
+    <string name="dialog_title_contributor_setter">Contributor Setter</string>
+
     <string name="app_name">Income Expense</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -10,6 +13,7 @@
 
     <string name="label_name">Name :</string>
     <string name="label_currency">Currency :</string>
+    <string name="label_contributors">Contributors :</string>
 
     <string name="hint_account_name">Enter account name</string>
     <string name="hint_contributor_name">Enter contributor name</string>
@@ -18,6 +22,8 @@
     <string name="button_label_back">Back</string>
     <string name="button_label_delete">Delete</string>
     <string name="button_label_save">Save</string>
+    <string name="button_label_ok">Ok</string>
+    <string name="button_label_cancel">Cancel</string>
 
     <string name="error_log_adding_item">Unable to add %1$s</string>
     <string name="error_log_deleting_item">Unable to delete %1$s with id %2$d</string>
@@ -59,6 +65,8 @@
     <string name="validation_name_mandatory">Name is mandatory</string>
 
     <string name="validation_name_already_exists">Name already exists</string>
+
+    <string name="error_unable_to_fetch_all_contributor">Unable to fetch all contributor.</string>
 
     <string-array name="currency_array">
         <item>@string/pref_CAD_currency</item>

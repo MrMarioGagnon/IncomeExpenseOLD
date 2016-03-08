@@ -26,6 +26,9 @@ public class IncomeExpenseProvider extends ContentProvider {
     static final int CONTRIBUTOR = 300;
     static final int CONTRIBUTOR_WITH_ID = 301;
 
+    static final int ACCOUNT_CONTRIBUTOR = 400;
+    static final int ACCOUNT_CONTRIBUTOR_WITH_ID = 401;
+
 //    private static final String sCategoryIdSelection =
 //            IncomeExpenseContract.CategoryEntry.TABLE_NAME +
 //                    "." + IncomeExpenseContract.CategoryEntry.COLUMN_ID + " = ? ";
@@ -37,6 +40,10 @@ public class IncomeExpenseProvider extends ContentProvider {
     private static final String sContributorIdSelection =
             IncomeExpenseContract.ContributorEntry.TABLE_NAME +
                     "." + IncomeExpenseContract.ContributorEntry.COLUMN_ID + " = ? ";
+
+    private static final String sAccountContributorIdSelection =
+            IncomeExpenseContract.AccountContributorEntry.TABLE_NAME +
+                    "." + IncomeExpenseContract.AccountContributorEntry.COLUMN_ID + " = ? ";
 
     static UriMatcher buildUriMatcher() {
 
@@ -55,6 +62,9 @@ public class IncomeExpenseProvider extends ContentProvider {
 
         matcher.addURI(authority, IncomeExpenseContract.PATH_CONTRIBUTOR, CONTRIBUTOR);
         matcher.addURI(authority, IncomeExpenseContract.PATH_CONTRIBUTOR + "/#", CONTRIBUTOR_WITH_ID);
+
+        matcher.addURI(authority, IncomeExpenseContract.PATH_ACCOUNT_CONTRIBUTOR, ACCOUNT_CONTRIBUTOR);
+        matcher.addURI(authority, IncomeExpenseContract.PATH_ACCOUNT_CONTRIBUTOR + "/#", ACCOUNT_CONTRIBUTOR_WITH_ID);
 
         return matcher;
     }
@@ -119,6 +129,26 @@ public class IncomeExpenseProvider extends ContentProvider {
         );
     }
 
+    private Cursor getAccountContributorById(Uri uri, String[] projection) {
+
+        long id = IncomeExpenseContract.AccountContributorEntry.getIdFromUri(uri);
+
+        String[] selectionArgs;
+        String selection;
+
+        selection = sAccountContributorIdSelection;
+        selectionArgs = new String[]{String.valueOf(id)};
+
+        return mOpenHelper.getReadableDatabase().query(IncomeExpenseContract.AccountContributorEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+    }
+
     @Override
     public boolean onCreate() {
         mOpenHelper = new IncomeExpenseDbHelper(getContext());
@@ -163,6 +193,20 @@ public class IncomeExpenseProvider extends ContentProvider {
             case ACCOUNT_WITH_ID:
                 retCursor = getAccountById(uri, projection);
                 break;
+            case ACCOUNT_CONTRIBUTOR:
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        IncomeExpenseContract.AccountContributorEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case ACCOUNT_CONTRIBUTOR_WITH_ID:
+                retCursor = getAccountContributorById(uri, projection);
+                break;
             case CONTRIBUTOR:
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         IncomeExpenseContract.ContributorEntry.TABLE_NAME,
@@ -200,6 +244,10 @@ public class IncomeExpenseProvider extends ContentProvider {
                 return IncomeExpenseContract.AccountEntry.CONTENT_TYPE;
             case ACCOUNT_WITH_ID:
                 return IncomeExpenseContract.AccountEntry.CONTENT_ITEM_TYPE;
+            case ACCOUNT_CONTRIBUTOR:
+                return IncomeExpenseContract.AccountContributorEntry.CONTENT_TYPE;
+            case ACCOUNT_CONTRIBUTOR_WITH_ID:
+                return IncomeExpenseContract.AccountContributorEntry.CONTENT_ITEM_TYPE;
             case CONTRIBUTOR:
                 return IncomeExpenseContract.ContributorEntry.CONTENT_TYPE;
             case CONTRIBUTOR_WITH_ID:
@@ -230,6 +278,14 @@ public class IncomeExpenseProvider extends ContentProvider {
                 long _id = db.insert(IncomeExpenseContract.AccountEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
                     returnUri = IncomeExpenseContract.AccountEntry.buildInstanceUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            case ACCOUNT_CONTRIBUTOR: {
+                long _id = db.insert(IncomeExpenseContract.AccountContributorEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = IncomeExpenseContract.AccountContributorEntry.buildInstanceUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -267,6 +323,10 @@ public class IncomeExpenseProvider extends ContentProvider {
                 rowsDeleted = db.delete(
                         IncomeExpenseContract.AccountEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+            case ACCOUNT_CONTRIBUTOR:
+                rowsDeleted = db.delete(
+                        IncomeExpenseContract.AccountContributorEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             case CONTRIBUTOR:
                 rowsDeleted = db.delete(
                         IncomeExpenseContract.ContributorEntry.TABLE_NAME, selection, selectionArgs);
@@ -294,6 +354,10 @@ public class IncomeExpenseProvider extends ContentProvider {
 //                break;
             case ACCOUNT:
                 rowsUpdated = db.update(IncomeExpenseContract.AccountEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case ACCOUNT_CONTRIBUTOR:
+                rowsUpdated = db.update(IncomeExpenseContract.AccountContributorEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
             case CONTRIBUTOR:
@@ -346,6 +410,22 @@ public class IncomeExpenseProvider extends ContentProvider {
                 }
                 getContext().getContentResolver().notifyChange(uri, null);
                 return returnCount;
+            case ACCOUNT_CONTRIBUTOR:
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(IncomeExpenseContract.AccountContributorEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+
             case CONTRIBUTOR:
                 db.beginTransaction();
                 try {

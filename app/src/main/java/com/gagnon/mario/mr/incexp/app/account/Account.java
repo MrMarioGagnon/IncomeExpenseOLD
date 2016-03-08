@@ -1,138 +1,132 @@
 package com.gagnon.mario.mr.incexp.app.account;
 
+import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.core.ObjectBase;
+import com.gagnon.mario.mr.incexp.app.core.Tools;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Account extends ObjectBase implements Serializable, Comparable<Account> {
 
-	// region Static Method
+    private Long mId = null;
+    private String mName;
 
-	public static Account create(Long id, String name, String currency, Boolean isClose) {
+    private String mCurrency;
+    private Boolean mIsClose;
 
-		Account newInstance = new Account();
-		newInstance.mNew = false;
-		newInstance.mDirty = false;
-		newInstance.mId = id;
-		newInstance.mName = name;
-		newInstance.mCurrency = currency;
-		newInstance.mIsClose = isClose;
+    private List<Contributor> mContributors;
 
-		return newInstance;
-	}
+    private Account() {
 
-	public static Account createNew() {
+    }
 
-		Account newInstance = new Account();
-		newInstance.mNew = true;
-		newInstance.mDirty = true;
-		newInstance.mName = "";
+    public static Account create(Long id, String name, String currency, Boolean isClose, List<Contributor> contributors) {
+
+        Account newInstance = new Account();
+        newInstance.mNew = false;
+        newInstance.mDirty = false;
+        newInstance.mId = id;
+        newInstance.mName = name;
+        newInstance.mCurrency = currency;
+        newInstance.mIsClose = isClose;
+        newInstance.mContributors = contributors;
+
+        return newInstance;
+    }
+
+    public static Account createNew() {
+
+        Account newInstance = new Account();
+        newInstance.mNew = true;
+        newInstance.mDirty = true;
+        newInstance.mName = "";
         newInstance.mCurrency = "";
+        newInstance.mContributors = new ArrayList<>();
 
-		return newInstance;
+        return newInstance;
 
-	}
+    }
 
-	// endregion Static Method
+    public Long getId() {
+        return mId;
+    }
 
-	// region Private Field
+    public void setId(Long id) {
+        mId = id;
+    }
 
-	private Long mId = null;
-	private String mName;
-	private String mCurrency;
-	private Boolean mIsClose;
+    public String getName() {
 
-	// endregion Private Field
+        return null == mName ? "" : mName;
+    }
 
-	// region Constructor
+    public void setName(String name) {
 
-	private Account() {
+        if (!mName.equals(name)) {
+            mDirty = true;
+            mName = name;
+        }
 
-	}
+    }
 
-	// endregion Constructor
+    public String getCurrency() {
+        return null == mCurrency ? "" : mCurrency;
+    }
 
-	// region Getter/Setter
+    public void setCurrency(String currency) {
 
-	public Long getId() {
-		return mId;
-	}
-
-	public void setId(Long id) {
-		mId = id;
-	}
-
-	public String getName() {
-
-		return null == mName ? "" : mName;
-	}
-
-	public void setName(String name) {
-
-		if (!mName.equals(name)) {
-			mDirty = true;
-			mName = name;
-		}
-
-	}
-
-	public String getCurrency() {
-		return null == mCurrency ? "" : mCurrency;
-	}
-
-	public void setCurrency(String currency) {
-
-        if (!mCurrency.equals(currency)){
+        if (!mCurrency.equals(currency)) {
             mDirty = true;
             mCurrency = currency;
         }
-	}
+    }
 
-	public Boolean getIsClose() {
-		return mIsClose;
-	}
+    public Boolean getIsClose() {
+        return mIsClose;
+    }
 
-	public void setIsClose(Boolean isClose) {
-		mIsClose = isClose;
-	}
-// endregion Getter/Setter
+    public void setIsClose(Boolean isClose) {
+        mIsClose = isClose;
+    }
 
-	// region Public Method
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Account)) return false;
 
+        Account account = (Account) o;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Account)) return false;
+        if (!mId.equals(account.mId)) return false;
+        if (!mName.equals(account.mName)) return false;
+        if (!mCurrency.equals(account.mCurrency)) return false;
+        return mIsClose.equals(account.mIsClose);
 
-		Account account = (Account) o;
+    }
 
-		if (!mId.equals(account.mId)) return false;
-		if (!mName.equals(account.mName)) return false;
-		if (!mCurrency.equals(account.mCurrency)) return false;
-		return mIsClose.equals(account.mIsClose);
+    @Override
+    public int hashCode() {
+        int result = mId.hashCode();
+        result = 31 * result + mName.hashCode();
+        result = 31 * result + mCurrency.hashCode();
+        result = 31 * result + mIsClose.hashCode();
+        return result;
+    }
 
-	}
+    @Override
+    public String toString() {
+        String toString = String.format("%1$s(%2$s)", getName(), getCurrency());
+        return toString;
+    }
 
-	@Override
-	public int hashCode() {
-		int result = mId.hashCode();
-		result = 31 * result + mName.hashCode();
-		result = 31 * result + mCurrency.hashCode();
-		result = 31 * result + mIsClose.hashCode();
-		return result;
-	}
+    @Override
+    public int compareTo(Account instanceToCompare) {
+        return getName().compareToIgnoreCase(instanceToCompare.getName());
+    }
 
-	@Override
-	public String toString() {
-		String toString = String.format("%1$s(%2$s)", getName(), getCurrency() );
-		return toString;
-	}
+    public String getContributorsForDisplay(){
+        return Tools.join(mContributors, ",");
+    }
 
-	@Override
-	public int compareTo(Account instanceToCompare) {
-		return getName().compareToIgnoreCase(instanceToCompare.getName());
-	}
-
-	// endregion Public Method
 }

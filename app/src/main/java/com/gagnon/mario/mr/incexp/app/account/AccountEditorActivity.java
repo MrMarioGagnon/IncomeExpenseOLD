@@ -17,7 +17,6 @@ package com.gagnon.mario.mr.incexp.app.account;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,18 +26,11 @@ import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
-
-import java.util.ArrayList;
+import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseDataHelper;
 
 public class AccountEditorActivity extends AppCompatActivity implements AccountEditorFragment.OnButtonClickListener {
 
-    // region Private Fields
-
     private static final String LOG_TAG = AccountEditorActivity.class.getSimpleName();
-
-    // endregion
-
-    // region Protected Method
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,16 +43,17 @@ public class AccountEditorActivity extends AppCompatActivity implements AccountE
 
             Bundle bundle = getIntent().getExtras();
             if (bundle != null) {
-                account = (Account)bundle.getSerializable("item");
+                account = (Account) bundle.getSerializable("item");
             }
 
-            if(null == account) {
+            if (null == account) {
                 account = Account.createNew();
             }
 
             Bundle arguments = new Bundle();
             arguments.putSerializable("item", account);
-            arguments.putSerializable("names", getAvailableAccountsName(account));
+            arguments.putSerializable("names", IncomeExpenseDataHelper.getAvailableAccountsName(this, account));
+            arguments.putSerializable("contributors", IncomeExpenseDataHelper.getAvailableContributors(this));
 
             AccountEditorFragment fragment = new AccountEditorFragment();
             fragment.setArguments(arguments);
@@ -71,41 +64,6 @@ public class AccountEditorActivity extends AppCompatActivity implements AccountE
                     .commit();
         }
     }
-
-    // endregion Protected Method
-
-    // region Private Method
-    private ArrayList<String> getAvailableAccountsName(Account account)
-    {
-
-        ArrayList<String> names = new ArrayList<>();
-
-        Uri uri = IncomeExpenseContract.AccountEntry.CONTENT_URI;
-        ContentResolver contentResolver = getContentResolver();
-
-        Cursor cursor = null;
-        try {
-
-            String selection = String.format("%1$s !=?", IncomeExpenseContract.AccountEntry.COLUMN_ID);
-            // Si account est new le id va etre null, donc remplacer par -1
-            String[] selectionArgument = new String[] { account.isNew() ? "-1" : account.getId().toString()};
-
-            cursor = contentResolver.query(uri, new String[] {IncomeExpenseContract.AccountEntry.COLUMN_NAME}, selection, selectionArgument, null);
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_NAME));
-                names.add(name.toUpperCase());
-            }
-        }finally {
-            if(null != cursor) {
-                cursor.close();
-            }
-        }
-
-        return names;
-    }
-    // endregion Private Method
-
-    // region Public Method
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -127,16 +85,11 @@ public class AccountEditorActivity extends AppCompatActivity implements AccountE
 //        return super.onOptionsItemSelected(item);
 //    }
 
-    // endregion Public Method
-
-    // region ContributorEditorFragment.OnButtonClickListener
-
     @Override
     public void onBackButtonClick() {
         setResult(RESULT_CANCELED);
         finish();
     }
-
 
     @Override
     public void onDeleteButtonClick(Account account) {
@@ -229,7 +182,5 @@ public class AccountEditorActivity extends AppCompatActivity implements AccountE
         setResult(RESULT_OK);
         finish();
     }
-
-    // endregion ContributorEditorFragment.OnButtonClickListener
 
 }

@@ -23,13 +23,7 @@ public class AccountAdapter extends CursorAdapter {
 
     private static final String LOG_TAG = AccountAdapter.class.getSimpleName();
 
-
-    // region Public Static Class
     private static final int VIEW_TYPE_COUNT = 1;
-
-    // endregion Public Static Class
-
-    // region Private Field
 
     public AccountAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -49,10 +43,6 @@ public class AccountAdapter extends CursorAdapter {
         return view;
     }
 
-    // endregion Private Field
-
-    // region Constructor
-
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
@@ -66,33 +56,27 @@ public class AccountAdapter extends CursorAdapter {
         String currency = cursor.getString(AccountFragment.COL_CURRENCY);
         viewHolder.textViewCurrency.setText(currency);
 
-        viewHolder.imageButtonContributor.setTag(accountId);
+//        viewHolder.imageButtonContributor.setTag(accountId);
     }
-
-    // endregion Constructor
-
-    // region Public Method
 
     public class ViewHolder {
         public final TextView textViewName;
         public final TextView textViewCurrency;
-        public final ImageButton imageButtonContributor;
+//        public final ImageButton imageButtonContributor;
 
         public ViewHolder(View view) {
             textViewName = (TextView) view.findViewById(R.id.textView_account_name);
             textViewCurrency = (TextView) view.findViewById(R.id.textView_account_currency);
-            imageButtonContributor = (ImageButton) view.findViewById(R.id.imageButton_contributor);
-            imageButtonContributor.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Long id = (Long) v.getTag();
-                    Log.d(LOG_TAG, "onClick");
-                    Toast.makeText(v.getContext(), id.toString(), Toast.LENGTH_SHORT);
-                }
-            });
+//            imageButtonContributor = (ImageButton) view.findViewById(R.id.imageButton_contributor);
+//            imageButtonContributor.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Long id = (Long) v.getTag();
+//                    Log.d(LOG_TAG, "onClick");
+//                    Toast.makeText(v.getContext(), id.toString(), Toast.LENGTH_SHORT);
+//                }
+//            });
         }
     }
-
-    // endregion Public Method
 
 }
