@@ -129,4 +129,17 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
         return Tools.join(mContributors, ",");
     }
 
+    public void addContributor(Contributor contributor){
+        mDirty = true;
+        mContributors.add(contributor);
+    }
+
+    public void clearContributor(){
+        mContributors.clear();
+    }
+
+    public List<Contributor> getContributors(){
+        return mContributors;
+    }
+
 }

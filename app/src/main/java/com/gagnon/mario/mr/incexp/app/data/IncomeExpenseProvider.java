@@ -2,12 +2,19 @@ package com.gagnon.mario.mr.incexp.app.data;
 
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import java.util.ArrayList;
 
 /**
  * Created by mario on 12/2/2015.
@@ -28,6 +35,20 @@ public class IncomeExpenseProvider extends ContentProvider {
 
     static final int ACCOUNT_CONTRIBUTOR = 400;
     static final int ACCOUNT_CONTRIBUTOR_WITH_ID = 401;
+
+    private static final SQLiteQueryBuilder mAccountContributorQueryBuilder;
+
+    static{
+        mAccountContributorQueryBuilder = new SQLiteQueryBuilder();
+
+        mAccountContributorQueryBuilder.setTables(
+                IncomeExpenseContract.AccountContributorEntry.TABLE_NAME + " INNER JOIN " +
+                        IncomeExpenseContract.ContributorEntry.TABLE_NAME +
+                        " ON " + IncomeExpenseContract.AccountContributorEntry.TABLE_NAME +
+                        "." + IncomeExpenseContract.AccountContributorEntry.COLUMN_CONTRIBUTOR_ID +
+                        "=" + IncomeExpenseContract.ContributorEntry.COLUMN_ID);
+    }
+
 
 //    private static final String sCategoryIdSelection =
 //            IncomeExpenseContract.CategoryEntry.TABLE_NAME +
@@ -456,5 +477,18 @@ public class IncomeExpenseProvider extends ContentProvider {
         super.shutdown();
     }
 
+    public Cursor getAccountContributor(Long accountId){
+
+        String selection = IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID + "=?";
+        String[] selectionArgs = new String[] {accountId.toString()};
+
+        return mAccountContributorQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null);
+    }
 
 }

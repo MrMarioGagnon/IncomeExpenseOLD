@@ -124,7 +124,15 @@ public class AccountEditorFragment extends Fragment{
                         mAccount.setCurrency((String) mSpinnerCurrency
                                 .getSelectedItem());
 
-                        // TODO set contributors of account
+                        Contributor[] a = new Contributor[mContributors.size()];
+                        mContributors.toArray(a);
+
+                        mAccount.clearContributor();
+                        for(int i = 0; i < mSelectedContributor.length; i++){
+                            if(mSelectedContributor[i]){
+                                mAccount.addContributor(a[i]);
+                            }
+                        }
 
                         try {
                             ValidationStatus validationStatus = getObjectValidator().Validate(mAccount);
@@ -270,6 +278,7 @@ public class AccountEditorFragment extends Fragment{
         super.onResume();
 
         mEditTextName.addTextChangedListener(mOnTextChangeListener);
+        mTextViewContributors.addTextChangedListener(mOnTextChangeListener);
         mSpinnerCurrency.setOnItemSelectedListener(mOnItemSelectedListener);
 
     }

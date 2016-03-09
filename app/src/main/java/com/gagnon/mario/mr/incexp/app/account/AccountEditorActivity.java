@@ -15,18 +15,26 @@
  */
 package com.gagnon.mario.mr.incexp.app.account;
 
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
+import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseDataHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountEditorActivity extends AppCompatActivity implements AccountEditorFragment.OnButtonClickListener {
 
@@ -144,6 +152,13 @@ public class AccountEditorActivity extends AppCompatActivity implements AccountE
             Uri accountUri = IncomeExpenseContract.AccountEntry.CONTENT_URI;
             ContentResolver contentResolver = getContentResolver();
 
+//            StringBuffer sb = new StringBuffer();
+//            for (Contributor contributor : account.getContributors()) {
+//                sb.append( String.format("%1$s,", contributor.getName())  );
+//            }
+//
+//            Toast.makeText(this, sb.toString(), Toast.LENGTH_SHORT).show();
+
             if (account.isNew()) {
                 // Add account
 
@@ -172,9 +187,43 @@ public class AccountEditorActivity extends AppCompatActivity implements AccountE
                 ContentValues accountValues = new ContentValues();
                 accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_NAME, account.getName());
                 accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY, account.getCurrency());
+
+                ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+
+                operations.add(
+                ContentProviderOperation.newUpdate(accountUri)
+                        .withSelection(IncomeExpenseContract.AccountEntry.COLUMN_ID + "=?", new String[]{account.getId().toString()})
+                        .withValues(accountValues).build());
+
+                operations.add(
+                        ContentProviderOperation.newDelete(IncomeExpenseContract.AccountContributorEntry.CONTENT_URI)
+                        .withSelection(IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID + "=?", new String[]{account.getId().toString()})
+                        .build());
+
+
+                for (Contributor contributor : account.getContributors()) {
+                    accountValues = new ContentValues();
+                    accountValues.put(IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID, id  );
+                    accountValues.put(IncomeExpenseContract.AccountContributorEntry.COLUMN_CONTRIBUTOR_ID, contributor.getId());
+                    operations.add(
+                            ContentProviderOperation.newInsert(IncomeExpenseContract.AccountContributorEntry.CONTENT_URI)
+                            .withValues(accountValues)
+                            .build());
+
+                }
+
+                ContentProviderResult[] results = null;
+                try {
+                    results = getContentResolver().applyBatch(
+                            IncomeExpenseContract.CONTENT_AUTHORITY, operations);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                } catch (OperationApplicationException e) {
+                    e.printStackTrace();
+                }
                 Log.i(LOG_TAG, getString(R.string.log_info_updating_account, id));
-                int rowsUpdated = contentResolver.update(accountUri, accountValues, IncomeExpenseContract.AccountEntry.COLUMN_ID + "=?", new String[]{account.getId().toString()});
-                Log.i(LOG_TAG, getString(R.string.log_info_number_updated_account, rowsUpdated));
+//                int rowsUpdated = contentResolver.update(accountUri, accountValues, IncomeExpenseContract.AccountEntry.COLUMN_ID + "=?", new String[]{account.getId().toString()});
+//                Log.i(LOG_TAG, getString(R.string.log_info_number_updated_account, rowsUpdated));
             }
 
         }

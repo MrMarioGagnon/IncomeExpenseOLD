@@ -1,5 +1,6 @@
 package com.gagnon.mario.mr.incexp.app.account;
 
+import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -134,6 +135,9 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
                     String currency = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY));
                     int close = cursor.getInt(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE));
                     Boolean isClose = (close == 1);
+
+                    ContentResolver contentResolver = getContext().getContentResolver();
+                    Cursor c = contentResolver.query(IncomeExpenseContract.AccountContributorEntry.CONTENT_URI)
 
                     Account account = Account.create(id, name, currency, isClose, new ArrayList<Contributor>());
 
