@@ -46,7 +46,8 @@ public class IncomeExpenseProvider extends ContentProvider {
                         IncomeExpenseContract.ContributorEntry.TABLE_NAME +
                         " ON " + IncomeExpenseContract.AccountContributorEntry.TABLE_NAME +
                         "." + IncomeExpenseContract.AccountContributorEntry.COLUMN_CONTRIBUTOR_ID +
-                        "=" + IncomeExpenseContract.ContributorEntry.COLUMN_ID);
+                        "=" + IncomeExpenseContract.ContributorEntry.TABLE_NAME +
+                        "." + IncomeExpenseContract.ContributorEntry.COLUMN_ID);
     }
 
 
@@ -215,15 +216,16 @@ public class IncomeExpenseProvider extends ContentProvider {
                 retCursor = getAccountById(uri, projection);
                 break;
             case ACCOUNT_CONTRIBUTOR:
-                retCursor = mOpenHelper.getReadableDatabase().query(
-                        IncomeExpenseContract.AccountContributorEntry.TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder
-                );
+//                retCursor = mOpenHelper.getReadableDatabase().query(
+//                        IncomeExpenseContract.AccountContributorEntry.TABLE_NAME,
+//                        projection,
+//                        selection,
+//                        selectionArgs,
+//                        null,
+//                        null,
+//                        sortOrder
+//                );
+                retCursor = getAccountContributor(selection, selectionArgs);
                 break;
             case ACCOUNT_CONTRIBUTOR_WITH_ID:
                 retCursor = getAccountContributorById(uri, projection);
@@ -477,10 +479,7 @@ public class IncomeExpenseProvider extends ContentProvider {
         super.shutdown();
     }
 
-    public Cursor getAccountContributor(Long accountId){
-
-        String selection = IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID + "=?";
-        String[] selectionArgs = new String[] {accountId.toString()};
+    public Cursor getAccountContributor(String selection, String[] selectionArgs){
 
         return mAccountContributorQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 null,

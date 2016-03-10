@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
+import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseDataHelper;
 
 import java.util.ArrayList;
 
@@ -117,7 +118,7 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
         super.onSaveInstanceState(outState);
     }
 
-    private void setupListView(View v, LayoutInflater inflater, ViewGroup container) {
+    private void setupListView(View v, final LayoutInflater inflater, ViewGroup container) {
 
         mListView = (ListView) v.findViewById(R.id.listview_account);
         mListView.setAdapter(mAccountAdapter);
@@ -130,16 +131,13 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (null != cursor) {
 
-                    long id = cursor.getLong(cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_ID));
-                    String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_NAME));
+                    Long id = cursor.getLong(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_ID));
+                    String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_NAME));
                     String currency = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY));
                     int close = cursor.getInt(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE));
                     Boolean isClose = (close == 1);
 
-                    ContentResolver contentResolver = getContext().getContentResolver();
-                    Cursor c = contentResolver.query(IncomeExpenseContract.AccountContributorEntry.CONTENT_URI)
-
-                    Account account = Account.create(id, name, currency, isClose, new ArrayList<Contributor>());
+                    Account account = Account.create(id, name, currency, isClose, IncomeExpenseDataHelper.getAccountContributors(getContext(), id));
 
                     ((AccountFragment.OnItemSelectedListener) getActivity()).onItemSelected(account);
 

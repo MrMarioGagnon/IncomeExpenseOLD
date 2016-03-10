@@ -4,13 +4,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v7.util.SortedList;
 
 import com.gagnon.mario.mr.incexp.app.account.Account;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 
 import java.util.ArrayList;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
@@ -68,6 +66,41 @@ public class IncomeExpenseDataHelper {
         }
 
         return names;
+    }
+
+    public static ArrayList<Contributor> getAccountContributors(Context context, Long accountId){
+
+        ArrayList<Contributor> contributors = new ArrayList<>();
+
+        ContentResolver contentResolver = context.getContentResolver();
+
+
+        Cursor cursor = null;
+        try {
+
+            String[] projection  = new String[] {IncomeExpenseContract.AccountContributorEntry.TABLE_NAME + "." + IncomeExpenseContract.AccountContributorEntry.COLUMN_ID
+                       ,IncomeExpenseContract.ContributorEntry.TABLE_NAME + "." + IncomeExpenseContract.ContributorEntry.COLUMN_ID
+                        ,IncomeExpenseContract.ContributorEntry.TABLE_NAME + "." + IncomeExpenseContract.ContributorEntry.COLUMN_NAME};
+
+            String selection = IncomeExpenseContract.AccountContributorEntry.TABLE_NAME + "." + IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID + "=?";
+            String[] selectionArgs = new String[] {accountId.toString()};
+
+            cursor = contentResolver.query(IncomeExpenseContract.AccountContributorEntry.CONTENT_URI,projection, selection, selectionArgs, null);
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                Long id = cursor.getLong(1);
+                String name = cursor.getString(2);
+                contributors.add(Contributor.create(id, name));
+            }
+        } finally {
+            if (null != cursor) {
+                cursor.close();
+            }
+        }
+
+        return contributors;
+
+
+
     }
 
 
