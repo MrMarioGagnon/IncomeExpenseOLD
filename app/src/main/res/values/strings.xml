@@ -62,9 +62,11 @@
     <string name="title_contributor_editor">Contributor Editor</string>
 
     <string name="validation_currency_mandatory">Currency is mandatory</string>
+    <string name="validation_name_already_exists">Name already exists</string>
     <string name="validation_name_mandatory">Name is mandatory</string>
 
-    <string name="validation_name_already_exists">Name already exists</string>
+    <string name="validation_contributors_mandatory">No contributor selected</string>
+
 
     <string name="error_unable_to_fetch_all_contributor">Unable to fetch all contributor.</string>
 

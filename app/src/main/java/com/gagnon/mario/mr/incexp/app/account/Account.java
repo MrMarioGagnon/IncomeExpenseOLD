@@ -135,6 +135,7 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
     }
 
     public void clearContributor(){
+        mDirty = true;
         mContributors.clear();
     }
 

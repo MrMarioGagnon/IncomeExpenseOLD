@@ -120,6 +120,7 @@ public class AccountEditorActivity extends AppCompatActivity implements AccountE
                 String name = account.getName();
                 try {
 
+                    // TODO Delete Account_Contributor rows
                     Log.i(LOG_TAG, getString(R.string.log_info_deleting_account, id));
                     int rowsDeleted = contentResolver.delete(accountUri, IncomeExpenseContract.AccountEntry.COLUMN_ID + "=?", new String[]{String.valueOf(id)});
                     Log.i(LOG_TAG, getString(R.string.log_info_number_deleted_account, rowsDeleted));
@@ -152,23 +153,49 @@ public class AccountEditorActivity extends AppCompatActivity implements AccountE
             Uri accountUri = IncomeExpenseContract.AccountEntry.CONTENT_URI;
             ContentResolver contentResolver = getContentResolver();
 
-//            StringBuffer sb = new StringBuffer();
-//            for (Contributor contributor : account.getContributors()) {
-//                sb.append( String.format("%1$s,", contributor.getName())  );
-//            }
-//
-//            Toast.makeText(this, sb.toString(), Toast.LENGTH_SHORT).show();
-
             if (account.isNew()) {
                 // Add account
 
                 try {
+
                     ContentValues accountValues = new ContentValues();
                     accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_NAME, account.getName());
                     accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY, account.getCurrency());
-                    Uri newUri = contentResolver.insert(accountUri, accountValues);
-                    long newID = IncomeExpenseContract.AccountEntry.getIdFromUri(newUri);
-                    account.setId(newID);
+
+                    ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+
+                    operations.add(
+                            ContentProviderOperation.newInsert(IncomeExpenseContract.AccountEntry.CONTENT_URI)
+                                    .withValues(accountValues)
+                                    .build());
+
+                    for (Contributor contributor : account.getContributors()) {
+                        Log.d(LOG_TAG, "adding contributor:" + contributor.getName());
+                        accountValues = new ContentValues();
+                        accountValues.put(IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID, 0  );
+                        accountValues.put(IncomeExpenseContract.AccountContributorEntry.COLUMN_CONTRIBUTOR_ID, contributor.getId());
+                        operations.add(
+                                ContentProviderOperation.newInsert(IncomeExpenseContract.AccountContributorEntry.CONTENT_URI)
+                                        .withValues(accountValues)
+                                        .withValueBackReference(IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID, 0)
+                                        .build());
+
+                    }
+
+                    ContentProviderResult[] results = null;
+                    try {
+                        results = getContentResolver().applyBatch(
+                                IncomeExpenseContract.CONTENT_AUTHORITY, operations);
+
+                        long newId = IncomeExpenseContract.AccountEntry.getIdFromUri(results[0].uri);
+                        Log.d(LOG_TAG, "New Id:" + newId);
+                        account.setId(newId);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    } catch (OperationApplicationException e) {
+                        e.printStackTrace();
+                    }
+
                 } catch (Exception ex) {
 
                     String message_log = this.getString(R.string.error_log_adding_item, getString(R.string.account));

@@ -124,13 +124,16 @@ public class AccountEditorFragment extends Fragment{
                         mAccount.setCurrency((String) mSpinnerCurrency
                                 .getSelectedItem());
 
-                        Contributor[] a = new Contributor[mContributors.size()];
-                        mContributors.toArray(a);
+                        // if not null, Contributors Dialog Box was call
+                        if(mSelectedContributor != null) {
+                            Contributor[] a = new Contributor[mContributors.size()];
+                            mContributors.toArray(a);
 
-                        mAccount.clearContributor();
-                        for(int i = 0; i < mSelectedContributor.length; i++){
-                            if(mSelectedContributor[i]){
-                                mAccount.addContributor(a[i]);
+                            mAccount.clearContributor();
+                            for (int i = 0; i < mSelectedContributor.length; i++) {
+                                if (mSelectedContributor[i]) {
+                                    mAccount.addContributor(a[i]);
+                                }
                             }
                         }
 
@@ -158,7 +161,6 @@ public class AccountEditorFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 showContributorSetterDialog();
-//                Toast.makeText(v.getContext(), "Image Button was click", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -255,6 +257,8 @@ public class AccountEditorFragment extends Fragment{
             }
 
             mSpinnerCurrency.setSelection(((ArrayAdapter<String>) mSpinnerCurrency.getAdapter()).getPosition(mAccount.getCurrency()), false);
+
+            mTextViewContributors.setText(mAccount.getContributorsForDisplay());
 
             mButtonSave.setEnabled(false);
 

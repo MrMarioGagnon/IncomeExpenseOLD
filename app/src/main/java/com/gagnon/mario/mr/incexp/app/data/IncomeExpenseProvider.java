@@ -225,7 +225,7 @@ public class IncomeExpenseProvider extends ContentProvider {
 //                        null,
 //                        sortOrder
 //                );
-                retCursor = getAccountContributor(selection, selectionArgs);
+                retCursor = getAccountContributor(projection, selection, selectionArgs);
                 break;
             case ACCOUNT_CONTRIBUTOR_WITH_ID:
                 retCursor = getAccountContributorById(uri, projection);
@@ -479,10 +479,10 @@ public class IncomeExpenseProvider extends ContentProvider {
         super.shutdown();
     }
 
-    public Cursor getAccountContributor(String selection, String[] selectionArgs){
+    public Cursor getAccountContributor(String[] projection, String selection, String[] selectionArgs){
 
         return mAccountContributorQueryBuilder.query(mOpenHelper.getReadableDatabase(),
-                null,
+                projection,
                 selection,
                 selectionArgs,
                 null,

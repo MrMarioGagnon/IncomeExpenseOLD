@@ -74,7 +74,6 @@ public class IncomeExpenseDataHelper {
 
         ContentResolver contentResolver = context.getContentResolver();
 
-
         Cursor cursor = null;
         try {
 

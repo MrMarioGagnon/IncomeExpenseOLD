@@ -18,20 +18,8 @@ import java.util.Map;
  */
 public class AccountValidator implements ObjectValidator {
 
-    public static AccountValidator create(Context context, List<String> names) {
-
-        Map<Integer, String> messages = new HashMap<>();
-        messages.put(R.string.validation_name_mandatory, context.getString(R.string.validation_name_mandatory));
-        messages.put(R.string.validation_name_already_exists, context.getString(R.string.validation_name_already_exists));
-        messages.put(R.string.validation_currency_mandatory, context.getString(R.string.validation_currency_mandatory));
-
-        return new AccountValidator(names, messages);
-    }
-
-    // region Private Field
     private final List<String> mNames;
     private final Map<Integer, String> mValidationMessages;
-    // endregion
 
     public AccountValidator(List<String> names, Map<Integer, String> validationMessages) {
 
@@ -47,19 +35,22 @@ public class AccountValidator implements ObjectValidator {
         mValidationMessages = validationMessages;
     }
 
-    // endregion
+    public static AccountValidator create(Context context, List<String> names) {
 
-    // region Constructor
+        Map<Integer, String> messages = new HashMap<>();
+        messages.put(R.string.validation_name_mandatory, context.getString(R.string.validation_name_mandatory));
+        messages.put(R.string.validation_name_already_exists, context.getString(R.string.validation_name_already_exists));
+        messages.put(R.string.validation_currency_mandatory, context.getString(R.string.validation_currency_mandatory));
+        messages.put(R.string.validation_contributors_mandatory, context.getString(R.string.validation_contributors_mandatory));
 
-    // region Private Method
+        return new AccountValidator(names, messages);
+    }
+
     private boolean isNameExists(String name) {
 
         return mNames.contains(name.toUpperCase());
 
     }
-    // endregion
-
-    // region Public Method
 
     public ValidationStatus Validate(ObjectBase objectToValidate) throws Exception {
 
@@ -78,17 +69,20 @@ public class AccountValidator implements ObjectValidator {
         String currency = account.getCurrency().trim();
 
         if (name.length() == 0) {
-            messages.add( mValidationMessages.get(R.string.validation_name_mandatory));
+            messages.add(mValidationMessages.get(R.string.validation_name_mandatory));
         } else if (isNameExists(name)) {
             messages.add(mValidationMessages.get(R.string.validation_name_already_exists));
         }
 
-        if(currency.length() == 0){
+        if (currency.length() == 0) {
             messages.add(mValidationMessages.get(R.string.validation_currency_mandatory));
+        }
+
+        if (account.getContributors().size() == 0) {
+            messages.add((mValidationMessages.get(R.string.validation_contributors_mandatory)));
         }
 
         return ValidationStatus.create(Tools.join(messages, "\n"));
     }
 
-    // endregion
 }
