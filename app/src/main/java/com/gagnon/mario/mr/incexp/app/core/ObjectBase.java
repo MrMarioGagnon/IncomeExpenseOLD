@@ -5,8 +5,14 @@ import java.io.Serializable;
 public abstract class ObjectBase implements Serializable {
 
     protected boolean mDirty;
-    protected boolean mDead = false;
+    protected boolean mDead;
     protected boolean mNew;
+    protected Long mId;
+
+    {
+        mId = null;
+        mDead = false;
+    }
 
     public boolean isDead() {
         return mDead;
@@ -30,4 +36,11 @@ public abstract class ObjectBase implements Serializable {
         mDirty = mNew;
     }
 
+    public Long getId() {
+        return mId;
+    }
+
+    public void setId(Long id) {
+        mId = id;
+    }
 }

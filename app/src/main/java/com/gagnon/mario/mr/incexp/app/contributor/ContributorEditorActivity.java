@@ -16,34 +16,31 @@
 package com.gagnon.mario.mr.incexp.app.contributor;
 
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
-import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
+import com.gagnon.mario.mr.incexp.app.core.ItemRepositoryProxyMessageBuilder;
+import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeEvent;
+import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeListener;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
 
 import java.util.ArrayList;
 
-public class ContributorEditorActivity extends AppCompatActivity implements ContributorEditorFragment.OnButtonClickListener {
-
-    // region Private Fields
+public class ContributorEditorActivity extends AppCompatActivity implements ItemStateChangeListener {
 
     private static final String LOG_TAG = ContributorEditorActivity.class.getSimpleName();
-
-    // endregion
-
-    // region Protected Method
+    private ContributorRepositoryProxy mRepositoryProxy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contributor_editor_activity);
+
+        mRepositoryProxy = new ContributorRepositoryProxy(getContentResolver(), IncomeExpenseContract.ContributorEntry.CONTENT_URI, ItemRepositoryProxyMessageBuilder.build(this));
 
         if (savedInstanceState == null) {
 
@@ -51,10 +48,10 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
 
             Bundle bundle = getIntent().getExtras();
             if (bundle != null) {
-                contributor = (Contributor)bundle.getSerializable("item");
+                contributor = (Contributor) bundle.getSerializable("item");
             }
 
-            if(null == contributor) {
+            if (null == contributor) {
                 contributor = Contributor.createNew();
             }
 
@@ -63,6 +60,7 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
             arguments.putSerializable("names", getAvailableContributorsName(contributor));
 
             ContributorEditorFragment fragment = new ContributorEditorFragment();
+            fragment.addListener(this);
             fragment.setArguments(arguments);
             fragment.setRetainInstance(true);
 
@@ -72,11 +70,7 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
         }
     }
 
-    // endregion Protected Method
-
-    // region Private Method
-    private ArrayList<String> getAvailableContributorsName(Contributor contributor)
-    {
+    private ArrayList<String> getAvailableContributorsName(Contributor contributor) {
 
         ArrayList<String> names = new ArrayList<>();
 
@@ -88,24 +82,21 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
 
             String selection = String.format("%1$s !=?", IncomeExpenseContract.ContributorEntry.COLUMN_ID);
             // Si contributor est new le id va etre null, donc remplacer par -1
-            String[] selectionArgument = new String[] { contributor.isNew() ? "-1" : contributor.getId().toString()};
+            String[] selectionArgument = new String[]{contributor.isNew() ? "-1" : contributor.getId().toString()};
 
-            cursor = contentResolver.query(uri, new String[] {IncomeExpenseContract.ContributorEntry.COLUMN_NAME}, selection, selectionArgument, null);
+            cursor = contentResolver.query(uri, new String[]{IncomeExpenseContract.ContributorEntry.COLUMN_NAME}, selection, selectionArgument, null);
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_NAME));
                 names.add(name.toUpperCase());
             }
-        }finally {
-            if(null != cursor) {
+        } finally {
+            if (null != cursor) {
                 cursor.close();
             }
         }
 
         return names;
     }
-    // endregion Private Method
-
-    // region Public Method
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -127,107 +118,38 @@ public class ContributorEditorActivity extends AppCompatActivity implements Cont
 //        return super.onOptionsItemSelected(item);
 //    }
 
-    // endregion Public Method
-
-    // region ContributorEditorFragment.OnButtonClickListener
-
     @Override
-    public void onBackButtonClick() {
-        setResult(RESULT_CANCELED);
-        finish();
-    }
+    public void onItemStateChange(ItemStateChangeEvent event) {
 
-
-    @Override
-    public void onDeleteButtonClick(Contributor contributor) {
-
-        if (null == contributor || null == contributor.getId()) {
+        if (event == null) {
             setResult(RESULT_OK);
             finish();
             return;
         }
 
-        if (contributor.isDirty()) {
-
-            Uri contributorUri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
-
-            ContentResolver contentResolver = getContentResolver();
-
-            if (contributor.isDead()) {
-                // Delete contributor
-                long id = contributor.getId();
-                String name = contributor.getName();
-                try {
-
-                    Log.i(LOG_TAG, getString(R.string.log_info_deleting_contributor, id));
-                    int rowsDeleted = contentResolver.delete(contributorUri, IncomeExpenseContract.ContributorEntry.COLUMN_ID + "=?", new String[]{String.valueOf(id)});
-                    Log.i(LOG_TAG, getString(R.string.log_info_number_deleted_contributor, rowsDeleted));
-
-                } catch (Exception ex) {
-                    String message_log = this.getString(R.string.error_log_deleting_item, getString(R.string.contributor), id);
-                    Log.e(LOG_TAG, message_log, ex);
-
-                    String message_user = this.getString(R.string.error_to_user_deleting_item, getString(R.string.contributor), name);
-                    Toast.makeText(this, message_user, Toast.LENGTH_SHORT).show();
-
-                }
-            }
-
-        }
-
-        setResult(RESULT_OK);
-        finish();
-
-    }
-
-    @Override
-    public void onSaveButtonClick(Contributor contributor) {
-
-        if (null == contributor)
+        if (event.isCancelled()) {
+            setResult(RESULT_CANCELED);
+            finish();
             return;
-
-        if (contributor.isDirty()) {
-
-            Uri contributorUri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
-            ContentResolver contentResolver = getContentResolver();
-
-            if (contributor.isNew()) {
-                // Add contributor
-
-                try {
-                    ContentValues contributorValues = new ContentValues();
-                    contributorValues.put(IncomeExpenseContract.ContributorEntry.COLUMN_NAME, contributor.getName());
-                    Uri newUri = contentResolver.insert(contributorUri, contributorValues);
-                    long newID = IncomeExpenseContract.ContributorEntry.getIdFromUri(newUri);
-                    contributor.setId(newID);
-                } catch (Exception ex) {
-
-                    String message_log = this.getString(R.string.error_log_adding_item, getString(R.string.contributor));
-                    Log.e(LOG_TAG, message_log, ex);
-
-                    String message_user = this.getString(R.string.error_to_user_adding_item, getString(R.string.contributor));
-                    Toast.makeText(this, message_user, Toast.LENGTH_SHORT).show();
-
-                }
-            } else {
-
-                // Update contributor
-
-                long id = contributor.getId();
-
-                ContentValues contributorValues = new ContentValues();
-                contributorValues.put(IncomeExpenseContract.ContributorEntry.COLUMN_NAME, contributor.getName());
-                Log.i(LOG_TAG, getString(R.string.log_info_updating_contributor, id));
-                int rowsUpdated = contentResolver.update(contributorUri, contributorValues, IncomeExpenseContract.ContributorEntry.COLUMN_ID + "=?", new String[]{contributor.getId().toString()});
-                Log.i(LOG_TAG, getString(R.string.log_info_number_updated_contributor, rowsUpdated));
-            }
-
         }
+
+        // Ici le contributor ne pas etre null
+        // car il y a une validation dans le constructeur de ItemStateChangeEvent
+
+        Contributor contributor = (Contributor) event.getItem();
+
+        // Pas besoin de sauvegarde, l'item n'a pas ete modifie
+        if (!contributor.isDirty()) {
+            setResult(RESULT_OK);
+            finish();
+            return;
+        }
+
+        mRepositoryProxy.Save(contributor);
 
         setResult(RESULT_OK);
         finish();
-    }
 
-    // endregion ContributorEditorFragment.OnButtonClickListener
+    }
 
 }

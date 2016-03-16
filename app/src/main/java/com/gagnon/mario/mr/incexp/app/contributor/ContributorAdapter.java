@@ -16,39 +16,14 @@ import com.gagnon.mario.mr.incexp.app.R;
  */
 public class ContributorAdapter extends CursorAdapter {
 
-    // region Public Static Class
-
-    public static class ViewHolder {
-        public final TextView textViewName;
-
-        public ViewHolder(View view) {
-            textViewName = (TextView) view.findViewById(R.id.textView_contributor_name);
-        }
-    }
-
-    // endregion Public Static Class
-
-    // region Private Field
-
     private static final String LOG_TAG = ContributorAdapter.class.getSimpleName();
-
-    private static final int VIEW_TYPE_COUNT = 1;
-
-    // endregion Private Field
-
-    // region Constructor
 
     public ContributorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
 
-    // endregion Constructor
-
-    // region Public Method
-
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        int viewType = getItemViewType(cursor.getPosition());
         int layoutId = R.layout.contributor_list_item;
 
         View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
@@ -69,6 +44,12 @@ public class ContributorAdapter extends CursorAdapter {
 
     }
 
-    // endregion Public Method
+    public static class ViewHolder {
+        public final TextView textViewName;
+
+        public ViewHolder(View view) {
+            textViewName = (TextView) view.findViewById(R.id.textView_contributor_name);
+        }
+    }
 
 }

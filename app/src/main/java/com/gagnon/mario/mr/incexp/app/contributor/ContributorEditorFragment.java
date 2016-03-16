@@ -23,57 +23,44 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.gagnon.mario.mr.incexp.app.R;
-import com.gagnon.mario.mr.incexp.app.account.Account;
+import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeEvent;
+import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeHandler;
+import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeListener;
 import com.gagnon.mario.mr.incexp.app.core.ObjectValidator;
 import com.gagnon.mario.mr.incexp.app.core.ValidationStatus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ContributorEditorFragment extends Fragment {
-
-    // region Public Interface
-
-    public interface OnButtonClickListener{
-        void onBackButtonClick();
-        void onSaveButtonClick(Contributor contributor);
-        void onDeleteButtonClick(Contributor contributor);
-    }
-
-    // endregion Public Interface
-
-    // region Private Field
+public class ContributorEditorFragment extends Fragment implements ItemStateChangeHandler {
 
     private static final String LOG_TAG = ContributorEditorFragment.class.getSimpleName();
-    private static final String KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE = "key1";
 
+    private static final String KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE = "key1";
     private EditText mEditTextName;
     private Button mButtonSave;
     private Button mButtonBack;
     private Button mButtonDelete;
     private Contributor mContributor;
-
     private TextView mTextViewValidationErrorMessage;
-
     private View.OnClickListener mOnButtonClickListener;
     private TextWatcher mOnTextChangeListener;
-
     private ObjectValidator mObjectValidator = null;
     private ArrayList<String> mNames;
 
-    // endregion Private Field
-
-    // region Constructor
+    private List<ItemStateChangeListener> mListeners;
 
     public ContributorEditorFragment() {
+
+        mListeners = new ArrayList<>();
 
         mOnTextChangeListener = new TextWatcher() {
             @Override
@@ -96,15 +83,15 @@ public class ContributorEditorFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                Button button = (Button)v;
+                Button button = (Button) v;
 
-                switch(button.getId()){
+                switch (button.getId()) {
                     case R.id.button_back:
-                        ((ContributorEditorFragment.OnButtonClickListener)getActivity()).onBackButtonClick();
+                        notifyListener(new ItemStateChangeEvent(null, true));
                         break;
                     case R.id.button_delete:
                         mContributor.setDead(true);
-                        ((ContributorEditorFragment.OnButtonClickListener)getActivity()).onDeleteButtonClick(mContributor);
+                        notifyListener(new ItemStateChangeEvent(mContributor));
                         break;
                     case R.id.button_save:
 
@@ -114,14 +101,14 @@ public class ContributorEditorFragment extends Fragment {
                             ValidationStatus validationStatus = getObjectValidator().Validate(mContributor);
 
                             if (validationStatus.isValid()) {
-                                ((ContributorEditorFragment.OnButtonClickListener) getActivity()).onSaveButtonClick(mContributor);
+                                notifyListener(new ItemStateChangeEvent(mContributor));
                             } else {
                                 mTextViewValidationErrorMessage.setText(validationStatus.getMessage());
                                 mTextViewValidationErrorMessage.setVisibility(View.VISIBLE);
                             }
-                        }catch(Exception ex){
+                        } catch (Exception ex) {
                             Log.e(LOG_TAG, getString(R.string.error_log_saving_item, getString(R.string.contributor)), ex);
-                            mTextViewValidationErrorMessage.setText( getString(R.string.error_to_user_saving_item, getString(R.string.contributor)));
+                            mTextViewValidationErrorMessage.setText(getString(R.string.error_to_user_saving_item, getString(R.string.contributor)));
                             mTextViewValidationErrorMessage.setVisibility(View.VISIBLE);
                         }
 
@@ -131,10 +118,6 @@ public class ContributorEditorFragment extends Fragment {
         };
 
     }
-
-    // endregion Constructor
-
-    // region Public Method
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -153,7 +136,7 @@ public class ContributorEditorFragment extends Fragment {
 
     public ObjectValidator getObjectValidator() {
 
-        if(null == mObjectValidator){
+        if (null == mObjectValidator) {
             mObjectValidator = ContributorValidator.create(getActivity(), mNames);
         }
 
@@ -196,8 +179,8 @@ public class ContributorEditorFragment extends Fragment {
 
             mButtonSave.setEnabled(false);
 
-        }else{
-            if(savedInstanceState.containsKey(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE)){
+        } else {
+            if (savedInstanceState.containsKey(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE)) {
                 mButtonSave.setEnabled(savedInstanceState.getBoolean(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE));
             }
         }
@@ -219,6 +202,22 @@ public class ContributorEditorFragment extends Fragment {
         outState.putBoolean(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE, mButtonSave.isEnabled());
     }
 
-    // endregion Public Method
+    @Override
+    public void addListener(ItemStateChangeListener listener) {
+        if(listener == null)
+            return;
 
+        if(!mListeners.contains(listener))
+            mListeners.add(listener);
+    }
+
+    @Override
+    public void notifyListener(ItemStateChangeEvent event) {
+
+        if (event == null) return;
+
+        for (ItemStateChangeListener listener : mListeners) {
+            listener.onItemStateChange(event);
+        }
+    }
 }

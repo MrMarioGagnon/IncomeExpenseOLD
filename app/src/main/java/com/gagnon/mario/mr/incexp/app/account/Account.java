@@ -1,5 +1,7 @@
 package com.gagnon.mario.mr.incexp.app.account;
 
+import android.support.annotation.NonNull;
+
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.core.ObjectBase;
 import com.gagnon.mario.mr.incexp.app.core.Tools;
@@ -10,7 +12,6 @@ import java.util.List;
 
 public class Account extends ObjectBase implements Serializable, Comparable<Account> {
 
-    private Long mId = null;
     private String mName;
 
     private String mCurrency;
@@ -47,14 +48,6 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
 
         return newInstance;
 
-    }
-
-    public Long getId() {
-        return mId;
-    }
-
-    public void setId(Long id) {
-        mId = id;
     }
 
     public String getName() {
@@ -116,12 +109,11 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
 
     @Override
     public String toString() {
-        String toString = String.format("%1$s(%2$s)", getName(), getCurrency());
-        return toString;
+        return String.format("%1$s(%2$s)", getName(), getCurrency());
     }
 
     @Override
-    public int compareTo(Account instanceToCompare) {
+    public int compareTo(@NonNull Account instanceToCompare) {
         return getName().compareToIgnoreCase(instanceToCompare.getName());
     }
 

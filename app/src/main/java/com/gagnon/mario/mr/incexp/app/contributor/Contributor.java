@@ -1,19 +1,14 @@
 package com.gagnon.mario.mr.incexp.app.contributor;
 
+import android.support.annotation.NonNull;
+
 import com.gagnon.mario.mr.incexp.app.core.ObjectBase;
 
 import java.io.Serializable;
 
 public class Contributor extends ObjectBase implements Serializable, Comparable<Contributor> {
 
-    // region Static Method
-
-    private Long mId = null;
     private String mName;
-
-    // endregion Static Method
-
-    // region Private Field
 
     private Contributor() {
 
@@ -30,10 +25,6 @@ public class Contributor extends ObjectBase implements Serializable, Comparable<
         return newInstance;
     }
 
-    // endregion Private Field
-
-    // region Constructor
-
     public static Contributor createNew() {
 
         Contributor newInstance = new Contributor();
@@ -43,18 +34,6 @@ public class Contributor extends ObjectBase implements Serializable, Comparable<
 
         return newInstance;
 
-    }
-
-    // endregion Constructor
-
-    // region Getter/Setter
-
-    public Long getId() {
-        return mId;
-    }
-
-    public void setId(Long id) {
-        mId = id;
     }
 
     public String getName() {
@@ -68,10 +47,6 @@ public class Contributor extends ObjectBase implements Serializable, Comparable<
             mName = name;
         }
     }
-
-    // endregion Getter/Setter
-
-    // region Public Method
 
     @Override
     public boolean equals(Object o) {
@@ -97,9 +72,8 @@ public class Contributor extends ObjectBase implements Serializable, Comparable<
     }
 
     @Override
-    public int compareTo(Contributor instanceToCompare) {
+    public int compareTo(@NonNull Contributor instanceToCompare) {
         return getName().compareToIgnoreCase(instanceToCompare.getName());
     }
 
-    // endregion Public Method
 }

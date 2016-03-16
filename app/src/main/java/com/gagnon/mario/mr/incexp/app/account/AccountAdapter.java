@@ -1,18 +1,14 @@
 package com.gagnon.mario.mr.incexp.app.account;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.gagnon.mario.mr.incexp.app.*;
+import com.gagnon.mario.mr.incexp.app.R;
 
 /**
  * {@link AccountAdapter} exposes a list of weather forecasts
@@ -23,8 +19,6 @@ public class AccountAdapter extends CursorAdapter {
 
     private static final String LOG_TAG = AccountAdapter.class.getSimpleName();
 
-    private static final int VIEW_TYPE_COUNT = 1;
-
     public AccountAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
 
@@ -32,7 +26,6 @@ public class AccountAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        int viewType = getItemViewType(cursor.getPosition());
         int layoutId = R.layout.account_list_item;
 
         View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
@@ -48,15 +41,12 @@ public class AccountAdapter extends CursorAdapter {
 
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-        Long accountId = cursor.getLong(AccountFragment.COL_ID);
-
         String name = cursor.getString(AccountFragment.COL_NAME);
         viewHolder.textViewName.setText(name);
 
         String currency = cursor.getString(AccountFragment.COL_CURRENCY);
         viewHolder.textViewCurrency.setText(currency);
 
-//        viewHolder.imageButtonContributor.setTag(accountId);
     }
 
     public class ViewHolder {

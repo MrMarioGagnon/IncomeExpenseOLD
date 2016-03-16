@@ -1,6 +1,7 @@
 package com.gagnon.mario.mr.incexp.app.account;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.core.ObjectBase;
@@ -21,16 +22,7 @@ public class AccountValidator implements ObjectValidator {
     private final List<String> mNames;
     private final Map<Integer, String> mValidationMessages;
 
-    public AccountValidator(List<String> names, Map<Integer, String> validationMessages) {
-
-        if (null == names) {
-            throw new NullPointerException("Parameter names of type List<String> is mandatory.");
-        }
-
-        if (null == validationMessages) {
-            throw new NullPointerException("Parameter validationMessages of type Map<Integer, String> is mandatory.");
-        }
-
+    public AccountValidator(@NonNull List<String> names, @NonNull Map<Integer, String> validationMessages) {
         mNames = names;
         mValidationMessages = validationMessages;
     }

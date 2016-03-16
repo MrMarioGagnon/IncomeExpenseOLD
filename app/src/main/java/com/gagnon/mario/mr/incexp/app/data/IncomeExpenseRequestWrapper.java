@@ -14,7 +14,7 @@ import java.util.TreeSet;
 /**
  * Created by mario on 3/7/2016.
  */
-public class IncomeExpenseDataHelper {
+public class IncomeExpenseRequestWrapper {
 
     public static TreeSet<Contributor> getAvailableContributors(Context context) {
 

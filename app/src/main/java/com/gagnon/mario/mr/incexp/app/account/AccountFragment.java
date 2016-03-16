@@ -1,6 +1,5 @@
 package com.gagnon.mario.mr.incexp.app.account;
 
-import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,20 +7,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
-import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
-import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseDataHelper;
-
-import java.util.ArrayList;
+import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseRequestWrapper;
 
 /**
  * Created by mario on 2/1/2016.
@@ -137,7 +131,7 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
                     int close = cursor.getInt(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE));
                     Boolean isClose = (close == 1);
 
-                    Account account = Account.create(id, name, currency, isClose, IncomeExpenseDataHelper.getAccountContributors(getContext(), id));
+                    Account account = Account.create(id, name, currency, isClose, IncomeExpenseRequestWrapper.getAccountContributors(getContext(), id));
 
                     ((AccountFragment.OnItemSelectedListener) getActivity()).onItemSelected(account);
 

@@ -31,10 +31,9 @@ import android.widget.Toast;
 import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
-import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseDataHelper;
+import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseRequestWrapper;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class AccountEditorActivity extends AppCompatActivity implements AccountEditorFragment.OnButtonClickListener {
 
@@ -60,8 +59,8 @@ public class AccountEditorActivity extends AppCompatActivity implements AccountE
 
             Bundle arguments = new Bundle();
             arguments.putSerializable("item", account);
-            arguments.putSerializable("names", IncomeExpenseDataHelper.getAvailableAccountsName(this, account));
-            arguments.putSerializable("contributors", IncomeExpenseDataHelper.getAvailableContributors(this));
+            arguments.putSerializable("names", IncomeExpenseRequestWrapper.getAvailableAccountsName(this, account));
+            arguments.putSerializable("contributors", IncomeExpenseRequestWrapper.getAvailableContributors(this));
 
             AccountEditorFragment fragment = new AccountEditorFragment();
             fragment.setArguments(arguments);
@@ -120,9 +119,13 @@ public class AccountEditorActivity extends AppCompatActivity implements AccountE
                 String name = account.getName();
                 try {
 
+                    int rowsDeleted = contentResolver.delete(IncomeExpenseContract.AccountContributorEntry.CONTENT_URI,
+                            IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID + "=?", new String[]{String.valueOf(id)});
+                    Log.i(LOG_TAG, getString(R.string.log_info_number_deleted_associated_contributor, rowsDeleted, id));
+
                     // TODO Delete Account_Contributor rows
                     Log.i(LOG_TAG, getString(R.string.log_info_deleting_account, id));
-                    int rowsDeleted = contentResolver.delete(accountUri, IncomeExpenseContract.AccountEntry.COLUMN_ID + "=?", new String[]{String.valueOf(id)});
+                    rowsDeleted = contentResolver.delete(accountUri, IncomeExpenseContract.AccountEntry.COLUMN_ID + "=?", new String[]{String.valueOf(id)});
                     Log.i(LOG_TAG, getString(R.string.log_info_number_deleted_account, rowsDeleted));
 
                 } catch (Exception ex) {
