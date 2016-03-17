@@ -16,7 +16,7 @@ public class IncomeExpenseContract {
     // the content provider.
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
-//    public static final String PATH_CATEGORY = "category";
+    //    public static final String PATH_CATEGORY = "category";
 //    public static final String PATH_SUBCATEGORY = "subcategory";
     public static final String PATH_ACCOUNT = "account";
     public static final String PATH_CONTRIBUTOR = "contributor";
@@ -77,7 +77,7 @@ public class IncomeExpenseContract {
 //
 //    }
 
-    public static final class AccountEntry implements BaseColumns{
+    public static final class AccountEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_ACCOUNT).build();
@@ -94,7 +94,7 @@ public class IncomeExpenseContract {
         public static final String COLUMN_CURRENCY = "currency";
         public static final String COLUMN_CLOSE = "close";
 
-        public static Uri buildInstanceUri(long id){
+        public static Uri buildInstanceUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
@@ -104,7 +104,7 @@ public class IncomeExpenseContract {
 
     }
 
-    public static final class AccountContributorEntry implements BaseColumns{
+    public static final class AccountContributorEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_ACCOUNT_CONTRIBUTOR).build();
@@ -120,7 +120,7 @@ public class IncomeExpenseContract {
         public static final String COLUMN_ACCOUNT_ID = "accountId";
         public static final String COLUMN_CONTRIBUTOR_ID = "contributorId";
 
-        public static Uri buildInstanceUri(long id){
+        public static Uri buildInstanceUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
@@ -130,7 +130,7 @@ public class IncomeExpenseContract {
 
     }
 
-    public static final class ContributorEntry implements BaseColumns{
+    public static final class ContributorEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_CONTRIBUTOR).build();
@@ -145,7 +145,7 @@ public class IncomeExpenseContract {
         public static final String COLUMN_ID = _ID;
         public static final String COLUMN_NAME = "name";
 
-        public static Uri buildInstanceUri(long id){
+        public static Uri buildInstanceUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 

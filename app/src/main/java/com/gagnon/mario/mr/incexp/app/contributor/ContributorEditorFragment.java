@@ -16,10 +16,10 @@
 package com.gagnon.mario.mr.incexp.app.contributor;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,18 +97,12 @@ public class ContributorEditorFragment extends Fragment implements ItemStateChan
 
                         mContributor.setName(mEditTextName.getText().toString());
 
-                        try {
-                            ValidationStatus validationStatus = getObjectValidator().Validate(mContributor);
+                        ValidationStatus validationStatus = getObjectValidator().Validate(mContributor);
 
-                            if (validationStatus.isValid()) {
-                                notifyListener(new ItemStateChangeEvent(mContributor));
-                            } else {
-                                mTextViewValidationErrorMessage.setText(validationStatus.getMessage());
-                                mTextViewValidationErrorMessage.setVisibility(View.VISIBLE);
-                            }
-                        } catch (Exception ex) {
-                            Log.e(LOG_TAG, getString(R.string.error_log_saving_item, getString(R.string.contributor)), ex);
-                            mTextViewValidationErrorMessage.setText(getString(R.string.error_to_user_saving_item, getString(R.string.contributor)));
+                        if (validationStatus.isValid()) {
+                            notifyListener(new ItemStateChangeEvent(mContributor));
+                        } else {
+                            mTextViewValidationErrorMessage.setText(validationStatus.getMessage());
                             mTextViewValidationErrorMessage.setVisibility(View.VISIBLE);
                         }
 
@@ -203,19 +197,13 @@ public class ContributorEditorFragment extends Fragment implements ItemStateChan
     }
 
     @Override
-    public void addListener(ItemStateChangeListener listener) {
-        if(listener == null)
-            return;
-
-        if(!mListeners.contains(listener))
+    public void addListener(@NonNull ItemStateChangeListener listener) {
+        if (!mListeners.contains(listener))
             mListeners.add(listener);
     }
 
     @Override
-    public void notifyListener(ItemStateChangeEvent event) {
-
-        if (event == null) return;
-
+    public void notifyListener(@NonNull ItemStateChangeEvent event) {
         for (ItemStateChangeListener listener : mListeners) {
             listener.onItemStateChange(event);
         }

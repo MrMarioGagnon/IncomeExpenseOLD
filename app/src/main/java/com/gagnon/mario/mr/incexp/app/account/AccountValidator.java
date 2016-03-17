@@ -44,17 +44,13 @@ public class AccountValidator implements ObjectValidator {
 
     }
 
-    public ValidationStatus Validate(ObjectBase objectToValidate) throws Exception {
-
-        if (null == objectToValidate) {
-            throw new NullPointerException("Parameter objectToValidate of type ObjectBase is mandatory.");
-        }
-
-        if (!(objectToValidate instanceof Account)) {
-            throw new IllegalArgumentException("Parameter objectToValidate must be an instance of Account");
-        }
+    public ValidationStatus Validate(@NonNull ObjectBase objectToValidate){
 
         List<String> messages = new ArrayList<>();
+
+        if (!(objectToValidate instanceof Account)) {
+            return ValidationStatus.create("Wrong object type.");
+        }
 
         Account account = (Account) objectToValidate;
         String name = account.getName().trim();

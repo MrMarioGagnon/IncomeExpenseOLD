@@ -9,9 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class IncomeExpenseDbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
-
     static final String DATABASE_NAME = "incexp.db";
+    private static final int DATABASE_VERSION = 1;
 
     public IncomeExpenseDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -43,7 +42,7 @@ public class IncomeExpenseDbHelper extends SQLiteOpenHelper {
                 IncomeExpenseContract.ContributorEntry.COLUMN_NAME + " TEXT UNIQUE NOT NULL" +
                 " );";
 
-        final String SQL_CREATE_ACCOUNT_CONTRIBUTOR_TABLE = "CREATE TABLE " +  IncomeExpenseContract.AccountContributorEntry.TABLE_NAME + " (" +
+        final String SQL_CREATE_ACCOUNT_CONTRIBUTOR_TABLE = "CREATE TABLE " + IncomeExpenseContract.AccountContributorEntry.TABLE_NAME + " (" +
                 IncomeExpenseContract.AccountContributorEntry._ID + " INTEGER PRIMARY KEY," +
                 IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID + " INTEGER, " +
                 IncomeExpenseContract.AccountContributorEntry.COLUMN_CONTRIBUTOR_ID + " INTEGER" +

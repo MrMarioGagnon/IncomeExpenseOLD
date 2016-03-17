@@ -14,7 +14,7 @@ public class Contributor extends ObjectBase implements Serializable, Comparable<
 
     }
 
-    public static Contributor create(Long id, String name) {
+    public static Contributor create(@NonNull Long id, String name) {
 
         Contributor newInstance = new Contributor();
         newInstance.mNew = false;

@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.gagnon.mario.mr.incexp.app.account.Account;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
@@ -16,12 +17,39 @@ import java.util.TreeSet;
  */
 public class IncomeExpenseRequestWrapper {
 
-    public static TreeSet<Contributor> getAvailableContributors(Context context) {
+    public static ArrayList<String> getAvailableContributorsName(@NonNull ContentResolver contentResolver, @NonNull Contributor contributor) {
+
+        ArrayList<String> names = new ArrayList<>();
+
+        Uri uri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
+
+        Cursor cursor = null;
+        try {
+
+            String selection = String.format("%1$s !=?", IncomeExpenseContract.ContributorEntry.COLUMN_ID);
+            // Si contributor est new le id va etre null, donc remplacer par -1
+            String[] selectionArgument = new String[]{contributor.isNew() ? "-1" : contributor.getId().toString()};
+
+            cursor = contentResolver.query(uri, new String[]{IncomeExpenseContract.ContributorEntry.COLUMN_NAME}, selection, selectionArgument, null);
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_NAME));
+                names.add(name.toUpperCase());
+            }
+        } finally {
+            if (null != cursor) {
+                cursor.close();
+            }
+        }
+
+        return names;
+    }
+
+
+    public static TreeSet<Contributor> getAvailableContributors(@NonNull ContentResolver contentResolver) {
 
         TreeSet<Contributor> contributors = new TreeSet<>();
 
         Uri uri = IncomeExpenseContract.ContributorEntry.CONTENT_URI;
-        ContentResolver contentResolver = context.getContentResolver();
 
         Cursor cursor = null;
         try {
@@ -40,12 +68,11 @@ public class IncomeExpenseRequestWrapper {
         return contributors;
     }
 
-    public static ArrayList<String> getAvailableAccountsName(Context context, Account account) {
+    public static ArrayList<String> getAvailableAccountsName(@NonNull ContentResolver contentResolver, Account account) {
 
         ArrayList<String> names = new ArrayList<>();
 
         Uri uri = IncomeExpenseContract.AccountEntry.CONTENT_URI;
-        ContentResolver contentResolver = context.getContentResolver();
 
         Cursor cursor = null;
         try {
@@ -68,12 +95,9 @@ public class IncomeExpenseRequestWrapper {
         return names;
     }
 
-    public static ArrayList<Contributor> getAccountContributors(Context context, Long accountId){
+    public static ArrayList<Contributor> getAccountContributors(@NonNull ContentResolver contentResolver, Long accountId){
 
         ArrayList<Contributor> contributors = new ArrayList<>();
-
-        ContentResolver contentResolver = context.getContentResolver();
-
         Cursor cursor = null;
         try {
 

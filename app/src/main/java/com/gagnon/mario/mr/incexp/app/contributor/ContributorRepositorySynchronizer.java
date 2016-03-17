@@ -3,6 +3,7 @@ package com.gagnon.mario.mr.incexp.app.contributor;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.gagnon.mario.mr.incexp.app.R;
@@ -14,39 +15,22 @@ import java.util.Map;
 /**
  * Created by mario on 3/14/2016.
  */
-public class ContributorRepositoryProxy {
+public class ContributorRepositorySynchronizer {
 
-    private static final String LOG_TAG = ContributorRepositoryProxy.class.getSimpleName();
+    private static final String LOG_TAG = ContributorRepositorySynchronizer.class.getSimpleName();
     private final ContentResolver mContentResolver;
     private final Uri mItemUri;
     private final Map<Integer, String> mMessages;
 
-    public ContributorRepositoryProxy(ContentResolver contentResolver, Uri itemUri, Map<Integer, String> messages) {
-
-        if (contentResolver == null) {
-            throw new NullPointerException("Parameter contentResolver of type ContentResolver is mandatory.");
-        }
-
-        if(itemUri == null){
-            throw new NullPointerException("Parameter itemUri of type Uri is mandatory.");
-        }
-
-        if (messages == null) {
-            throw new NullPointerException("Parameter messages of type Map<Integer, String> is mandatory.");
-        }
-
+    public ContributorRepositorySynchronizer(@NonNull ContentResolver contentResolver, @NonNull Uri itemUri, @NonNull Map<Integer, String> messages) {
         mMessages = messages;
         mItemUri = itemUri;
         mContentResolver = contentResolver;
     }
 
-    public ObjectBase Save(ObjectBase item) {
+    public ObjectBase Save(@NonNull ObjectBase item) {
 
         // region Precondition
-        if (item == null) {
-            throw new NullPointerException("Parameter item of type ObjectBase is mandatory.");
-        }
-
         if (!(item instanceof Contributor)) {
             throw new IllegalArgumentException("Parameter item must be an instance of Contributor");
         }

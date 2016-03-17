@@ -21,22 +21,14 @@ public class ContributorValidator implements ObjectValidator {
 
     private final List<String> mNames;
     private final Map<Integer, String> mValidationMessages;
-    public ContributorValidator(List<String> names, Map<Integer, String> validationMessages) {
-
-        if (null == names) {
-            throw new NullPointerException("Parameter names of type List<String> is mandatory.");
-        }
-
-        if (null == validationMessages) {
-            throw new NullPointerException("Parameter validationMessages of type Map<Integer, String> is mandatory.");
-        }
+    public ContributorValidator(@NonNull List<String> names, @NonNull Map<Integer, String> validationMessages) {
 
         mNames = names;
         mValidationMessages = validationMessages;
 
     }
 
-    public static ContributorValidator create(Context context, List<String> names) {
+    public static ContributorValidator create(@NonNull Context context, @NonNull List<String> names) {
 
         Map<Integer, String> messages = new HashMap<>();
         messages.put(R.string.validation_name_mandatory, context.getString(R.string.validation_name_mandatory));
@@ -45,16 +37,16 @@ public class ContributorValidator implements ObjectValidator {
         return new ContributorValidator(names, messages);
     }
 
-    private boolean isNameExists(String name) {
+    private boolean isNameExists(@NonNull String name) {
 
         return mNames.contains(name.toUpperCase());
 
     }
 
-    public ValidationStatus Validate(@NonNull ObjectBase objectToValidate) throws Exception {
+    public ValidationStatus Validate(@NonNull ObjectBase objectToValidate) {
 
         if (!(objectToValidate instanceof Contributor)) {
-            throw new IllegalArgumentException("Parameter objectToValidate must be an instance of Contributor");
+            return ValidationStatus.create("Wrong object type.");
         }
 
         List<String> messages = new ArrayList<>();

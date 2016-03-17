@@ -20,9 +20,7 @@ import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseRequestWrapper;
 /**
  * Created by mario on 2/1/2016.
  */
-public class AccountFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
-
-    // region Static Field
+public class AccountFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int COL_ID = 0;
     public static final int COL_NAME = 1;
@@ -39,24 +37,13 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
     private static final String SELECTED_KEY = "selected_position";
     private static final int ACCOUNT_LOADER = 0;
 
-    // endregion Private Static Field
-
-    // region Private Field
-
     private AccountAdapter mAccountAdapter;
     private int mPosition = ListView.INVALID_POSITION;
     private ListView mListView;
 
-    // endregion Private Field
-
-    // region Public Interface
     public AccountFragment() {
         // Required empty public constructor
     }
-
-    // endregion Public Interface
-
-    // region Constructor
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,10 +53,6 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
         //setHasOptionsMenu(true);
 
     }
-
-    // endregion Constructor
-
-    // region Public Method
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -131,7 +114,7 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
                     int close = cursor.getInt(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE));
                     Boolean isClose = (close == 1);
 
-                    Account account = Account.create(id, name, currency, isClose, IncomeExpenseRequestWrapper.getAccountContributors(getContext(), id));
+                    Account account = Account.create(id, name, currency, isClose, IncomeExpenseRequestWrapper.getAccountContributors(getContext().getContentResolver(), id));
 
                     ((AccountFragment.OnItemSelectedListener) getActivity()).onItemSelected(account);
 
@@ -144,9 +127,6 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
         mListView.setEmptyView(v.findViewById(R.id.textView_no_account));
 
     }
-    // endregion Public Method
-
-    // region Private Method
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -165,10 +145,6 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
                 null,
                 sortOrder);
     }
-
-    // endregion Private Method
-
-    // region LoaderManager.LoaderCallbacks Method
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
