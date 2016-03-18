@@ -12,6 +12,8 @@ import android.util.Log;
 
 import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
+import com.gagnon.mario.mr.incexp.app.core.ItemRepositorySynchronizerAction;
+import com.gagnon.mario.mr.incexp.app.core.ItemRepositorySynchronizerException;
 import com.gagnon.mario.mr.incexp.app.core.ObjectBase;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
 
@@ -34,7 +36,7 @@ public class AccountRepositorySynchronizer {
         mContentResolver = contentResolver;
     }
 
-    public ObjectBase Save(@NonNull ObjectBase item) {
+    public ObjectBase Save(@NonNull ObjectBase item) throws ItemRepositorySynchronizerException {
 
         // region Precondition
         if (!(item instanceof Account)) {
@@ -45,7 +47,7 @@ public class AccountRepositorySynchronizer {
             throw new NullPointerException("Item is not new, item id is mandatory.");
         }
 
-        if(!item.isDirty()){
+        if (!item.isDirty()) {
             return item;
         }
         // endregion Precondition
@@ -57,39 +59,44 @@ public class AccountRepositorySynchronizer {
         final String selection = IncomeExpenseContract.AccountEntry.COLUMN_ID + "=?";
         final String[] selectionArgs;
         int rowsAffected;
+        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+        ContentProviderResult[] results;
 
         if (itemToBeSave.isDead()) {
             // Delete item
             id = itemToBeSave.getId();
             selectionArgs = new String[]{id.toString()};
 
-            int rowsDeleted = mContentResolver.delete(IncomeExpenseContract.AccountContributorEntry.CONTENT_URI,
-                    IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID + "=?", new String[]{String.valueOf(id)});
-            Log.i(LOG_TAG, String.format("Associated contributor deleted : %1$d", rowsDeleted));
+            operations.add(
+                    ContentProviderOperation.newDelete(IncomeExpenseContract.AccountContributorEntry.CONTENT_URI).withSelection(
+                            IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID + "=?", new String[]{String.valueOf(id)}).build());
+
+            operations.add(
+                    ContentProviderOperation.newDelete(mItemUri).withSelection(selection, selectionArgs).build()
+            );
 
             Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_deleting_item), itemType, id));
-            rowsAffected = mContentResolver.delete(mItemUri, selection, selectionArgs);
-            Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_deleted_item), itemType, rowsAffected, id));
+
+            try {
+                results = mContentResolver.applyBatch(
+                        IncomeExpenseContract.CONTENT_AUTHORITY, operations);
+                rowsAffected = results[0].count;
+                Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_number_deleted_associated_contributor), rowsAffected));
+
+                rowsAffected = results[1].count;
+                Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_deleted_item), itemType, rowsAffected, id));
+            } catch (Exception ex) {
+                Log.e(LOG_TAG, mMessages.get(R.string.log_error_deleting_item), ex);
+                throw new ItemRepositorySynchronizerException(ex, ItemRepositorySynchronizerAction.delete);
+            }
 
         } else {
             if (itemToBeSave.isNew()) {
-                // add item
-//                Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_adding_item), itemType));
-//                ContentValues itemValues = new ContentValues();
-//                itemValues.put(IncomeExpenseContract.ContributorEntry.COLUMN_NAME, itemToBeSave.getName());
-//                Uri newUri = mContentResolver.insert(mItemUri, itemValues);
-//                id = IncomeExpenseContract.ContributorEntry.getIdFromUri(newUri);
-//                rowsAffected = (id != null) ? 1 : 0;
-//                itemToBeSave.setId(id);
-//                Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_added_item), itemType, rowsAffected, id));
-
-                //////
+                Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_adding_item), itemType));
 
                 ContentValues accountValues = new ContentValues();
                 accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_NAME, itemToBeSave.getName());
                 accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY, itemToBeSave.getCurrency());
-
-                ArrayList<ContentProviderOperation> operations = new ArrayList<>();
 
                 operations.add(
                         ContentProviderOperation.newInsert(mItemUri)
@@ -98,7 +105,7 @@ public class AccountRepositorySynchronizer {
 
                 for (Contributor contributor : itemToBeSave.getContributors()) {
                     accountValues = new ContentValues();
-                    accountValues.put(IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID, 0  );
+                    accountValues.put(IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID, 0);
                     accountValues.put(IncomeExpenseContract.AccountContributorEntry.COLUMN_CONTRIBUTOR_ID, contributor.getId());
                     operations.add(
                             ContentProviderOperation.newInsert(IncomeExpenseContract.AccountContributorEntry.CONTENT_URI)
@@ -108,39 +115,37 @@ public class AccountRepositorySynchronizer {
 
                 }
 
-                ContentProviderResult[] results = null;
                 try {
+
                     results = mContentResolver.applyBatch(
                             IncomeExpenseContract.CONTENT_AUTHORITY, operations);
 
-                    long newId = IncomeExpenseContract.AccountEntry.getIdFromUri(results[0].uri);
-                    itemToBeSave.setId(newId);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                } catch (OperationApplicationException e) {
-                    e.printStackTrace();
+                    id = IncomeExpenseContract.AccountEntry.getIdFromUri(results[0].uri);
+                    rowsAffected = (id != null) ? 1 : 0;
+                    itemToBeSave.setId(id);
+                    Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_added_item), itemType, rowsAffected, id));
+
+                    rowsAffected = 0;
+                    for (int i = 1; i < results.length; i++) {
+                        id = IncomeExpenseContract.AccountContributorEntry.getIdFromUri(results[i].uri);
+                        rowsAffected += (id != null) ? 1 : 0;
+                    }
+
+                    Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_number_added_associated_contributor), rowsAffected));
+                } catch (Exception ex) {
+                    Log.e(LOG_TAG, mMessages.get(R.string.log_error_adding_item), ex);
+                    throw new ItemRepositorySynchronizerException(ex, ItemRepositorySynchronizerAction.add);
                 }
-
-
 
             } else {
                 // update item
                 id = itemToBeSave.getId();
                 selectionArgs = new String[]{id.toString()};
                 Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_updating_item), itemType, id));
-                ContentValues itemValues = new ContentValues();
-                itemValues.put(IncomeExpenseContract.ContributorEntry.COLUMN_NAME, itemToBeSave.getName());
-                rowsAffected = mContentResolver.update(mItemUri, itemValues, selection, selectionArgs);
-                Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_updated_item), itemType, rowsAffected, id));
-
-/////////////////////////////
-                id = itemToBeSave.getId();
 
                 ContentValues accountValues = new ContentValues();
                 accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_NAME, itemToBeSave.getName());
                 accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY, itemToBeSave.getCurrency());
-
-                ArrayList<ContentProviderOperation> operations = new ArrayList<>();
 
                 operations.add(
                         ContentProviderOperation.newUpdate(mItemUri)
@@ -152,28 +157,38 @@ public class AccountRepositorySynchronizer {
                                 .withSelection(IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID + "=?", new String[]{id.toString()})
                                 .build());
 
-
                 for (Contributor contributor : itemToBeSave.getContributors()) {
                     accountValues = new ContentValues();
-                    accountValues.put(IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID, id  );
+                    accountValues.put(IncomeExpenseContract.AccountContributorEntry.COLUMN_ACCOUNT_ID, id);
                     accountValues.put(IncomeExpenseContract.AccountContributorEntry.COLUMN_CONTRIBUTOR_ID, contributor.getId());
                     operations.add(
                             ContentProviderOperation.newInsert(IncomeExpenseContract.AccountContributorEntry.CONTENT_URI)
                                     .withValues(accountValues)
                                     .build());
-
                 }
 
-                ContentProviderResult[] results = null;
                 try {
+
                     results = mContentResolver.applyBatch(
                             IncomeExpenseContract.CONTENT_AUTHORITY, operations);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                } catch (OperationApplicationException e) {
-                    e.printStackTrace();
+
+                    rowsAffected = results[0].count;
+                    Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_updated_item), itemType, rowsAffected, id));
+
+                    rowsAffected = results[1].count;
+                    Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_number_deleted_associated_contributor), rowsAffected));
+
+                    rowsAffected = 0;
+                    for (int i = 2; i < results.length; i++) {
+                        id = IncomeExpenseContract.AccountContributorEntry.getIdFromUri(results[i].uri);
+                        rowsAffected += (id != null) ? 1 : 0;
+                    }
+
+                    Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_number_added_associated_contributor), rowsAffected));
+                } catch (Exception ex) {
+                    Log.e(LOG_TAG, mMessages.get(R.string.log_error_updating_item), ex);
+                    throw new ItemRepositorySynchronizerException(ex, ItemRepositorySynchronizerAction.update);
                 }
-                //Log.i(LOG_TAG, getString(R.string.log_info_updating_account, id));
 
             }
         }

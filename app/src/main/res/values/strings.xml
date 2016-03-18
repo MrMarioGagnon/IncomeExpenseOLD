@@ -25,13 +25,14 @@
     <string name="button_label_ok">Ok</string>
     <string name="button_label_cancel">Cancel</string>
 
-    <string name="error_log_adding_item">Unable to add %1$s</string>
-    <string name="error_log_deleting_item">Unable to delete %1$s with id %2$d</string>
-    <string name="error_log_saving_item">Unable to save %1$s</string>
+    <string name="log_error_adding_item">Error adding item</string>
+    <string name="log_error_deleting_item">Error deleting item</string>
+    <string name="log_error_updating_item">Error updating item</string>
 
-    <string name="error_to_user_adding_item">Problem adding %1$s.</string>
-    <string name="error_to_user_deleting_item">Problem deleting %1$s \'%2$s\'.</string>
-    <string name="error_to_user_saving_item">Problem saving %1$s.</string>
+    <string name="user_error_adding_item">Problem adding item.</string>
+    <string name="user_error_deleting_item">Problem deleting item.</string>
+    <string name="user_error_updating_item">Problem updating item</string>
+    <string name="user_error_synch_item">Problem synchronizing item</string>
 
     <string name="account">Account</string>
     <string name="contributor">Contributor</string>
@@ -45,7 +46,8 @@
 
     <string name="log_info_number_deleted_account">Number of deleted account %1$d</string>
     <string name="log_info_deleting_account">Deleting account with id \'%1$s\'</string>
-    <string name="log_info_number_deleted_associated_contributor">Number of deleted associated contributor %1$d for account id \'%2$d\'</string>
+    <string name="log_info_number_deleted_associated_contributor">Associated contributor deleted : %1$d</string>
+    <string name="log_info_number_added_associated_contributor">Associated contributor added : %1$d"</string>
 
 
     <string name="log_info_updating_account">Updating account with id \'%1$s\'</string>

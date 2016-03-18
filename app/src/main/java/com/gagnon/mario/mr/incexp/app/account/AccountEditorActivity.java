@@ -18,9 +18,11 @@ package com.gagnon.mario.mr.incexp.app.account;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
+import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
-import com.gagnon.mario.mr.incexp.app.core.ItemRepositoryProxyMessageBuilder;
+import com.gagnon.mario.mr.incexp.app.core.ItemRepositorySynchronizerException;
+import com.gagnon.mario.mr.incexp.app.core.ItemRepositorySynchronizerMessageBuilder;
 import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeEvent;
 import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeListener;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
@@ -36,7 +38,7 @@ public class AccountEditorActivity extends AppCompatActivity implements ItemStat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_editor_activity);
 
-        mRepositorySynchronizer = new AccountRepositorySynchronizer(getContentResolver(), IncomeExpenseContract.AccountEntry.CONTENT_URI, ItemRepositoryProxyMessageBuilder.build(this));
+        mRepositorySynchronizer = new AccountRepositorySynchronizer(getContentResolver(), IncomeExpenseContract.AccountEntry.CONTENT_URI, ItemRepositorySynchronizerMessageBuilder.build(this, AccountRepositorySynchronizer.class.getSimpleName()));
 
         if (savedInstanceState == null) {
 
@@ -113,7 +115,25 @@ public class AccountEditorActivity extends AppCompatActivity implements ItemStat
             return;
         }
 
-        mRepositorySynchronizer.Save(account);
+        try {
+            mRepositorySynchronizer.Save(account);
+        } catch (ItemRepositorySynchronizerException ex) {
+            String message;
+            switch (ex.getAction()) {
+                case delete:
+                    message = getString(R.string.user_error_deleting_item);
+                    break;
+                case add:
+                    message = getString(R.string.user_error_adding_item);
+                    break;
+                case update:
+                    message = getString(R.string.user_error_updating_item);
+                    break;
+                default:
+                    message = getString(R.string.user_error_synch_item);
+            }
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        }
 
         setResult(RESULT_OK);
         finish();

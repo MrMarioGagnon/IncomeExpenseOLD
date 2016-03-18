@@ -20,7 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 
 import com.gagnon.mario.mr.incexp.app.R;
-import com.gagnon.mario.mr.incexp.app.core.ItemRepositoryProxyMessageBuilder;
+import com.gagnon.mario.mr.incexp.app.core.ItemRepositorySynchronizerMessageBuilder;
 import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeEvent;
 import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeListener;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
@@ -36,7 +36,7 @@ public class ContributorEditorActivity extends AppCompatActivity implements Item
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contributor_editor_activity);
 
-        mRepositorySynchronizer = new ContributorRepositorySynchronizer(getContentResolver(), IncomeExpenseContract.ContributorEntry.CONTENT_URI, ItemRepositoryProxyMessageBuilder.build(this));
+        mRepositorySynchronizer = new ContributorRepositorySynchronizer(getContentResolver(), IncomeExpenseContract.ContributorEntry.CONTENT_URI, ItemRepositorySynchronizerMessageBuilder.build(this, ContributorRepositorySynchronizer.class.getSimpleName()));
 
         if (savedInstanceState == null) {
 
