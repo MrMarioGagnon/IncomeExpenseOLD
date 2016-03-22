@@ -25,6 +25,7 @@ import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorEditorActivity;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
 import com.gagnon.mario.mr.incexp.app.helper.Utility;
+import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodFragment;
 
 public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener, AccountFragment.OnItemSelectedListener {
 
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
     private final int ACTIVITY_CONTRIBUTOR = 100;
     private final int ACTIVITY_ACCOUNT = 200;
+    private final int ACTIVITY_PAYMENT_METHOD = 300;
 
     DrawerLayout mDrawerLayout;
     NavigationView mNavigationView;
@@ -87,6 +89,14 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView,new AccountFragment(), "account").commit();
                 }
+
+                if (menuItem.getItemId() == R.id.nav_payment_method) {
+                    MainActivity.this.toolbar.setTitle("Payment Method");
+
+                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.containerView,new PaymentMethodFragment(), "Payment Method").commit();
+                }
+
 
                 if (menuItem.getItemId() == R.id.nav_category) {
 

@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class IncomeExpenseDbHelper extends SQLiteOpenHelper {
 
     static final String DATABASE_NAME = "incexp.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public IncomeExpenseDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,11 +48,21 @@ public class IncomeExpenseDbHelper extends SQLiteOpenHelper {
                 IncomeExpenseContract.AccountContributorEntry.COLUMN_CONTRIBUTOR_ID + " INTEGER" +
                 " );";
 
+        final String SQL_CREATE_PAYMENT_METHOD_TABLE = "CREATE TABLE " + IncomeExpenseContract.PaymentMethodEntry.TABLE_NAME + " (" +
+                IncomeExpenseContract.PaymentMethodEntry._ID + " INTEGER PRIMARY KEY," +
+                IncomeExpenseContract.PaymentMethodEntry.COLUMN_NAME + " TEXT UNIQUE NOT NULL," +
+                IncomeExpenseContract.PaymentMethodEntry.COLUMN_CURRENCY + " TEXT NOT NULL," +
+                IncomeExpenseContract.PaymentMethodEntry.COLUMN_EXCHANGE_RATE + " NUMERIC NOT NULL DEFAULT 1," +
+                IncomeExpenseContract.PaymentMethodEntry.COLUMN_CLOSE + " INTEGER NOT NULL DEFAULT 0" +
+                " );";
+
+
 //        db.execSQL(SQL_CREATE_CATEGORY_TABLE);
 //        db.execSQL(SQL_CREATE_SUBCATEGORY_TABLE);
         db.execSQL(SQL_CREATE_ACCOUNT_TABLE);
         db.execSQL(SQL_CREATE_CONTRIBUTOR_TABLE);
         db.execSQL(SQL_CREATE_ACCOUNT_CONTRIBUTOR_TABLE);
+        db.execSQL(SQL_CREATE_PAYMENT_METHOD_TABLE);
 
     }
 

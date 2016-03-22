@@ -30,6 +30,8 @@ public class IncomeExpenseProvider extends ContentProvider {
     static final int CONTRIBUTOR_WITH_ID = 301;
     static final int ACCOUNT_CONTRIBUTOR = 400;
     static final int ACCOUNT_CONTRIBUTOR_WITH_ID = 401;
+    static final int PAYMENT_METHOD = 500;
+    static final int PAYMENT_METHOD_WITH_ID = 501;
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final SQLiteQueryBuilder mAccountContributorQueryBuilder;
     //    private static final String sCategoryIdSelection =
@@ -45,6 +47,10 @@ public class IncomeExpenseProvider extends ContentProvider {
     private static final String sAccountContributorIdSelection =
             IncomeExpenseContract.AccountContributorEntry.TABLE_NAME +
                     "." + IncomeExpenseContract.AccountContributorEntry.COLUMN_ID + " = ? ";
+    private static final String sPaymentMethodIdSelection =
+            IncomeExpenseContract.PaymentMethodEntry.TABLE_NAME +
+                    "." + IncomeExpenseContract.PaymentMethodEntry.COLUMN_ID + " = ? ";
+
 
     static {
         mAccountContributorQueryBuilder = new SQLiteQueryBuilder();
@@ -81,6 +87,9 @@ public class IncomeExpenseProvider extends ContentProvider {
         matcher.addURI(authority, IncomeExpenseContract.PATH_ACCOUNT_CONTRIBUTOR, ACCOUNT_CONTRIBUTOR);
         matcher.addURI(authority, IncomeExpenseContract.PATH_ACCOUNT_CONTRIBUTOR + "/#", ACCOUNT_CONTRIBUTOR_WITH_ID);
 
+        matcher.addURI(authority, IncomeExpenseContract.PATH_PAYMENT_METHOD, PAYMENT_METHOD);
+        matcher.addURI(authority, IncomeExpenseContract.PATH_PAYMENT_METHOD + "/#", PAYMENT_METHOD_WITH_ID);
+
         return matcher;
     }
 
@@ -103,6 +112,26 @@ public class IncomeExpenseProvider extends ContentProvider {
 //                null
 //        );
 //    }
+
+    private Cursor getPaymentMethodById(Uri uri, String[] projection) {
+
+        long id = IncomeExpenseContract.PaymentMethodEntry.getIdFromUri(uri);
+
+        String[] selectionArgs;
+        String selection;
+
+        selection = sPaymentMethodIdSelection;
+        selectionArgs = new String[]{String.valueOf(id)};
+
+        return mOpenHelper.getReadableDatabase().query(IncomeExpenseContract.PaymentMethodEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+    }
 
     private Cursor getAccountById(Uri uri, String[] projection) {
 
@@ -237,6 +266,20 @@ public class IncomeExpenseProvider extends ContentProvider {
             case CONTRIBUTOR_WITH_ID:
                 retCursor = getContributorById(uri, projection);
                 break;
+            case PAYMENT_METHOD:
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        IncomeExpenseContract.PaymentMethodEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            case PAYMENT_METHOD_WITH_ID:
+                retCursor = getPaymentMethodById(uri, projection);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -268,6 +311,10 @@ public class IncomeExpenseProvider extends ContentProvider {
                 return IncomeExpenseContract.ContributorEntry.CONTENT_TYPE;
             case CONTRIBUTOR_WITH_ID:
                 return IncomeExpenseContract.ContributorEntry.CONTENT_ITEM_TYPE;
+            case PAYMENT_METHOD:
+                return IncomeExpenseContract.PaymentMethodEntry.CONTENT_TYPE;
+            case PAYMENT_METHOD_WITH_ID:
+                return IncomeExpenseContract.PaymentMethodEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -314,6 +361,14 @@ public class IncomeExpenseProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case PAYMENT_METHOD: {
+                long _id = db.insert(IncomeExpenseContract.PaymentMethodEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = IncomeExpenseContract.PaymentMethodEntry.buildInstanceUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -347,6 +402,10 @@ public class IncomeExpenseProvider extends ContentProvider {
                 rowsDeleted = db.delete(
                         IncomeExpenseContract.ContributorEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+            case PAYMENT_METHOD:
+                rowsDeleted = db.delete(
+                        IncomeExpenseContract.PaymentMethodEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -378,6 +437,10 @@ public class IncomeExpenseProvider extends ContentProvider {
                 break;
             case CONTRIBUTOR:
                 rowsUpdated = db.update(IncomeExpenseContract.ContributorEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case PAYMENT_METHOD:
+                rowsUpdated = db.update(IncomeExpenseContract.PaymentMethodEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
             default:
@@ -447,6 +510,21 @@ public class IncomeExpenseProvider extends ContentProvider {
                 try {
                     for (ContentValues value : values) {
                         long _id = db.insert(IncomeExpenseContract.ContributorEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            case PAYMENT_METHOD:
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(IncomeExpenseContract.PaymentMethodEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;
                         }

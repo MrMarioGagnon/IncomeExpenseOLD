@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.gagnon.mario.mr.incexp.app.account.Account;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
+import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethod;
 
 import java.util.ArrayList;
 import java.util.TreeSet;
@@ -94,6 +95,34 @@ public class IncomeExpenseRequestWrapper {
 
         return names;
     }
+
+    public static ArrayList<String> getAvailablePaymentMethodsName(@NonNull ContentResolver contentResolver, PaymentMethod paymentMethod) {
+
+        ArrayList<String> names = new ArrayList<>();
+
+        Uri uri = IncomeExpenseContract.PaymentMethodEntry.CONTENT_URI;
+
+        Cursor cursor = null;
+        try {
+
+            String selection = String.format("%1$s !=?", IncomeExpenseContract.PaymentMethodEntry.COLUMN_ID);
+            // Si paymentMethod est new le id va etre null, donc remplacer par -1
+            String[] selectionArgument = new String[]{paymentMethod.isNew() ? "-1" : paymentMethod.getId().toString()};
+
+            cursor = contentResolver.query(uri, new String[]{IncomeExpenseContract.PaymentMethodEntry.COLUMN_NAME}, selection, selectionArgument, null);
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.PaymentMethodEntry.COLUMN_NAME));
+                names.add(name.toUpperCase());
+            }
+        } finally {
+            if (null != cursor) {
+                cursor.close();
+            }
+        }
+
+        return names;
+    }
+
 
     public static ArrayList<Contributor> getAccountContributors(@NonNull ContentResolver contentResolver, Long accountId){
 
