@@ -25,9 +25,11 @@ import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorEditorActivity;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
 import com.gagnon.mario.mr.incexp.app.helper.Utility;
+import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethod;
+import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodEditorActivity;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodFragment;
 
-public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener, AccountFragment.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener, AccountFragment.OnItemSelectedListener, PaymentMethodFragment.OnItemSelectedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -94,9 +96,8 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                     MainActivity.this.toolbar.setTitle("Payment Method");
 
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView,new PaymentMethodFragment(), "Payment Method").commit();
+                    fragmentTransaction.replace(R.id.containerView,new PaymentMethodFragment(), "payment_method").commit();
                 }
-
 
                 if (menuItem.getItemId() == R.id.nav_category) {
 
@@ -148,6 +149,8 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
                 Log.d(LOG_TAG, String.valueOf(mFragmentManager.getFragments().size()));
 
+                String defaultCurrency;
+
                 for (Fragment f : mFragmentManager.getFragments()) {
 
                     if (null != f && f.isVisible()) {
@@ -185,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
                                     Account account = Account.createNew();
 
-                                    String defaultCurrency = Utility.getPreferredDefaultCurrency(MainActivity.this);
+                                    defaultCurrency = Utility.getPreferredDefaultCurrency(MainActivity.this);
                                     Log.d(LOG_TAG, defaultCurrency);
                                     account.setCurrency(Utility.getPreferredDefaultCurrency(MainActivity.this));
                                     arguments = new Bundle();
@@ -195,6 +198,21 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                                     intent.putExtras(arguments);
                                     startActivityForResult(intent, ACTIVITY_ACCOUNT);
 
+
+                                    break;
+                                case "payment_method":
+
+                                    PaymentMethod paymentMethod = PaymentMethod.createNew();
+
+                                    defaultCurrency = Utility.getPreferredDefaultCurrency(MainActivity.this);
+                                    Log.d(LOG_TAG, defaultCurrency);
+                                    paymentMethod.setCurrency(Utility.getPreferredDefaultCurrency(MainActivity.this));
+                                    arguments = new Bundle();
+                                    arguments.putSerializable("item", paymentMethod);
+
+                                    intent = new Intent(MainActivity.this, PaymentMethodEditorActivity.class);
+                                    intent.putExtras(arguments);
+                                    startActivityForResult(intent, ACTIVITY_PAYMENT_METHOD);
 
                                     break;
                                 default:
@@ -235,6 +253,14 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                 }
 
                 break;
+            case ACTIVITY_PAYMENT_METHOD:
+
+                if(resultCode == RESULT_OK){
+
+                }
+
+                break;
+
 
             default:
                 break;
@@ -288,4 +314,17 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
         startActivityForResult(intent, ACTIVITY_ACCOUNT);
 
     }
+
+    @Override
+    public void onItemSelected(PaymentMethod paymentMethod) {
+
+        Bundle arguments = new Bundle();
+        arguments.putSerializable("item", paymentMethod);
+
+        Intent intent = new Intent(MainActivity.this, PaymentMethodEditorActivity.class);
+        intent.putExtras(arguments);
+        startActivityForResult(intent, ACTIVITY_PAYMENT_METHOD);
+
+    }
+
 }

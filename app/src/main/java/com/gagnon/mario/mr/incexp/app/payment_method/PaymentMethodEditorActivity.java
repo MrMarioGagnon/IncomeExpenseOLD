@@ -21,9 +21,6 @@ import android.view.Menu;
 import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
-import com.gagnon.mario.mr.incexp.app.account.Account;
-import com.gagnon.mario.mr.incexp.app.account.AccountEditorFragment;
-import com.gagnon.mario.mr.incexp.app.account.AccountRepositorySynchronizer;
 import com.gagnon.mario.mr.incexp.app.core.ItemRepositorySynchronizerException;
 import com.gagnon.mario.mr.incexp.app.core.ItemRepositorySynchronizerMessageBuilder;
 import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeEvent;
@@ -39,7 +36,7 @@ public class PaymentMethodEditorActivity extends AppCompatActivity implements It
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.account_editor_activity);
+        setContentView(R.layout.payment_method_editor_activity);
 
         mRepositorySynchronizer = new PaymentMethodRepositorySynchronizer(getContentResolver(), IncomeExpenseContract.PaymentMethodEntry.CONTENT_URI, ItemRepositorySynchronizerMessageBuilder.build(this, PaymentMethodRepositorySynchronizer.class.getSimpleName()));
 

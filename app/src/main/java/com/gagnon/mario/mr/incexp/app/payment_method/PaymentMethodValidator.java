@@ -2,6 +2,7 @@ package com.gagnon.mario.mr.incexp.app.payment_method;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.core.ObjectBase;
@@ -19,6 +20,7 @@ import java.util.Map;
  */
 public class PaymentMethodValidator implements ObjectValidator {
 
+    private static final String LOG_TAG = PaymentMethodValidator.class.getSimpleName();
     private final List<String> mNames;
     private final Map<Integer, String> mValidationMessages;
 
@@ -68,6 +70,7 @@ public class PaymentMethodValidator implements ObjectValidator {
             messages.add(mValidationMessages.get(R.string.validation_currency_mandatory));
         }
 
+        Log.d(LOG_TAG, exchangeRate.toString());
         if(exchangeRate <= 0){
             messages.add(mValidationMessages.get(R.string.validation_exchange_rate_mandatory));
         }

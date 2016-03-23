@@ -82,8 +82,8 @@ public class PaymentMethodRepositorySynchronizer {
 //                rowsAffected = results[0].count;
 //                Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_number_deleted_associated_contributor), rowsAffected));
 
-                rowsAffected = results[1].count;
-                Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_deleted_item), itemType, rowsAffected, id));
+//                rowsAffected = results[1].count;
+//                Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_deleted_item), itemType, rowsAffected, id));
             } catch (Exception ex) {
                 Log.e(LOG_TAG, mMessages.get(R.string.log_error_deleting_item), ex);
                 throw new ItemRepositorySynchronizerException(ex, ItemRepositorySynchronizerAction.delete);

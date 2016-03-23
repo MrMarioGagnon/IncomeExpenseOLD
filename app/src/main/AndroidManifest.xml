@@ -28,6 +28,11 @@
             android:label="@string/title_account_editor"
             android:parentActivityName=".account.AccountEditorActivity" >
         </activity>
+        <activity
+            android:name=".payment_method.PaymentMethodEditorActivity"
+            android:label="@string/title_payment_method_editor"
+            android:parentActivityName=".payment_method.PaymentMethodEditorActivity" >
+        </activity>
 
 
         <activity

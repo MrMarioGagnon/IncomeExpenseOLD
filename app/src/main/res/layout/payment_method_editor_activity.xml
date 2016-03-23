@@ -1,0 +1,8 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/payment_method_editor_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodEditorActivity"
+    tools:ignore="MergeRootFrame" />
+
