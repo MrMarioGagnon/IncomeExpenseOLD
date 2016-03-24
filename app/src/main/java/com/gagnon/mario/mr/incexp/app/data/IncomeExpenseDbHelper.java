@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class IncomeExpenseDbHelper extends SQLiteOpenHelper {
 
     static final String DATABASE_NAME = "incexp.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
 
     public IncomeExpenseDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -19,10 +19,10 @@ public class IncomeExpenseDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-//        final String SQL_CREATE_CATEGORY_TABLE = "CREATE TABLE " + IncomeExpenseContract.CategoryEntry.TABLE_NAME + " (" +
-//                IncomeExpenseContract.CategoryEntry._ID + " INTEGER PRIMARY KEY," +
-//                IncomeExpenseContract.CategoryEntry.COLUMN_NAME + " TEXT UNIQUE NOT NULL" +
-//                " );";
+        final String SQL_CREATE_CATEGORY_TABLE = "CREATE TABLE " + IncomeExpenseContract.CategoryEntry.TABLE_NAME + " (" +
+                IncomeExpenseContract.CategoryEntry._ID + " INTEGER PRIMARY KEY," +
+                IncomeExpenseContract.CategoryEntry.COLUMN_NAME + " TEXT UNIQUE NOT NULL" +
+                " );";
 //
 //        final String SQL_CREATE_SUBCATEGORY_TABLE = "CREATE TABLE " + IncomeExpenseContract.SubCategoryEntry.TABLE_NAME + " (" +
 //                IncomeExpenseContract.SubCategoryEntry._ID + " INTEGER PRIMARY KEY," +
@@ -56,13 +56,19 @@ public class IncomeExpenseDbHelper extends SQLiteOpenHelper {
                 IncomeExpenseContract.PaymentMethodEntry.COLUMN_CLOSE + " INTEGER NOT NULL DEFAULT 0" +
                 " );";
 
+        final String SQL_CREATE_PAYMENT_METHOD_CONTRIBUTOR_TABLE = "CREATE TABLE " + IncomeExpenseContract.PaymentMethodContributorEntry.TABLE_NAME + " (" +
+                IncomeExpenseContract.PaymentMethodContributorEntry._ID + " INTEGER PRIMARY KEY," +
+                IncomeExpenseContract.PaymentMethodContributorEntry.COLUMN_PAYMENT_METHOD_ID + " INTEGER, " +
+                IncomeExpenseContract.PaymentMethodContributorEntry.COLUMN_CONTRIBUTOR_ID + " INTEGER" +
+                " );";
 
-//        db.execSQL(SQL_CREATE_CATEGORY_TABLE);
+        db.execSQL(SQL_CREATE_CATEGORY_TABLE);
 //        db.execSQL(SQL_CREATE_SUBCATEGORY_TABLE);
         db.execSQL(SQL_CREATE_ACCOUNT_TABLE);
         db.execSQL(SQL_CREATE_CONTRIBUTOR_TABLE);
         db.execSQL(SQL_CREATE_ACCOUNT_CONTRIBUTOR_TABLE);
         db.execSQL(SQL_CREATE_PAYMENT_METHOD_TABLE);
+        db.execSQL(SQL_CREATE_PAYMENT_METHOD_CONTRIBUTOR_TABLE);
 
     }
 

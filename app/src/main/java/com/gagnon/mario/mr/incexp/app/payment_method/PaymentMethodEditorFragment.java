@@ -139,17 +139,17 @@ public class PaymentMethodEditorFragment extends Fragment implements ItemStateCh
                         mPaymentMethod.setExchangeRate( exchangeRate == null ? 0 : exchangeRate);
 
                         // if not null, Contributors Dialog Box was call
-//                        if (mSelectedContributor != null) {
-//                            Contributor[] a = new Contributor[mContributors.size()];
-//                            mContributors.toArray(a);
-//
-//                            mPaymentMethod.clearContributor();
-//                            for (int i = 0; i < mSelectedContributor.length; i++) {
-//                                if (mSelectedContributor[i]) {
-//                                    mPaymentMethod.addContributor(a[i]);
-//                                }
-//                            }
-//                        }
+                        if (mSelectedContributor != null) {
+                            Contributor[] a = new Contributor[mContributors.size()];
+                            mContributors.toArray(a);
+
+                            mPaymentMethod.clearContributor();
+                            for (int i = 0; i < mSelectedContributor.length; i++) {
+                                if (mSelectedContributor[i]) {
+                                    mPaymentMethod.addContributor(a[i]);
+                                }
+                            }
+                        }
 
                         ValidationStatus validationStatus = getObjectValidator().Validate(mPaymentMethod);
 
@@ -165,29 +165,29 @@ public class PaymentMethodEditorFragment extends Fragment implements ItemStateCh
             }
         };
 
-//        mOnImageButtonClickListener = new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showContributorSetterDialog();
-//            }
-//        };
+        mOnImageButtonClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showContributorSetterDialog();
+            }
+        };
 
-//        mContributorMultipleChoiceEventHandler = new MultipleChoiceEventHandler() { // Creating an anonymous Class Object
-//            @Override
-//            public void execute(boolean[] idSelected) {
-//                Contributor[] a = new Contributor[mContributors.size()];
-//                mContributors.toArray(a);
-//
-//                StringBuilder sb = new StringBuilder();
-//                for (int i = 0; i < idSelected.length; i++) {
-//                    if (idSelected[i]) {
-//                        sb.append(String.format("%1$s%2$s", (sb.length() == 0 ? "" : ","), a[i].getName()));
-//                    }
-//                }
-//                mTextViewContributors.setText(sb.toString());
-//                mSelectedContributor = idSelected;
-//            }
-//        };
+        mContributorMultipleChoiceEventHandler = new MultipleChoiceEventHandler() { // Creating an anonymous Class Object
+            @Override
+            public void execute(boolean[] idSelected) {
+                Contributor[] a = new Contributor[mContributors.size()];
+                mContributors.toArray(a);
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < idSelected.length; i++) {
+                    if (idSelected[i]) {
+                        sb.append(String.format("%1$s%2$s", (sb.length() == 0 ? "" : ","), a[i].getName()));
+                    }
+                }
+                mTextViewContributors.setText(sb.toString());
+                mSelectedContributor = idSelected;
+            }
+        };
 
     }
 
@@ -199,11 +199,11 @@ public class PaymentMethodEditorFragment extends Fragment implements ItemStateCh
         if (arguments != null) {
             mPaymentMethod = (PaymentMethod) arguments.getSerializable("item");
             mNames = (ArrayList<String>) arguments.getSerializable("names");
-            //mContributors = (SortedSet<Contributor>) arguments.getSerializable("contributors");
+            mContributors = (SortedSet<Contributor>) arguments.getSerializable("contributors");
         } else {
             mPaymentMethod = PaymentMethod.createNew();
             mNames = new ArrayList<>();
-            //mContributors = new TreeSet<>();
+            mContributors = new TreeSet<>();
         }
 
         mSpinnerCurrencyAdapter = ArrayAdapter.createFromResource(
@@ -250,10 +250,10 @@ public class PaymentMethodEditorFragment extends Fragment implements ItemStateCh
         mButtonBack = (Button) rootView.findViewById(R.id.button_back);
         mButtonBack.setOnClickListener(mOnButtonClickListener);
 
-//        mImageButtonContributors = (ImageButton) rootView.findViewById(R.id.imagebutton_contributors);
-//        mImageButtonContributors.setOnClickListener(mOnImageButtonClickListener);
+        mImageButtonContributors = (ImageButton) rootView.findViewById(R.id.imagebutton_contributors);
+        mImageButtonContributors.setOnClickListener(mOnImageButtonClickListener);
 
-//        mTextViewContributors = (TextView) rootView.findViewById(R.id.textview_contributors);
+        mTextViewContributors = (TextView) rootView.findViewById(R.id.textview_contributors);
 
         if (null == savedInstanceState) {
 
@@ -269,7 +269,7 @@ public class PaymentMethodEditorFragment extends Fragment implements ItemStateCh
 
             mSpinnerCurrency.setSelection(((ArrayAdapter<String>) mSpinnerCurrency.getAdapter()).getPosition(mPaymentMethod.getCurrency()), false);
 
-            //mTextViewContributors.setText(mPaymentMethod.getContributorsForDisplay());
+            mTextViewContributors.setText(mPaymentMethod.getContributorsForDisplay());
 
             mButtonSave.setEnabled(false);
 
@@ -293,7 +293,7 @@ public class PaymentMethodEditorFragment extends Fragment implements ItemStateCh
         super.onResume();
 
         mEditTextName.addTextChangedListener(mOnTextChangeListener);
-        //mTextViewContributors.addTextChangedListener(mOnTextChangeListener);
+        mTextViewContributors.addTextChangedListener(mOnTextChangeListener);
         mSpinnerCurrency.setOnItemSelectedListener(mOnItemSelectedListener);
         mEditTextExchangeRate.addTextChangedListener(mOnTextChangeListener);
 
@@ -306,49 +306,49 @@ public class PaymentMethodEditorFragment extends Fragment implements ItemStateCh
         outState.putInt(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION, mSpinnerCurrency.getSelectedItemPosition());
     }
 
-//    private boolean[] buildContributorsCheckedArray(SortedSet<Contributor> contributors,
-//                                                    String contributorsName) {
-//
-//        boolean[] checked = new boolean[contributors.size()];
-//
-//        int i = 0;
-//        for (Contributor contributor : contributors) {
-//
-//            checked[i] = contributorsName.contains(contributor.getName());
-//            i++;
-//        }
-//
-//        return checked;
-//
-//    }
+    private boolean[] buildContributorsCheckedArray(SortedSet<Contributor> contributors,
+                                                    String contributorsName) {
 
-//    private void showContributorSetterDialog() {
-//
-//        try {
-//
-//            CharSequence[] contributorArray = new CharSequence[mContributors.size()];
-//            int i = 0;
-//            for (Contributor contributor : mContributors) {
-//                contributorArray[i++] = contributor.getName();
-//            }
-//
-//            Dialog dialog = DialogUtils.childSetterDialog(
-//                    this.getContext(),
-//                    contributorArray,
-//                    mContributorMultipleChoiceEventHandler,
-//                    buildContributorsCheckedArray(mContributors, mPaymentMethod.getContributorsForDisplay()),
-//                    getString(R.string.dialog_title_contributor_setter));
-//
-//            dialog.setOwnerActivity(this.getActivity());
-//            dialog.show();
-//        } catch (Exception exception) {
-//            DialogUtils.messageBox(this.getContext(),
-//                    getString(R.string.error_unable_to_fetch_all_contributor),
-//                    getString(R.string.dialog_title_contributor_setter)).show();
-//
-//        }
-//
-//    }
+        boolean[] checked = new boolean[contributors.size()];
+
+        int i = 0;
+        for (Contributor contributor : contributors) {
+
+            checked[i] = contributorsName.contains(contributor.getName());
+            i++;
+        }
+
+        return checked;
+
+    }
+
+    private void showContributorSetterDialog() {
+
+        try {
+
+            CharSequence[] contributorArray = new CharSequence[mContributors.size()];
+            int i = 0;
+            for (Contributor contributor : mContributors) {
+                contributorArray[i++] = contributor.getName();
+            }
+
+            Dialog dialog = DialogUtils.childSetterDialog(
+                    this.getContext(),
+                    contributorArray,
+                    mContributorMultipleChoiceEventHandler,
+                    buildContributorsCheckedArray(mContributors, mPaymentMethod.getContributorsForDisplay()),
+                    getString(R.string.dialog_title_contributor_setter));
+
+            dialog.setOwnerActivity(this.getActivity());
+            dialog.show();
+        } catch (Exception exception) {
+            DialogUtils.messageBox(this.getContext(),
+                    getString(R.string.error_unable_to_fetch_all_contributor),
+                    getString(R.string.dialog_title_contributor_setter)).show();
+
+        }
+
+    }
 
     @Override
     public void addListener(@NonNull ItemStateChangeListener listener) {

@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.gagnon.mario.mr.incexp.app.R;
 import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseContract;
+import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseRequestWrapper;
 
 /**
  * Created by mario on 2/1/2016.
@@ -116,8 +117,7 @@ public class PaymentMethodFragment extends Fragment implements LoaderManager.Loa
                     int close = cursor.getInt(cursor.getColumnIndex(IncomeExpenseContract.PaymentMethodEntry.COLUMN_CLOSE));
                     Boolean isClose = (close == 1);
 
-                    //PaymentMethod paymentMethod = PaymentMethod.create(id, name, currency, isClose, IncomeExpenseRequestWrapper.getAccountContributors(getContext().getContentResolver(), id));
-                    PaymentMethod paymentMethod = PaymentMethod.create(id, name, currency, exchangeRate, isClose);
+                    PaymentMethod paymentMethod = PaymentMethod.create(id, name, currency, exchangeRate, isClose, IncomeExpenseRequestWrapper.getPaymentMethodContributors(getContext().getContentResolver(), id));
 
                     ((PaymentMethodFragment.OnItemSelectedListener) getActivity()).onItemSelected(paymentMethod);
 
@@ -165,8 +165,6 @@ public class PaymentMethodFragment extends Fragment implements LoaderManager.Loa
         mPaymentMethodAdapter.swapCursor(null);
     }
 
-    // endregion LoaderManager.LoaderCallbacks Method
-
     /**
      * A callback interface that all activities containing this fragment must
      * implement. This mechanism allows activities to be notified of item
@@ -175,6 +173,4 @@ public class PaymentMethodFragment extends Fragment implements LoaderManager.Loa
     public interface OnItemSelectedListener {
         void onItemSelected(PaymentMethod paymentMethod);
     }
-
-
 }

@@ -36,7 +36,7 @@ public class PaymentMethodValidator implements ObjectValidator {
         messages.put(R.string.validation_name_already_exists, context.getString(R.string.validation_name_already_exists));
         messages.put(R.string.validation_currency_mandatory, context.getString(R.string.validation_currency_mandatory));
         messages.put(R.string.validation_exchange_rate_mandatory, context.getString(R.string.validation_exchange_rate_mandatory));
-        //messages.put(R.string.validation_contributors_mandatory, context.getString(R.string.validation_contributors_mandatory));
+        messages.put(R.string.validation_contributors_mandatory, context.getString(R.string.validation_contributors_mandatory));
 
         return new PaymentMethodValidator(names, messages);
     }
@@ -75,9 +75,9 @@ public class PaymentMethodValidator implements ObjectValidator {
             messages.add(mValidationMessages.get(R.string.validation_exchange_rate_mandatory));
         }
 
-//        if (paymentMethod.getContributors().size() == 0) {
-//            messages.add((mValidationMessages.get(R.string.validation_contributors_mandatory)));
-//        }
+        if (paymentMethod.getContributors().size() == 0) {
+            messages.add((mValidationMessages.get(R.string.validation_contributors_mandatory)));
+        }
 
         return ValidationStatus.create(Tools.join(messages, "\n"));
     }

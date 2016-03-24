@@ -24,7 +24,7 @@ public class PaymentMethod extends ObjectBase implements Serializable, Comparabl
 
     }
 
-    public static PaymentMethod create(Long id, String name, String currency, Double exchangeRate, Boolean isClose /*, List<Contributor> contributors*/) {
+    public static PaymentMethod create(Long id, String name, String currency, Double exchangeRate, Boolean isClose, List<Contributor> contributors) {
 
         PaymentMethod newInstance = new PaymentMethod();
         newInstance.mNew = false;
@@ -34,7 +34,7 @@ public class PaymentMethod extends ObjectBase implements Serializable, Comparabl
         newInstance.mCurrency = currency;
         newInstance.mExchangeRate = exchangeRate;
         newInstance.mIsClose = isClose;
-//        newInstance.mContributors = contributors;
+        newInstance.mContributors = contributors;
 
         return newInstance;
     }

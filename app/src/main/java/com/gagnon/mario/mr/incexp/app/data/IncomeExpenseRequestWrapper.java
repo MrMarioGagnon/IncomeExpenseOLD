@@ -155,5 +155,34 @@ public class IncomeExpenseRequestWrapper {
 
     }
 
+    public static ArrayList<Contributor> getPaymentMethodContributors(@NonNull ContentResolver contentResolver, Long paymentMethodId){
+
+        ArrayList<Contributor> contributors = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+
+            String[] projection  = new String[] {IncomeExpenseContract.PaymentMethodContributorEntry.TABLE_NAME + "." + IncomeExpenseContract.PaymentMethodContributorEntry.COLUMN_ID
+                    ,IncomeExpenseContract.ContributorEntry.TABLE_NAME + "." + IncomeExpenseContract.ContributorEntry.COLUMN_ID
+                    ,IncomeExpenseContract.ContributorEntry.TABLE_NAME + "." + IncomeExpenseContract.ContributorEntry.COLUMN_NAME};
+
+            String selection = IncomeExpenseContract.PaymentMethodContributorEntry.TABLE_NAME + "." + IncomeExpenseContract.PaymentMethodContributorEntry.COLUMN_PAYMENT_METHOD_ID + "=?";
+            String[] selectionArgs = new String[] {paymentMethodId.toString()};
+
+            cursor = contentResolver.query(IncomeExpenseContract.PaymentMethodContributorEntry.CONTENT_URI,projection, selection, selectionArgs, null);
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                Long id = cursor.getLong(1);
+                String name = cursor.getString(2);
+                contributors.add(Contributor.create(id, name));
+            }
+        } finally {
+            if (null != cursor) {
+                cursor.close();
+            }
+        }
+
+        return contributors;
+
+    }
+
 
 }
