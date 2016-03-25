@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gagnon.mario.mr.incexp.app.account;
+package com.gagnon.mario.mr.incexp.app.category;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,32 +27,25 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
-import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeEvent;
 import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeHandler;
 import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeListener;
 import com.gagnon.mario.mr.incexp.app.core.ObjectValidator;
 import com.gagnon.mario.mr.incexp.app.core.ValidationStatus;
-import com.gagnon.mario.mr.incexp.app.core.dialog.DialogUtils;
-import com.gagnon.mario.mr.incexp.app.core.dialog.MultipleChoiceEventHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class AccountEditorFragment extends Fragment implements ItemStateChangeHandler {
+public class CategoryEditorFragment extends Fragment implements ItemStateChangeHandler {
 
-    private static final String LOG_TAG = AccountEditorFragment.class.getSimpleName();
+    private static final String LOG_TAG = CategoryEditorFragment.class.getSimpleName();
     private static final String KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE = "key1";
     private static final String KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION = "key2";
 
@@ -62,25 +53,19 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
     private Button mButtonSave;
     private Button mButtonBack;
     private Button mButtonDelete;
-    private ImageButton mImageButtonContributors;
-    private Account mAccount;
+    private Category mCategory;
     private TextView mTextViewValidationErrorMessage;
-    private Spinner mSpinnerCurrency;
+    private Spinner mSpinnerGroup;
     private View.OnClickListener mOnButtonClickListener;
-    private View.OnClickListener mOnImageButtonClickListener;
     private TextWatcher mOnTextChangeListener;
     private ObjectValidator mObjectValidator = null;
     private ArrayList<String> mNames;
-    private SortedSet<Contributor> mContributors;
     private AdapterView.OnItemSelectedListener mOnItemSelectedListener;
-    private ArrayAdapter<CharSequence> mSpinnerCurrencyAdapter;
-    private MultipleChoiceEventHandler mContributorMultipleChoiceEventHandler;
-    private boolean[] mSelectedContributor;
-    private TextView mTextViewContributors;
+    private ArrayAdapter<CharSequence> mSpinnerGroupAdapter;
 
     private List<ItemStateChangeListener> mListeners;
 
-    public AccountEditorFragment() {
+    public CategoryEditorFragment() {
 
         mListeners = new ArrayList<>();
 
@@ -124,32 +109,19 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
                         notifyListener(new ItemStateChangeEvent(null, true));
                         break;
                     case R.id.button_delete:
-                        mAccount.setDead(true);
-                        notifyListener(new ItemStateChangeEvent(mAccount));
+                        mCategory.setDead(true);
+                        notifyListener(new ItemStateChangeEvent(mCategory));
                         break;
                     case R.id.button_save:
 
-                        mAccount.setName(mEditTextName.getText().toString());
-                        mAccount.setCurrency((String) mSpinnerCurrency
+                        mCategory.setName(mEditTextName.getText().toString());
+                        mCategory.setGroup((String) mSpinnerGroup
                                 .getSelectedItem());
 
-                        // if not null, Contributors Dialog Box was call
-                        if (mSelectedContributor != null) {
-                            Contributor[] a = new Contributor[mContributors.size()];
-                            mContributors.toArray(a);
-
-                            mAccount.clearContributor();
-                            for (int i = 0; i < mSelectedContributor.length; i++) {
-                                if (mSelectedContributor[i]) {
-                                    mAccount.addContributor(a[i]);
-                                }
-                            }
-                        }
-
-                        ValidationStatus validationStatus = getObjectValidator().Validate(mAccount);
+                        ValidationStatus validationStatus = getObjectValidator().Validate(mCategory);
 
                         if (validationStatus.isValid()) {
-                            notifyListener(new ItemStateChangeEvent(mAccount));
+                            notifyListener(new ItemStateChangeEvent(mCategory));
                         } else {
                             mTextViewValidationErrorMessage.setText(validationStatus.getMessage());
                             mTextViewValidationErrorMessage.setVisibility(View.VISIBLE);
@@ -157,30 +129,6 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
 
                         break;
                 }
-            }
-        };
-
-        mOnImageButtonClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showContributorSetterDialog();
-            }
-        };
-
-        mContributorMultipleChoiceEventHandler = new MultipleChoiceEventHandler() { // Creating an anonymous Class Object
-            @Override
-            public void execute(boolean[] idSelected) {
-                Contributor[] a = new Contributor[mContributors.size()];
-                mContributors.toArray(a);
-
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < idSelected.length; i++) {
-                    if (idSelected[i]) {
-                        sb.append(String.format("%1$s%2$s", (sb.length() == 0 ? "" : ","), a[i].getName()));
-                    }
-                }
-                mTextViewContributors.setText(sb.toString());
-                mSelectedContributor = idSelected;
             }
         };
 
@@ -192,26 +140,24 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mAccount = (Account) arguments.getSerializable("item");
+            mCategory = (Category) arguments.getSerializable("item");
             mNames = (ArrayList<String>) arguments.getSerializable("names");
-            mContributors = (SortedSet<Contributor>) arguments.getSerializable("contributors");
         } else {
-            mAccount = Account.createNew();
+            mCategory = Category.createNew();
             mNames = new ArrayList<>();
-            mContributors = new TreeSet<>();
         }
 
-        mSpinnerCurrencyAdapter = ArrayAdapter.createFromResource(
-                getActivity(), R.array.pref_currency_values,
+        mSpinnerGroupAdapter = ArrayAdapter.createFromResource(
+                getActivity(), R.array.category_group_names,
                 android.R.layout.simple_spinner_item);
-        mSpinnerCurrencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinnerGroupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
     }
 
     public ObjectValidator getObjectValidator() {
 
         if (null == mObjectValidator) {
-            mObjectValidator = AccountValidator.create(getActivity(), mNames);
+            mObjectValidator = CategoryValidator.create(getActivity(), mNames);
         }
 
         return mObjectValidator;
@@ -225,14 +171,14 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.account_editor_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.category_editor_fragment, container, false);
 
         mTextViewValidationErrorMessage = (TextView) rootView.findViewById(R.id.textViewValidationErrorMessage);
 
-        mEditTextName = (EditText) rootView.findViewById(R.id.edittext_account_name);
+        mEditTextName = (EditText) rootView.findViewById(R.id.edittext_category_name);
 
-        mSpinnerCurrency = (Spinner) rootView.findViewById(R.id.spinner_currency);
-        mSpinnerCurrency.setAdapter(mSpinnerCurrencyAdapter);
+        mSpinnerGroup = (Spinner) rootView.findViewById(R.id.spinner_group);
+        mSpinnerGroup.setAdapter(mSpinnerGroupAdapter);
 
         mButtonDelete = (Button) rootView.findViewById(R.id.button_delete);
         mButtonDelete.setOnClickListener(mOnButtonClickListener);
@@ -243,25 +189,18 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
         mButtonBack = (Button) rootView.findViewById(R.id.button_back);
         mButtonBack.setOnClickListener(mOnButtonClickListener);
 
-        mImageButtonContributors = (ImageButton) rootView.findViewById(R.id.imagebutton_contributors);
-        mImageButtonContributors.setOnClickListener(mOnImageButtonClickListener);
-
-        mTextViewContributors = (TextView) rootView.findViewById(R.id.textview_contributors);
-
         if (null == savedInstanceState) {
 
-            mEditTextName.setText(mAccount.getName());
+            mEditTextName.setText(mCategory.getName());
 
-            if (mAccount.isNew()) {
+            if (mCategory.isNew()) {
                 mButtonDelete.setVisibility(View.GONE);
                 mButtonSave.setText(R.string.button_label_add);
             } else {
                 mButtonSave.setText(R.string.button_label_save);
             }
 
-            mSpinnerCurrency.setSelection(((ArrayAdapter<String>) mSpinnerCurrency.getAdapter()).getPosition(mAccount.getCurrency()), false);
-
-            mTextViewContributors.setText(mAccount.getContributorsForDisplay());
+            mSpinnerGroup.setSelection(((ArrayAdapter<String>) mSpinnerGroup.getAdapter()).getPosition(mCategory.getGroup()), false);
 
             mButtonSave.setEnabled(false);
 
@@ -271,8 +210,8 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
             }
             if (savedInstanceState.containsKey(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION)) {
                 int position = savedInstanceState.getInt(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION);
-                mSpinnerCurrency.setOnItemSelectedListener(null);
-                mSpinnerCurrency.setSelection(position, false);
+                mSpinnerGroup.setOnItemSelectedListener(null);
+                mSpinnerGroup.setSelection(position, false);
             }
 
         }
@@ -285,8 +224,7 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
         super.onResume();
 
         mEditTextName.addTextChangedListener(mOnTextChangeListener);
-        mTextViewContributors.addTextChangedListener(mOnTextChangeListener);
-        mSpinnerCurrency.setOnItemSelectedListener(mOnItemSelectedListener);
+        mSpinnerGroup.setOnItemSelectedListener(mOnItemSelectedListener);
 
     }
 
@@ -294,51 +232,7 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE, mButtonSave.isEnabled());
-        outState.putInt(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION, mSpinnerCurrency.getSelectedItemPosition());
-    }
-
-    private boolean[] buildContributorsCheckedArray(SortedSet<Contributor> contributors,
-                                                    String contributorsName) {
-
-        boolean[] checked = new boolean[contributors.size()];
-
-        int i = 0;
-        for (Contributor contributor : contributors) {
-
-            checked[i] = contributorsName.contains(contributor.getName());
-            i++;
-        }
-
-        return checked;
-
-    }
-
-    private void showContributorSetterDialog() {
-
-        try {
-
-            CharSequence[] contributorArray = new CharSequence[mContributors.size()];
-            int i = 0;
-            for (Contributor contributor : mContributors) {
-                contributorArray[i++] = contributor.getName();
-            }
-
-            Dialog dialog = DialogUtils.childSetterDialog(
-                    this.getContext(),
-                    contributorArray,
-                    mContributorMultipleChoiceEventHandler,
-                    buildContributorsCheckedArray(mContributors, mAccount.getContributorsForDisplay()),
-                    getString(R.string.dialog_title_contributor_setter));
-
-            dialog.setOwnerActivity(this.getActivity());
-            dialog.show();
-        } catch (Exception exception) {
-            DialogUtils.messageBox(this.getContext(),
-                    getString(R.string.error_unable_to_fetch_all_contributor),
-                    getString(R.string.dialog_title_contributor_setter)).show();
-
-        }
-
+        outState.putInt(KEY_SAVE_INSTANCE_STATE_SPINNER_CURRENCY_POSITION, mSpinnerGroup.getSelectedItemPosition());
     }
 
     @Override

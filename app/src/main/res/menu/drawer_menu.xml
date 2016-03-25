@@ -8,6 +8,11 @@
             android:title="Contributor" />
 
         <item
+            android:id="@+id/nav_category"
+            android:icon="@drawable/ic_view_list_black_24dp"
+            android:title="Category" />
+
+        <item
             android:id="@+id/nav_account"
             android:icon="@drawable/ic_account_balance_black_24dp"
             android:title="Account" />
@@ -15,10 +20,6 @@
             android:id="@+id/nav_payment_method"
             android:icon="@drawable/ic_credit_card_black_24dp"
             android:title="Payment Method" />
-        <item
-            android:id="@+id/nav_category"
-            android:icon="@drawable/ic_view_list_black_24dp"
-            android:title="Category" />
 
         <item
             android:id="@+id/nav_transaction"

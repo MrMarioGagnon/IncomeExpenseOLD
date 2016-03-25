@@ -33,6 +33,11 @@
             android:label="@string/title_payment_method_editor"
             android:parentActivityName=".payment_method.PaymentMethodEditorActivity" >
         </activity>
+        <activity
+            android:name=".category.CategoryEditorActivity"
+            android:label="@string/title_category_editor"
+            android:parentActivityName=".category.CategoryEditorActivity" >
+        </activity>
 
 
         <activity

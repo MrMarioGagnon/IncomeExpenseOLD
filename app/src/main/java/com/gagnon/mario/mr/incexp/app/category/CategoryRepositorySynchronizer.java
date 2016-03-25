@@ -66,6 +66,7 @@ public class CategoryRepositorySynchronizer {
                 Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_adding_item), itemType));
                 ContentValues itemValues = new ContentValues();
                 itemValues.put(IncomeExpenseContract.CategoryEntry.COLUMN_NAME, itemToBeSave.getName());
+                itemValues.put(IncomeExpenseContract.CategoryEntry.COLUMN_GROUP, itemToBeSave.getGroup());
                 Uri newUri = mContentResolver.insert(mItemUri, itemValues);
                 id = IncomeExpenseContract.CategoryEntry.getIdFromUri(newUri);
                 rowsAffected = (id != null) ? 1 : 0;
@@ -78,6 +79,7 @@ public class CategoryRepositorySynchronizer {
                 Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_updating_item), itemType, id));
                 ContentValues itemValues = new ContentValues();
                 itemValues.put(IncomeExpenseContract.CategoryEntry.COLUMN_NAME, itemToBeSave.getName());
+                itemValues.put(IncomeExpenseContract.CategoryEntry.COLUMN_GROUP, itemToBeSave.getGroup());
                 rowsAffected = mContentResolver.update(mItemUri, itemValues, selection, selectionArgs);
                 Log.i(LOG_TAG, String.format(mMessages.get(R.string.log_info_updated_item), itemType, rowsAffected, id));
             }

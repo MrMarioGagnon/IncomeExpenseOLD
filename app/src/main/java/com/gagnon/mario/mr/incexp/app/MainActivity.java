@@ -21,6 +21,10 @@ import android.view.View;
 import com.gagnon.mario.mr.incexp.app.account.Account;
 import com.gagnon.mario.mr.incexp.app.account.AccountEditorActivity;
 import com.gagnon.mario.mr.incexp.app.account.AccountFragment;
+import com.gagnon.mario.mr.incexp.app.category.Category;
+import com.gagnon.mario.mr.incexp.app.category.CategoryEditorActivity;
+import com.gagnon.mario.mr.incexp.app.category.CategoryFragment;
+import com.gagnon.mario.mr.incexp.app.category.ExpandableListView1;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorEditorActivity;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
@@ -29,13 +33,17 @@ import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethod;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodEditorActivity;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodFragment;
 
-public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener, AccountFragment.OnItemSelectedListener, PaymentMethodFragment.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener,
+        AccountFragment.OnItemSelectedListener,
+        PaymentMethodFragment.OnItemSelectedListener,
+        CategoryFragment.OnItemSelectedListener{
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private final int ACTIVITY_CONTRIBUTOR = 100;
     private final int ACTIVITY_ACCOUNT = 200;
     private final int ACTIVITY_PAYMENT_METHOD = 300;
+    private final int ACTIVITY_CATEGORY = 400;
 
     DrawerLayout mDrawerLayout;
     NavigationView mNavigationView;
@@ -174,6 +182,19 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                                     startActivityForResult(intent, ACTIVITY_CONTRIBUTOR);
 
                                     break;
+                                case "category":
+
+                                    Category category = Category.createNew();
+
+                                    arguments = new Bundle();
+                                    arguments.putSerializable("item", category);
+
+                                    intent = new Intent(MainActivity.this, CategoryEditorActivity.class);
+                                    intent.putExtras(arguments);
+                                    startActivityForResult(intent, ACTIVITY_CATEGORY);
+
+                                    break;
+
                                 case "account":
 
 //                                    ContentResolver contentResolver = getContentResolver();
@@ -246,6 +267,14 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                 }
 
                 break;
+            case ACTIVITY_CATEGORY:
+
+                if(resultCode == RESULT_OK){
+
+                }
+
+                break;
+
             case ACTIVITY_ACCOUNT:
 
                 if(resultCode == RESULT_OK){
@@ -327,4 +356,14 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
     }
 
+    @Override
+    public void onItemSelected(Category category) {
+        Bundle arguments = new Bundle();
+        arguments.putSerializable("item", category);
+
+        Intent intent = new Intent(MainActivity.this, CategoryEditorActivity.class);
+        intent.putExtras(arguments);
+        startActivityForResult(intent, ACTIVITY_CATEGORY);
+
+    }
 }

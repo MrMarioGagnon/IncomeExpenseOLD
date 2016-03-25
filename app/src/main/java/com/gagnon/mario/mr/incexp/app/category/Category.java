@@ -1,135 +1,95 @@
 package com.gagnon.mario.mr.incexp.app.category;
 
+import android.support.annotation.NonNull;
+
 import com.gagnon.mario.mr.incexp.app.core.ObjectBase;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
-public class Category extends ObjectBase implements Serializable {
+public class Category extends ObjectBase implements Serializable, Comparable<Category> {
 
-    private Long mId;
     private String mName;
-    private String[] mSubCategories;
+    private String mGroup;
 
     private Category() {
+
     }
 
-    public static Category create(Long id, String name, String[] subCategories) {
+    public static Category create(@NonNull Long id, String name, String group) {
 
-        Category category = new Category();
-        category.mNew = false;
-        category.mDirty = false;
-        category.mId = id;
-        category.mName = name;
-        category.mSubCategories = subCategories;
+        Category newInstance = new Category();
+        newInstance.mNew = false;
+        newInstance.mDirty = false;
+        newInstance.mId = id;
+        newInstance.mName = name;
+        newInstance.mGroup = group;
 
-        return category;
+        return newInstance;
     }
 
     public static Category createNew() {
 
-        Category category = new Category();
-        category.mNew = true;
-        category.mDirty = true;
+        Category newInstance = new Category();
+        newInstance.mNew = true;
+        newInstance.mDirty = true;
+        newInstance.mName = "";
+        newInstance.mGroup = "";
 
-        return category;
-    }
+        return newInstance;
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Category other = (Category) obj;
-        if (mId == null) {
-            if (other.mId != null)
-                return false;
-        } else if (!mId.equals(other.mId))
-            return false;
-        if (mName == null) {
-            if (other.mName != null)
-                return false;
-        } else if (!mName.equals(other.mName))
-            return false;
-        return Arrays.equals(mSubCategories, other.mSubCategories);
-    }
-
-    public Long getId() {
-        return mId;
-    }
-
-    public void setId(Long id) {
-        mId = id;
     }
 
     public String getName() {
-        return mName;
+        return null == mName ? "" : mName;
     }
 
     public void setName(String name) {
 
-        if (null == mName || !mName.equals(name)) {
+        if (!mName.equals(name)) {
+            mDirty = true;
             mName = name;
+        }
+    }
+
+    public String getGroup() {
+        return null == mGroup ? "" : mGroup;
+    }
+
+    public void setGroup(String group) {
+
+        if (!mName.equals(group)) {
             mDirty = true;
+            mGroup = group;
         }
-
     }
 
-    public String[] getSubCategories() {
-        return mSubCategories;
-    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Category)) return false;
 
-    public void setSubCategories(String[] subCategories) {
+        Category category = (Category) o;
 
-        if (null == mSubCategories
-                || !Arrays.equals(mSubCategories, subCategories)) {
-            mSubCategories = subCategories;
-            mDirty = true;
-        }
-
-    }
-
-    public String getSubCategoriesAsString() {
-
-        StringBuilder sb = new StringBuilder();
-
-        for (String subCategory : getSubCategories()) {
-
-            if (sb.length() != 0) {
-                sb.append("|");
-            }
-            sb.append(subCategory);
-
-        }
-
-        return sb.toString();
-    }
-
-    public String getSubCategory(int i) {
-
-        if (i > getSubCategories().length - 1)
-            return null;
-
-        return getSubCategories()[i];
+        if (!mName.equals(category.mName)) return false;
+        return mGroup.equals(category.mGroup);
 
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((mId == null) ? 0 : mId.hashCode());
-        result = prime * result + ((mName == null) ? 0 : mName.hashCode());
-        result = prime * result + Arrays.hashCode(mSubCategories);
+        int result = mName.hashCode();
+        result = 31 * result + mGroup.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public int compareTo(@NonNull Category instanceToCompare) {
+        return getName().compareToIgnoreCase(instanceToCompare.getName());
     }
 
 }

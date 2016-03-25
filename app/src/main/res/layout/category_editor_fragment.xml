@@ -1,0 +1,58 @@
+<!-- Master layout. -->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView android:layout_width="fill_parent" android:id="@+id/textViewValidationErrorMessage"
+                  android:layout_height="wrap_content" android:textColor="@android:color/white"
+                  android:background="@android:color/holo_red_dark"
+                  android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_name"/>
+
+        <EditText
+            android:id="@+id/edittext_category_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_category_name"
+            android:inputType="text|textNoSuggestions"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_group"/>
+
+        <Spinner android:id="@+id/spinner_group"
+                 android:layout_width="fill_parent" android:layout_height="wrap_content"/>
+
+        <LinearLayout android:layout_height="fill_parent"
+                      android:layout_width="fill_parent">
+
+            <Button android:text="@string/button_label_delete" android:id="@+id/button_delete"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_gravity="bottom" />
+            <Button android:text="@string/button_label_save" android:id="@+id/button_save"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_gravity="bottom" />
+            <Button android:text="@string/button_label_back" android:id="@+id/button_back"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_gravity="bottom" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

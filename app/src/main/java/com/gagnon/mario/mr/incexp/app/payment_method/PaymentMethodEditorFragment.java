@@ -207,7 +207,7 @@ public class PaymentMethodEditorFragment extends Fragment implements ItemStateCh
         }
 
         mSpinnerCurrencyAdapter = ArrayAdapter.createFromResource(
-                getActivity(), R.array.currency_array,
+                getActivity(), R.array.pref_currency_values,
                 android.R.layout.simple_spinner_item);
         mSpinnerCurrencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 

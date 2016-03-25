@@ -17,10 +17,12 @@
     <string name="label_name">Name :</string>
     <string name="label_currency">Currency :</string>
     <string name="label_contributors">Contributors :</string>
+    <string name="label_group">Group:</string>
 
     <string name="hint_account_name">Enter account name</string>
     <string name="hint_contributor_name">Enter contributor name</string>
     <string name="hint_payment_method_name">Enter payment method name</string>
+    <string name="hint_category_name">Enter category name</string>
 
     <string name="button_label_add">Add New</string>
     <string name="button_label_back">Back</string>
@@ -73,21 +75,21 @@
     <string name="title_activity_settings">Settings</string>
     <string name="title_contributor_editor">Contributor Editor</string>
     <string name="title_payment_method_editor">Payment Method Editor</string>
+    <string name="title_category_editor">Category Editor</string>
 
     <string name="validation_currency_mandatory">Currency is mandatory</string>
     <string name="validation_name_already_exists">Name already exists</string>
     <string name="validation_name_mandatory">Name is mandatory</string>
     <string name="validation_exchange_rate_mandatory">Exchange rate must be greater than 0</string>
-
+    <string name="validation_group_mandatory">Group is mandatory</string>
     <string name="validation_contributors_mandatory">No contributor selected</string>
 
 
     <string name="error_unable_to_fetch_all_contributor">Unable to fetch all contributor.</string>
 
-    <string-array name="currency_array">
-        <item>@string/pref_CAD_currency</item>
-        <item>@string/pref_EUR_currency</item>
-        <item>@string/pref_USD_currency</item>
-    </string-array>
+    <string name="category_group_car">Car</string>
+    <string name="category_group_home">Home</string>
+    <string name="category_group_personal">Home</string>
+    <string name="category_group_vacation">Vacation</string>
 
 </resources>

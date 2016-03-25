@@ -12,4 +12,12 @@
         <item>@string/pref_USD_currency</item>
         <item>@string/pref_EUR_currency</item>
     </string-array>
+
+    <string-array name="category_group_names">
+        <item>@string/category_group_car</item>
+        <item>@string/category_group_home</item>
+        <item>@string/category_group_personal</item>
+        <item>@string/category_group_vacation</item>
+    </string-array>
+
 </resources>

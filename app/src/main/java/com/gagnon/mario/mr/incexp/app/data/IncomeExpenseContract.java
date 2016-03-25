@@ -17,7 +17,6 @@ public class IncomeExpenseContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     public static final String PATH_CATEGORY = "category";
-//    public static final String PATH_SUBCATEGORY = "subcategory";
     public static final String PATH_ACCOUNT = "account";
     public static final String PATH_CONTRIBUTOR = "contributor";
     public static final String PATH_ACCOUNT_CONTRIBUTOR = "account_contributor";
@@ -39,6 +38,7 @@ public class IncomeExpenseContract {
 
         public static final String COLUMN_ID = _ID;
         public static final String COLUMN_NAME = "name";
+        public static final String COLUMN_GROUP = "groupName";
 
         public static Uri buildInstanceUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -49,33 +49,6 @@ public class IncomeExpenseContract {
         }
 
     }
-
-//    public static final class SubCategoryEntry implements BaseColumns{
-//
-//        public static final Uri CONTENT_URI =
-//                BASE_CONTENT_URI.buildUpon().appendPath(PATH_SUBCATEGORY).build();
-//
-//        public static final String CONTENT_TYPE =
-//                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SUBCATEGORY;
-//        public static final String CONTENT_ITEM_TYPE =
-//                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SUBCATEGORY;
-//
-//        // Table name
-//        public static final String TABLE_NAME = "subcategory";
-//
-//        public static final String COLUMN_ID = _ID;
-//        public static final String COLUMN_CATEGORYID = "categoryId";
-//        public static final String COLUMN_NAME = "name";
-//
-//        public static Uri buildInstanceUri(long id){
-//            return ContentUris.withAppendedId(CONTENT_URI, id);
-//        }
-//
-//        public static long getIdFromUri(Uri uri) {
-//            return Integer.parseInt(uri.getPathSegments().get(1));
-//        }
-//
-//    }
 
     public static final class AccountEntry implements BaseColumns {
 

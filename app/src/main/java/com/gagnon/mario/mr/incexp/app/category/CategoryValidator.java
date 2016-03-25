@@ -34,6 +34,7 @@ public class CategoryValidator implements ObjectValidator {
         Map<Integer, String> messages = new HashMap<>();
         messages.put(R.string.validation_name_mandatory, context.getString(R.string.validation_name_mandatory));
         messages.put(R.string.validation_name_already_exists, context.getString(R.string.validation_name_already_exists));
+        messages.put(R.string.validation_group_mandatory, context.getString(R.string.validation_group_mandatory));
 
         return new CategoryValidator(names, messages);
     }
@@ -54,11 +55,14 @@ public class CategoryValidator implements ObjectValidator {
 
         Category category = (Category) objectToValidate;
         String name = category.getName().trim();
+        String group = category.getGroup().trim();
 
         if (name.length() == 0) {
             messages.add(mValidationMessages.get(R.string.validation_name_mandatory));
         } else if (isNameExists(name)) {
             messages.add(mValidationMessages.get(R.string.validation_name_already_exists));
+        }else if (group.length() == 0) {
+            messages.add(mValidationMessages.get(R.string.validation_group_mandatory));
         }
 
         return ValidationStatus.create(Tools.join(messages, "\n"));

@@ -36,7 +36,7 @@ public class ContributorValidatorTest extends TestCase {
         // Preparation
         thrown.expect(NullPointerException.class);
         //thrown.expectMessage("abc");
-        ContributorValidator contributorValidator = new ContributorValidator(null);
+        //ContributorValidator contributorValidator = new ContributorValidator(null);
 
         //boolean hasFail = true;
         // Execution

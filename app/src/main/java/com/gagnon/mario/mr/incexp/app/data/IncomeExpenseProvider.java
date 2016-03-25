@@ -54,7 +54,6 @@ public class IncomeExpenseProvider extends ContentProvider {
 
     static {
         mAccountContributorQueryBuilder = new SQLiteQueryBuilder();
-
         mAccountContributorQueryBuilder.setTables(
                 IncomeExpenseContract.AccountContributorEntry.TABLE_NAME + " INNER JOIN " +
                         IncomeExpenseContract.ContributorEntry.TABLE_NAME +
