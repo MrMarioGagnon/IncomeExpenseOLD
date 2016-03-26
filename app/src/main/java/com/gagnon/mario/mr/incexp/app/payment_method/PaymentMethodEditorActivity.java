@@ -55,7 +55,7 @@ public class PaymentMethodEditorActivity extends AppCompatActivity implements It
 
             Bundle arguments = new Bundle();
             arguments.putSerializable("item", paymentMethod);
-            arguments.putSerializable("names", IncomeExpenseRequestWrapper.getAvailablePaymentMethodsName(getContentResolver(), paymentMethod));
+            arguments.putSerializable("names", IncomeExpenseRequestWrapper.getAvailablePaymentMethodName(getContentResolver(), paymentMethod));
             arguments.putSerializable("contributors", IncomeExpenseRequestWrapper.getAvailableContributors(getContentResolver()));
 
             PaymentMethodEditorFragment fragment = new PaymentMethodEditorFragment();

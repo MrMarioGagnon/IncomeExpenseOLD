@@ -21,7 +21,7 @@ public class IncomeExpenseDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_CATEGORY_TABLE = "CREATE TABLE " + IncomeExpenseContract.CategoryEntry.TABLE_NAME + " (" +
                 IncomeExpenseContract.CategoryEntry._ID + " INTEGER PRIMARY KEY," +
-                IncomeExpenseContract.CategoryEntry.COLUMN_NAME + " TEXT UNIQUE NOT NULL," +
+                IncomeExpenseContract.CategoryEntry.COLUMN_NAME + " TEXT NOT NULL," +
                 IncomeExpenseContract.CategoryEntry.COLUMN_GROUP + " TEXT NOT NULL" +
                 " );";
 
@@ -57,12 +57,19 @@ public class IncomeExpenseDbHelper extends SQLiteOpenHelper {
                 IncomeExpenseContract.PaymentMethodContributorEntry.COLUMN_CONTRIBUTOR_ID + " INTEGER" +
                 " );";
 
+        final String SQL_CREATE_ACCOUNT_CATEGORY_TABLE = "CREATE TABLE " + IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME + " (" +
+                IncomeExpenseContract.AccountCategoryEntry._ID + " INTEGER PRIMARY KEY," +
+                IncomeExpenseContract.AccountCategoryEntry.COLUMN_ACCOUNT_ID + " INTEGER, " +
+                IncomeExpenseContract.AccountCategoryEntry.COLUMN_CATEGORY_ID + " INTEGER" +
+                " );";
+
         db.execSQL(SQL_CREATE_CATEGORY_TABLE);
         db.execSQL(SQL_CREATE_ACCOUNT_TABLE);
         db.execSQL(SQL_CREATE_CONTRIBUTOR_TABLE);
         db.execSQL(SQL_CREATE_ACCOUNT_CONTRIBUTOR_TABLE);
         db.execSQL(SQL_CREATE_PAYMENT_METHOD_TABLE);
         db.execSQL(SQL_CREATE_PAYMENT_METHOD_CONTRIBUTOR_TABLE);
+        db.execSQL(SQL_CREATE_ACCOUNT_CATEGORY_TABLE);
 
     }
 

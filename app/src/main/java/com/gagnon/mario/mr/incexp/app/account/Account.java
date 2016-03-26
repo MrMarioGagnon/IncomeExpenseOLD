@@ -2,6 +2,7 @@ package com.gagnon.mario.mr.incexp.app.account;
 
 import android.support.annotation.NonNull;
 
+import com.gagnon.mario.mr.incexp.app.category.Category;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.core.ObjectBase;
 import com.gagnon.mario.mr.incexp.app.core.Tools;
@@ -18,12 +19,13 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
     private Boolean mIsClose;
 
     private List<Contributor> mContributors;
+    private List<Category> mCategories;
 
     private Account() {
 
     }
 
-    public static Account create(Long id, String name, String currency, Boolean isClose, List<Contributor> contributors) {
+    public static Account create(Long id, String name, String currency, Boolean isClose, List<Contributor> contributors, List<Category> categories) {
 
         Account newInstance = new Account();
         newInstance.mNew = false;
@@ -33,6 +35,7 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
         newInstance.mCurrency = currency;
         newInstance.mIsClose = isClose;
         newInstance.mContributors = contributors;
+        newInstance.mCategories = categories;
 
         return newInstance;
     }
@@ -45,6 +48,7 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
         newInstance.mName = "";
         newInstance.mCurrency = "";
         newInstance.mContributors = new ArrayList<>();
+        newInstance.mCategories = new ArrayList<>();
 
         return newInstance;
 
@@ -120,6 +124,9 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
     public String getContributorsForDisplay(){
         return Tools.join(mContributors, ",");
     }
+    public String getCategoriesForDisplay(){
+        return Tools.join(mCategories, ",");
+    }
 
     public void addContributor(Contributor contributor){
         mDirty = true;
@@ -134,5 +141,20 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
     public List<Contributor> getContributors(){
         return mContributors;
     }
+
+    public void addCategory(Category category){
+        mDirty = true;
+        mCategories.add(category);
+    }
+
+    public void clearCategory(){
+        mDirty = true;
+        mCategories.clear();
+    }
+
+    public List<Category> getCategories(){
+        return mCategories;
+    }
+
 
 }

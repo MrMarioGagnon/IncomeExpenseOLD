@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
@@ -15,23 +16,26 @@ import android.support.annotation.Nullable;
  */
 public class IncomeExpenseProvider extends ContentProvider {
 
-    static final int CATEGORY = 100;
-    static final int CATEGORY_WITH_ID = 101;
+    private static final int CATEGORY = 100;
+    private static final int CATEGORY_WITH_ID = 101;
 
-    static final int ACCOUNT = 200;
-    static final int ACCOUNT_WITH_ID = 201;
-    static final int CONTRIBUTOR = 300;
-    static final int CONTRIBUTOR_WITH_ID = 301;
-    static final int ACCOUNT_CONTRIBUTOR = 400;
-    static final int ACCOUNT_CONTRIBUTOR_WITH_ID = 401;
-    static final int PAYMENT_METHOD = 500;
-    static final int PAYMENT_METHOD_WITH_ID = 501;
-    static final int PAYMENT_METHOD_CONTRIBUTOR = 600;
-    static final int PAYMENT_METHOD_CONTRIBUTOR_WITH_ID = 601;
+    private static final int ACCOUNT = 200;
+    private static final int ACCOUNT_WITH_ID = 201;
+    private static final int CONTRIBUTOR = 300;
+    private static final int CONTRIBUTOR_WITH_ID = 301;
+    private static final int ACCOUNT_CONTRIBUTOR = 400;
+    private static final int ACCOUNT_CONTRIBUTOR_WITH_ID = 401;
+    private static final int PAYMENT_METHOD = 500;
+    private static final int PAYMENT_METHOD_WITH_ID = 501;
+    private static final int PAYMENT_METHOD_CONTRIBUTOR = 600;
+    private static final int PAYMENT_METHOD_CONTRIBUTOR_WITH_ID = 601;
+    private static final int ACCOUNT_CATEGORY = 700;
+    private static final int ACCOUNT_CATEGORY_WITH_ID = 701;
+
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final SQLiteQueryBuilder mAccountContributorQueryBuilder;
     private static final SQLiteQueryBuilder mPaymentMethodContributorQueryBuilder;
-
+    private static final SQLiteQueryBuilder mAccountCategoryQueryBuilder;
 
     private static final String sCategoryIdSelection =
             IncomeExpenseContract.CategoryEntry.TABLE_NAME +
@@ -51,6 +55,9 @@ public class IncomeExpenseProvider extends ContentProvider {
     private static final String sPaymentMethodContributorIdSelection =
             IncomeExpenseContract.PaymentMethodContributorEntry.TABLE_NAME +
                     "." + IncomeExpenseContract.PaymentMethodContributorEntry.COLUMN_ID + " = ? ";
+    private static final String sAccountCategoryIdSelection =
+            IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME +
+                    "." + IncomeExpenseContract.AccountCategoryEntry.COLUMN_ID + " = ? ";
 
     static {
         mAccountContributorQueryBuilder = new SQLiteQueryBuilder();
@@ -70,6 +77,15 @@ public class IncomeExpenseProvider extends ContentProvider {
                         "." + IncomeExpenseContract.PaymentMethodContributorEntry.COLUMN_CONTRIBUTOR_ID +
                         "=" + IncomeExpenseContract.ContributorEntry.TABLE_NAME +
                         "." + IncomeExpenseContract.ContributorEntry.COLUMN_ID);
+
+        mAccountCategoryQueryBuilder = new SQLiteQueryBuilder();
+        mAccountCategoryQueryBuilder.setTables(
+                IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME + " INNER JOIN " +
+                        IncomeExpenseContract.CategoryEntry.TABLE_NAME +
+                        " ON " + IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME +
+                        "." + IncomeExpenseContract.AccountCategoryEntry.COLUMN_CATEGORY_ID +
+                        "=" + IncomeExpenseContract.CategoryEntry.TABLE_NAME +
+                        "." + IncomeExpenseContract.CategoryEntry.COLUMN_ID);
 
     }
 
@@ -95,6 +111,9 @@ public class IncomeExpenseProvider extends ContentProvider {
 
         matcher.addURI(authority, IncomeExpenseContract.PATH_ACCOUNT_CONTRIBUTOR, ACCOUNT_CONTRIBUTOR);
         matcher.addURI(authority, IncomeExpenseContract.PATH_ACCOUNT_CONTRIBUTOR + "/#", ACCOUNT_CONTRIBUTOR_WITH_ID);
+
+        matcher.addURI(authority, IncomeExpenseContract.PATH_ACCOUNT_CATEGORY, ACCOUNT_CATEGORY);
+        matcher.addURI(authority, IncomeExpenseContract.PATH_ACCOUNT_CATEGORY + "/#", ACCOUNT_CATEGORY_WITH_ID);
 
         matcher.addURI(authority, IncomeExpenseContract.PATH_PAYMENT_METHOD, PAYMENT_METHOD);
         matcher.addURI(authority, IncomeExpenseContract.PATH_PAYMENT_METHOD + "/#", PAYMENT_METHOD_WITH_ID);
@@ -205,6 +224,26 @@ public class IncomeExpenseProvider extends ContentProvider {
         );
     }
 
+    private Cursor getAccountCategoryById(Uri uri, String[] projection) {
+
+        long id = IncomeExpenseContract.AccountCategoryEntry.getIdFromUri(uri);
+
+        String[] selectionArgs;
+        String selection;
+
+        selection = sAccountCategoryIdSelection;
+        selectionArgs = new String[]{String.valueOf(id)};
+
+        return mOpenHelper.getReadableDatabase().query(IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+    }
+
     private Cursor getPaymentMethodContributorById(Uri uri, String[] projection) {
 
         long id = IncomeExpenseContract.PaymentMethodContributorEntry.getIdFromUri(uri);
@@ -233,14 +272,13 @@ public class IncomeExpenseProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
-            case CATEGORY:
-            {
+            case CATEGORY: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
-                      IncomeExpenseContract.CategoryEntry.TABLE_NAME,
+                        IncomeExpenseContract.CategoryEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -250,8 +288,7 @@ public class IncomeExpenseProvider extends ContentProvider {
                 );
                 break;
             }
-            case CATEGORY_WITH_ID:
-            {
+            case CATEGORY_WITH_ID: {
                 retCursor = getCategoryById(uri, projection);
                 break;
             }
@@ -274,6 +311,12 @@ public class IncomeExpenseProvider extends ContentProvider {
                 break;
             case ACCOUNT_CONTRIBUTOR_WITH_ID:
                 retCursor = getAccountContributorById(uri, projection);
+                break;
+            case ACCOUNT_CATEGORY:
+                retCursor = getAccountCategory(projection, selection, selectionArgs);
+                break;
+            case ACCOUNT_CATEGORY_WITH_ID:
+                retCursor = getAccountCategoryById(uri, projection);
                 break;
             case CONTRIBUTOR:
                 retCursor = mOpenHelper.getReadableDatabase().query(
@@ -319,7 +362,7 @@ public class IncomeExpenseProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
 
         final int match = sUriMatcher.match(uri);
 
@@ -336,6 +379,10 @@ public class IncomeExpenseProvider extends ContentProvider {
                 return IncomeExpenseContract.AccountContributorEntry.CONTENT_TYPE;
             case ACCOUNT_CONTRIBUTOR_WITH_ID:
                 return IncomeExpenseContract.AccountContributorEntry.CONTENT_ITEM_TYPE;
+            case ACCOUNT_CATEGORY:
+                return IncomeExpenseContract.AccountCategoryEntry.CONTENT_TYPE;
+            case ACCOUNT_CATEGORY_WITH_ID:
+                return IncomeExpenseContract.AccountCategoryEntry.CONTENT_ITEM_TYPE;
             case CONTRIBUTOR:
                 return IncomeExpenseContract.ContributorEntry.CONTENT_TYPE;
             case CONTRIBUTOR_WITH_ID:
@@ -356,7 +403,7 @@ public class IncomeExpenseProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         Uri returnUri;
@@ -364,7 +411,7 @@ public class IncomeExpenseProvider extends ContentProvider {
         switch (match) {
             case CATEGORY: {
                 long _id = db.insert(IncomeExpenseContract.CategoryEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = IncomeExpenseContract.CategoryEntry.buildInstanceUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -382,6 +429,14 @@ public class IncomeExpenseProvider extends ContentProvider {
                 long _id = db.insert(IncomeExpenseContract.AccountContributorEntry.TABLE_NAME, null, values);
                 if (_id > 0)
                     returnUri = IncomeExpenseContract.AccountContributorEntry.buildInstanceUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            case ACCOUNT_CATEGORY: {
+                long _id = db.insert(IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = IncomeExpenseContract.AccountCategoryEntry.buildInstanceUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -419,7 +474,7 @@ public class IncomeExpenseProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
 
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
@@ -438,6 +493,10 @@ public class IncomeExpenseProvider extends ContentProvider {
             case ACCOUNT_CONTRIBUTOR:
                 rowsDeleted = db.delete(
                         IncomeExpenseContract.AccountContributorEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case ACCOUNT_CATEGORY:
+                rowsDeleted = db.delete(
+                        IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case CONTRIBUTOR:
                 rowsDeleted = db.delete(
@@ -462,7 +521,7 @@ public class IncomeExpenseProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int rowsUpdated;
@@ -478,6 +537,10 @@ public class IncomeExpenseProvider extends ContentProvider {
                 break;
             case ACCOUNT_CONTRIBUTOR:
                 rowsUpdated = db.update(IncomeExpenseContract.AccountContributorEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
+            case ACCOUNT_CATEGORY:
+                rowsUpdated = db.update(IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME, values, selection,
                         selectionArgs);
                 break;
             case CONTRIBUTOR:
@@ -503,7 +566,7 @@ public class IncomeExpenseProvider extends ContentProvider {
     }
 
     @Override
-    public int bulkInsert(Uri uri, ContentValues[] values) {
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         int returnCount = 0;
@@ -543,6 +606,21 @@ public class IncomeExpenseProvider extends ContentProvider {
                 try {
                     for (ContentValues value : values) {
                         long _id = db.insert(IncomeExpenseContract.AccountContributorEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            case ACCOUNT_CATEGORY:
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME, null, value);
                         if (_id != -1) {
                             returnCount++;
                         }
@@ -618,6 +696,17 @@ public class IncomeExpenseProvider extends ContentProvider {
     public Cursor getAccountContributor(String[] projection, String selection, String[] selectionArgs) {
 
         return mAccountContributorQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null);
+    }
+
+    public Cursor getAccountCategory(String[] projection, String selection, String[] selectionArgs) {
+
+        return mAccountCategoryQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 selection,
                 selectionArgs,

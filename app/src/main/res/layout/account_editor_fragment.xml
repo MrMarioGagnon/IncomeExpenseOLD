@@ -66,6 +66,33 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_categories"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textview_categories"
+                android:text="Sample text"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/imagebutton_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_view_list_black_24dp"/>
+
+        </LinearLayout>
+
+
         <LinearLayout android:layout_height="fill_parent"
                       android:layout_width="fill_parent"
             android:orientation="horizontal">

@@ -36,7 +36,7 @@ import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodFragment;
 public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener,
         AccountFragment.OnItemSelectedListener,
         PaymentMethodFragment.OnItemSelectedListener,
-        CategoryFragment.OnItemSelectedListener{
+        CategoryFragment.OnItemSelectedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
          *Setup the DrawerLayout and NavigationView
          */
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        mNavigationView = (NavigationView) findViewById(R.id.shitstuff) ;
+        mNavigationView = (NavigationView) findViewById(R.id.shitstuff);
 
         /**
          * Lets inflate the very first fragment
@@ -74,9 +74,9 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
         mFragmentManager = getSupportFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
-        mFragmentTransaction.replace(R.id.containerView,new TransactionFragment(),"transaction").commit();
+        mFragmentTransaction.replace(R.id.containerView, new TransactionFragment(), "transaction").commit();
 
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Transaction");
 
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                     MainActivity.this.toolbar.setTitle("Contributor");
 
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView,new ContributorFragment(), "contributor").commit();
+                    fragmentTransaction.replace(R.id.containerView, new ContributorFragment(), "contributor").commit();
 
                 }
 
@@ -97,14 +97,14 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                     MainActivity.this.toolbar.setTitle("Account");
 
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView,new AccountFragment(), "account").commit();
+                    fragmentTransaction.replace(R.id.containerView, new AccountFragment(), "account").commit();
                 }
 
                 if (menuItem.getItemId() == R.id.nav_payment_method) {
                     MainActivity.this.toolbar.setTitle("Payment Method");
 
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView,new PaymentMethodFragment(), "payment_method").commit();
+                    fragmentTransaction.replace(R.id.containerView, new PaymentMethodFragment(), "payment_method").commit();
                 }
 
                 if (menuItem.getItemId() == R.id.nav_category) {
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
 
                     FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
-                    xfragmentTransaction.replace(R.id.containerView,new CategoryFragment(), "category").commit();
+                    xfragmentTransaction.replace(R.id.containerView, new CategoryFragment(), "category").commit();
                 }
 
                 if (menuItem.getItemId() == R.id.nav_transaction) {
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                     MainActivity.this.toolbar.setTitle("Transaction");
 
                     FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
-                    xfragmentTransaction.replace(R.id.containerView,new TransactionFragment(), "transaction").commit();
+                    xfragmentTransaction.replace(R.id.containerView, new TransactionFragment(), "transaction").commit();
                 }
 
                 if (menuItem.getItemId() == R.id.nav_settings) {
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
         });
 
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout, toolbar,R.string.app_name,
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name,
                 R.string.app_name);
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -259,17 +259,17 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
         if (null != data)
             extras = data.getExtras();
 
-        switch(requestCode){
+        switch (requestCode) {
             case ACTIVITY_CONTRIBUTOR:
 
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
 
                 }
 
                 break;
             case ACTIVITY_CATEGORY:
 
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
 
                 }
 
@@ -277,14 +277,14 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
             case ACTIVITY_ACCOUNT:
 
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
 
                 }
 
                 break;
             case ACTIVITY_PAYMENT_METHOD:
 
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
 
                 }
 

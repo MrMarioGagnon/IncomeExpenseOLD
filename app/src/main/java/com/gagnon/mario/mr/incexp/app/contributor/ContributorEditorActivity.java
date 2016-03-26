@@ -53,7 +53,7 @@ public class ContributorEditorActivity extends AppCompatActivity implements Item
 
             Bundle arguments = new Bundle();
             arguments.putSerializable("item", contributor);
-            arguments.putSerializable("names", IncomeExpenseRequestWrapper.getAvailableContributorsName(getContentResolver(), contributor));
+            arguments.putSerializable("names", IncomeExpenseRequestWrapper.getAvailableContributorName(getContentResolver(), contributor));
 
             ContributorEditorFragment fragment = new ContributorEditorFragment();
             fragment.addListener(this);

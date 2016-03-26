@@ -52,7 +52,7 @@ public class CategoryEditorActivity extends AppCompatActivity implements ItemSta
 
             Bundle arguments = new Bundle();
             arguments.putSerializable("item", category);
-            arguments.putSerializable("names", IncomeExpenseRequestWrapper.getAvailableCategoryName(getContentResolver(), category));
+            arguments.putSerializable("names", IncomeExpenseRequestWrapper.getAvailableCategoryNameForValidation(getContentResolver(), category));
 
             CategoryEditorFragment fragment = new CategoryEditorFragment();
             fragment.addListener(this);

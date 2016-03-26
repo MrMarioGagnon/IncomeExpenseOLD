@@ -59,7 +59,7 @@ public class CategoryValidator implements ObjectValidator {
 
         if (name.length() == 0) {
             messages.add(mValidationMessages.get(R.string.validation_name_mandatory));
-        } else if (isNameExists(name)) {
+        } else if (isNameExists(String.format("%1$s%2$s",group, name))) {
             messages.add(mValidationMessages.get(R.string.validation_name_already_exists));
         }else if (group.length() == 0) {
             messages.add(mValidationMessages.get(R.string.validation_group_mandatory));

@@ -1,6 +1,7 @@
 <resources>
 
     <string name="dialog_title_contributor_setter">Contributor Setter</string>
+    <string name="dialog_title_category_setter">Category Setter</string>
 
     <string name="app_name">Income Expense</string>
 
@@ -17,7 +18,8 @@
     <string name="label_name">Name :</string>
     <string name="label_currency">Currency :</string>
     <string name="label_contributors">Contributors :</string>
-    <string name="label_group">Group:</string>
+    <string name="label_group">Group :</string>
+    <string name="label_categories">Categories :</string>
 
     <string name="hint_account_name">Enter account name</string>
     <string name="hint_contributor_name">Enter contributor name</string>
@@ -54,6 +56,9 @@
     <string name="log_info_deleting_account">Deleting account with id \'%1$s\'</string>
     <string name="log_info_number_deleted_associated_contributor">Associated contributor deleted : %1$d</string>
     <string name="log_info_number_added_associated_contributor">Associated contributor added : %1$d"</string>
+    <string name="log_info_number_deleted_associated_category">Associated category deleted : %1$d</string>
+    <string name="log_info_number_added_associated_category">Associated category added : %1$d"</string>
+
 
 
     <string name="log_info_updating_account">Updating account with id \'%1$s\'</string>
@@ -83,13 +88,16 @@
     <string name="validation_exchange_rate_mandatory">Exchange rate must be greater than 0</string>
     <string name="validation_group_mandatory">Group is mandatory</string>
     <string name="validation_contributors_mandatory">No contributor selected</string>
+    <string name="validation_categories_mandatory">No category selected</string>
+
 
 
     <string name="error_unable_to_fetch_all_contributor">Unable to fetch all contributor.</string>
+    <string name="error_unable_to_fetch_all_category">Unable to fetch all category.</string>
 
     <string name="category_group_car">Car</string>
     <string name="category_group_home">Home</string>
-    <string name="category_group_personal">Home</string>
+    <string name="category_group_personal">Personal</string>
     <string name="category_group_vacation">Vacation</string>
 
 </resources>

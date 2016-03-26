@@ -114,7 +114,11 @@ public class AccountFragment extends Fragment implements LoaderManager.LoaderCal
                     int close = cursor.getInt(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE));
                     Boolean isClose = (close == 1);
 
-                    Account account = Account.create(id, name, currency, isClose, IncomeExpenseRequestWrapper.getAccountContributors(getContext().getContentResolver(), id));
+                    Account account = Account.create(id, name,
+                            currency,
+                            isClose,
+                            IncomeExpenseRequestWrapper.getAccountContributors(getContext().getContentResolver(),id),
+                            IncomeExpenseRequestWrapper.getAccountCategories(getContext().getContentResolver(),id));
 
                     ((AccountFragment.OnItemSelectedListener) getActivity()).onItemSelected(account);
 

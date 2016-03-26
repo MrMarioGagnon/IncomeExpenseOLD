@@ -21,7 +21,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +31,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gagnon.mario.mr.incexp.app.R;
+import com.gagnon.mario.mr.incexp.app.category.Category;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeEvent;
 import com.gagnon.mario.mr.incexp.app.core.ItemStateChangeHandler;
@@ -63,20 +62,27 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
     private Button mButtonBack;
     private Button mButtonDelete;
     private ImageButton mImageButtonContributors;
+    private ImageButton mImageButtonCategories;
     private Account mAccount;
     private TextView mTextViewValidationErrorMessage;
     private Spinner mSpinnerCurrency;
     private View.OnClickListener mOnButtonClickListener;
-    private View.OnClickListener mOnImageButtonClickListener;
+    private View.OnClickListener mOnContributorImageButtonClickListener;
+    private View.OnClickListener mOnCategoryImageButtonClickListener;
     private TextWatcher mOnTextChangeListener;
     private ObjectValidator mObjectValidator = null;
     private ArrayList<String> mNames;
     private SortedSet<Contributor> mContributors;
+    private SortedSet<Category> mCategories;
     private AdapterView.OnItemSelectedListener mOnItemSelectedListener;
     private ArrayAdapter<CharSequence> mSpinnerCurrencyAdapter;
     private MultipleChoiceEventHandler mContributorMultipleChoiceEventHandler;
     private boolean[] mSelectedContributor;
     private TextView mTextViewContributors;
+    private MultipleChoiceEventHandler mCategoryMultipleChoiceEventHandler;
+    private boolean[] mSelectedCategory;
+    private TextView mTextViewCategories;
+
 
     private List<ItemStateChangeListener> mListeners;
 
@@ -146,6 +152,19 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
                             }
                         }
 
+                        // if not null, Categories Dialog Box was call
+                        if (mSelectedCategory != null) {
+                            Category[] a = new Category[mCategories.size()];
+                            mCategories.toArray(a);
+
+                            mAccount.clearCategory();
+                            for (int i = 0; i < mSelectedCategory.length; i++) {
+                                if (mSelectedCategory[i]) {
+                                    mAccount.addCategory(a[i]);
+                                }
+                            }
+                        }
+
                         ValidationStatus validationStatus = getObjectValidator().Validate(mAccount);
 
                         if (validationStatus.isValid()) {
@@ -160,7 +179,7 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
             }
         };
 
-        mOnImageButtonClickListener = new View.OnClickListener() {
+        mOnContributorImageButtonClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showContributorSetterDialog();
@@ -184,6 +203,30 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
             }
         };
 
+        mOnCategoryImageButtonClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showCategorySetterDialog();
+            }
+        };
+
+        mCategoryMultipleChoiceEventHandler = new MultipleChoiceEventHandler() { // Creating an anonymous Class Object
+            @Override
+            public void execute(boolean[] idSelected) {
+                Category[] a = new Category[mCategories.size()];
+                mCategories.toArray(a);
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < idSelected.length; i++) {
+                    if (idSelected[i]) {
+                        sb.append(String.format("%1$s%2$s", (sb.length() == 0 ? "" : ","), a[i].getName()));
+                    }
+                }
+                mTextViewCategories.setText(sb.toString());
+                mSelectedCategory = idSelected;
+            }
+        };
+
     }
 
     @Override
@@ -195,10 +238,12 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
             mAccount = (Account) arguments.getSerializable("item");
             mNames = (ArrayList<String>) arguments.getSerializable("names");
             mContributors = (SortedSet<Contributor>) arguments.getSerializable("contributors");
+            mCategories = (SortedSet<Category>) arguments.getSerializable("categories");
         } else {
             mAccount = Account.createNew();
             mNames = new ArrayList<>();
             mContributors = new TreeSet<>();
+            mCategories = new TreeSet<>();
         }
 
         mSpinnerCurrencyAdapter = ArrayAdapter.createFromResource(
@@ -244,9 +289,14 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
         mButtonBack.setOnClickListener(mOnButtonClickListener);
 
         mImageButtonContributors = (ImageButton) rootView.findViewById(R.id.imagebutton_contributors);
-        mImageButtonContributors.setOnClickListener(mOnImageButtonClickListener);
+        mImageButtonContributors.setOnClickListener(mOnContributorImageButtonClickListener);
 
         mTextViewContributors = (TextView) rootView.findViewById(R.id.textview_contributors);
+
+        mImageButtonCategories = (ImageButton) rootView.findViewById(R.id.imagebutton_category);
+        mImageButtonCategories.setOnClickListener(mOnCategoryImageButtonClickListener);
+
+        mTextViewCategories = (TextView) rootView.findViewById(R.id.textview_categories);
 
         if (null == savedInstanceState) {
 
@@ -262,6 +312,7 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
             mSpinnerCurrency.setSelection(((ArrayAdapter<String>) mSpinnerCurrency.getAdapter()).getPosition(mAccount.getCurrency()), false);
 
             mTextViewContributors.setText(mAccount.getContributorsForDisplay());
+            mTextViewCategories.setText(mAccount.getCategoriesForDisplay());
 
             mButtonSave.setEnabled(false);
 
@@ -286,6 +337,7 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
 
         mEditTextName.addTextChangedListener(mOnTextChangeListener);
         mTextViewContributors.addTextChangedListener(mOnTextChangeListener);
+        mTextViewCategories.addTextChangedListener(mOnTextChangeListener);
         mSpinnerCurrency.setOnItemSelectedListener(mOnItemSelectedListener);
 
     }
@@ -336,6 +388,50 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
             DialogUtils.messageBox(this.getContext(),
                     getString(R.string.error_unable_to_fetch_all_contributor),
                     getString(R.string.dialog_title_contributor_setter)).show();
+
+        }
+
+    }
+
+    private boolean[] buildCategoriesCheckedArray(SortedSet<Category> categories,
+                                                  String categoriesName) {
+
+        boolean[] checked = new boolean[categories.size()];
+
+        int i = 0;
+        for (Category category : categories) {
+
+            checked[i] = categoriesName.contains(category.getName());
+            i++;
+        }
+
+        return checked;
+
+    }
+
+    private void showCategorySetterDialog() {
+
+        try {
+
+            CharSequence[] categoryArray = new CharSequence[mCategories.size()];
+            int i = 0;
+            for (Category category : mCategories) {
+                categoryArray[i++] = category.getName();
+            }
+
+            Dialog dialog = DialogUtils.childSetterDialog(
+                    this.getContext(),
+                    categoryArray,
+                    mCategoryMultipleChoiceEventHandler,
+                    buildCategoriesCheckedArray(mCategories, mAccount.getCategoriesForDisplay()),
+                    getString(R.string.dialog_title_category_setter));
+
+            dialog.setOwnerActivity(this.getActivity());
+            dialog.show();
+        } catch (Exception exception) {
+            DialogUtils.messageBox(this.getContext(),
+                    getString(R.string.error_unable_to_fetch_all_category),
+                    getString(R.string.dialog_title_category_setter)).show();
 
         }
 

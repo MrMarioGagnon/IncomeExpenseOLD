@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.gagnon.mario.mr.incexp.app.account.Account;
 import com.gagnon.mario.mr.incexp.app.category.Category;
@@ -19,7 +20,9 @@ import java.util.TreeSet;
  */
 public class IncomeExpenseRequestWrapper {
 
-    public static ArrayList<String> getAvailableContributorsName(@NonNull ContentResolver contentResolver, @NonNull Contributor contributor) {
+    private static final String LOG_TAG = IncomeExpenseRequestWrapper.class.getSimpleName();
+
+    public static ArrayList<String> getAvailableContributorName(@NonNull ContentResolver contentResolver, @NonNull Contributor contributor) {
 
         ArrayList<String> names = new ArrayList<>();
 
@@ -46,7 +49,7 @@ public class IncomeExpenseRequestWrapper {
         return names;
     }
 
-    public static ArrayList<String> getAvailableCategoryName(@NonNull ContentResolver contentResolver, @NonNull Category category) {
+    public static ArrayList<String> getAvailableCategoryNameForValidation(@NonNull ContentResolver contentResolver, @NonNull Category category) {
 
         ArrayList<String> names = new ArrayList<>();
 
@@ -59,10 +62,11 @@ public class IncomeExpenseRequestWrapper {
             // Si contributor est new le id va etre null, donc remplacer par -1
             String[] selectionArgument = new String[]{category.isNew() ? "-1" : category.getId().toString()};
 
-            cursor = contentResolver.query(uri, new String[]{IncomeExpenseContract.CategoryEntry.COLUMN_NAME}, selection, selectionArgument, null);
+            cursor = contentResolver.query(uri, new String[]{IncomeExpenseContract.CategoryEntry.COLUMN_NAME, IncomeExpenseContract.CategoryEntry.COLUMN_GROUP}, selection, selectionArgument, null);
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.CategoryEntry.COLUMN_NAME));
-                names.add(name.toUpperCase());
+                String group = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.CategoryEntry.COLUMN_GROUP));
+                names.add(String.format("%1$s%2$s", group.toUpperCase(), name.toUpperCase()));
             }
         } finally {
             if (null != cursor) {
@@ -83,8 +87,8 @@ public class IncomeExpenseRequestWrapper {
         try {
             cursor = contentResolver.query(uri, null, null, null, null);
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                Long id = cursor.getLong(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_ID));
-                String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_NAME));
+                Long id = cursor.getLong(cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_ID));
+                String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.ContributorEntry.COLUMN_NAME));
                 contributors.add(Contributor.create(id, name));
             }
         } finally {
@@ -96,7 +100,32 @@ public class IncomeExpenseRequestWrapper {
         return contributors;
     }
 
-    public static ArrayList<String> getAvailableAccountsName(@NonNull ContentResolver contentResolver, Account account) {
+    public static TreeSet<Category> getAvailableCategories(@NonNull ContentResolver contentResolver) {
+
+        TreeSet<Category> categories = new TreeSet<>();
+
+        Uri uri = IncomeExpenseContract.CategoryEntry.CONTENT_URI;
+
+        Cursor cursor = null;
+        try {
+            cursor = contentResolver.query(uri, null, null, null, null);
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                Long id = cursor.getLong(cursor.getColumnIndex(IncomeExpenseContract.CategoryEntry.COLUMN_ID));
+                String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.CategoryEntry.COLUMN_NAME));
+                String group = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.CategoryEntry.COLUMN_GROUP));
+                categories.add(Category.create(id, name, group));
+            }
+        } finally {
+            if (null != cursor) {
+                cursor.close();
+            }
+        }
+
+        return categories;
+    }
+
+
+    public static ArrayList<String> getAvailableAccountName(@NonNull ContentResolver contentResolver, Account account) {
 
         ArrayList<String> names = new ArrayList<>();
 
@@ -123,7 +152,7 @@ public class IncomeExpenseRequestWrapper {
         return names;
     }
 
-    public static ArrayList<String> getAvailablePaymentMethodsName(@NonNull ContentResolver contentResolver, PaymentMethod paymentMethod) {
+    public static ArrayList<String> getAvailablePaymentMethodName(@NonNull ContentResolver contentResolver, PaymentMethod paymentMethod) {
 
         ArrayList<String> names = new ArrayList<>();
 
@@ -181,6 +210,43 @@ public class IncomeExpenseRequestWrapper {
 
 
     }
+
+    public static ArrayList<Category> getAccountCategories(@NonNull ContentResolver contentResolver, Long accountId){
+
+        ArrayList<Category> categories = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+
+            String[] projection  = new String[] {IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME + "." + IncomeExpenseContract.AccountCategoryEntry.COLUMN_ID
+                    ,IncomeExpenseContract.CategoryEntry.TABLE_NAME + "." + IncomeExpenseContract.CategoryEntry.COLUMN_ID
+                    ,IncomeExpenseContract.CategoryEntry.TABLE_NAME + "." + IncomeExpenseContract.CategoryEntry.COLUMN_NAME
+            ,IncomeExpenseContract.CategoryEntry.TABLE_NAME + "." + IncomeExpenseContract.CategoryEntry.COLUMN_GROUP};
+
+            String selection = IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME + "." + IncomeExpenseContract.AccountCategoryEntry.COLUMN_ACCOUNT_ID + "=?";
+            String[] selectionArgs = new String[] {accountId.toString()};
+
+            cursor = contentResolver.query(IncomeExpenseContract.AccountCategoryEntry.CONTENT_URI,projection, selection, selectionArgs, null);
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                Long id = cursor.getLong(1);
+                String name = cursor.getString(2);
+                String group = cursor.getString(3);
+                categories.add(Category.create(id, name, group));
+            }
+        } finally {
+            if (null != cursor) {
+                cursor.close();
+            }
+        }
+
+        Log.d(LOG_TAG, String.format("Category count:%1$d", categories.size()));
+
+        return categories;
+
+
+
+    }
+
+
 
     public static ArrayList<Contributor> getPaymentMethodContributors(@NonNull ContentResolver contentResolver, Long paymentMethodId){
 

@@ -34,6 +34,7 @@ public class AccountValidator implements ObjectValidator {
         messages.put(R.string.validation_name_already_exists, context.getString(R.string.validation_name_already_exists));
         messages.put(R.string.validation_currency_mandatory, context.getString(R.string.validation_currency_mandatory));
         messages.put(R.string.validation_contributors_mandatory, context.getString(R.string.validation_contributors_mandatory));
+        messages.put(R.string.validation_categories_mandatory, context.getString(R.string.validation_categories_mandatory));
 
         return new AccountValidator(names, messages);
     }
@@ -68,6 +69,10 @@ public class AccountValidator implements ObjectValidator {
 
         if (account.getContributors().size() == 0) {
             messages.add((mValidationMessages.get(R.string.validation_contributors_mandatory)));
+        }
+
+        if (account.getCategories().size() == 0) {
+            messages.add((mValidationMessages.get(R.string.validation_categories_mandatory)));
         }
 
         return ValidationStatus.create(Tools.join(messages, "\n"));
