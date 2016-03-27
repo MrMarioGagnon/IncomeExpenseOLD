@@ -31,6 +31,8 @@ public class IncomeExpenseProvider extends ContentProvider {
     private static final int PAYMENT_METHOD_CONTRIBUTOR_WITH_ID = 601;
     private static final int ACCOUNT_CATEGORY = 700;
     private static final int ACCOUNT_CATEGORY_WITH_ID = 701;
+    private static final int TRANSACTION = 800;
+    private static final int TRANSACTION_WITH_ID = 801;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final SQLiteQueryBuilder mAccountContributorQueryBuilder;
@@ -58,6 +60,9 @@ public class IncomeExpenseProvider extends ContentProvider {
     private static final String sAccountCategoryIdSelection =
             IncomeExpenseContract.AccountCategoryEntry.TABLE_NAME +
                     "." + IncomeExpenseContract.AccountCategoryEntry.COLUMN_ID + " = ? ";
+    private static final String sTransactionIdSelection =
+            IncomeExpenseContract.TransactionEntry.TABLE_NAME +
+                    "." + IncomeExpenseContract.TransactionEntry.COLUMN_ID + " = ? ";
 
     static {
         mAccountContributorQueryBuilder = new SQLiteQueryBuilder();
@@ -120,6 +125,9 @@ public class IncomeExpenseProvider extends ContentProvider {
 
         matcher.addURI(authority, IncomeExpenseContract.PATH_PAYMENT_METHOD_CONTRIBUTOR, PAYMENT_METHOD_CONTRIBUTOR);
         matcher.addURI(authority, IncomeExpenseContract.PATH_PAYMENT_METHOD_CONTRIBUTOR + "/#", PAYMENT_METHOD_CONTRIBUTOR_WITH_ID);
+
+        matcher.addURI(authority, IncomeExpenseContract.PATH_TRANSACTION, TRANSACTION);
+        matcher.addURI(authority, IncomeExpenseContract.PATH_TRANSACTION + "/#", TRANSACTION_WITH_ID);
 
         return matcher;
     }
@@ -264,6 +272,26 @@ public class IncomeExpenseProvider extends ContentProvider {
         );
     }
 
+    private Cursor getTransactionById(Uri uri, String[] projection) {
+
+        long id = IncomeExpenseContract.TransactionEntry.getIdFromUri(uri);
+
+        String[] selectionArgs;
+        String selection;
+
+        selection = sTransactionIdSelection;
+        selectionArgs = new String[]{String.valueOf(id)};
+
+        return mOpenHelper.getReadableDatabase().query(IncomeExpenseContract.TransactionEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        );
+    }
+
     @Override
     public boolean onCreate() {
         mOpenHelper = new IncomeExpenseDbHelper(getContext());
@@ -290,6 +318,22 @@ public class IncomeExpenseProvider extends ContentProvider {
             }
             case CATEGORY_WITH_ID: {
                 retCursor = getCategoryById(uri, projection);
+                break;
+            }
+            case TRANSACTION: {
+                retCursor = mOpenHelper.getReadableDatabase().query(
+                        IncomeExpenseContract.TransactionEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case TRANSACTION_WITH_ID: {
+                retCursor = getTransactionById(uri, projection);
                 break;
             }
             case ACCOUNT:
@@ -367,6 +411,10 @@ public class IncomeExpenseProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
 
         switch (match) {
+            case TRANSACTION:
+                return IncomeExpenseContract.TransactionEntry.CONTENT_TYPE;
+            case TRANSACTION_WITH_ID:
+                return IncomeExpenseContract.TransactionEntry.CONTENT_ITEM_TYPE;
             case CATEGORY:
                 return IncomeExpenseContract.CategoryEntry.CONTENT_TYPE;
             case CATEGORY_WITH_ID:
@@ -409,6 +457,14 @@ public class IncomeExpenseProvider extends ContentProvider {
         Uri returnUri;
 
         switch (match) {
+            case TRANSACTION: {
+                long _id = db.insert(IncomeExpenseContract.TransactionEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = IncomeExpenseContract.TransactionEntry.buildInstanceUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             case CATEGORY: {
                 long _id = db.insert(IncomeExpenseContract.CategoryEntry.TABLE_NAME, null, values);
                 if (_id > 0)
@@ -486,6 +542,10 @@ public class IncomeExpenseProvider extends ContentProvider {
                 rowsDeleted = db.delete(
                         IncomeExpenseContract.CategoryEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+            case TRANSACTION:
+                rowsDeleted = db.delete(
+                        IncomeExpenseContract.TransactionEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             case ACCOUNT:
                 rowsDeleted = db.delete(
                         IncomeExpenseContract.AccountEntry.TABLE_NAME, selection, selectionArgs);
@@ -527,6 +587,10 @@ public class IncomeExpenseProvider extends ContentProvider {
         int rowsUpdated;
 
         switch (match) {
+            case TRANSACTION:
+                rowsUpdated = db.update(IncomeExpenseContract.TransactionEntry.TABLE_NAME, values, selection,
+                        selectionArgs);
+                break;
             case CATEGORY:
                 rowsUpdated = db.update(IncomeExpenseContract.CategoryEntry.TABLE_NAME, values, selection,
                         selectionArgs);
@@ -571,6 +635,21 @@ public class IncomeExpenseProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         int returnCount = 0;
         switch (match) {
+            case TRANSACTION:
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long _id = db.insert(IncomeExpenseContract.TransactionEntry.TABLE_NAME, null, value);
+                        if (_id != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
             case CATEGORY:
                 db.beginTransaction();
                 try {

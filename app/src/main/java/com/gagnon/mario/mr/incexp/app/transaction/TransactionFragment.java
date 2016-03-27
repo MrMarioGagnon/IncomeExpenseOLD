@@ -1,4 +1,4 @@
-package com.gagnon.mario.mr.incexp.app;
+package com.gagnon.mario.mr.incexp.app.transaction;
 
 /**
  * Created by mario on 2/2/2016.
@@ -13,6 +13,8 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.gagnon.mario.mr.incexp.app.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,15 +59,6 @@ public class TransactionFragment extends Fragment {
     private void setupViewPager(){
 
         mAdapter.addFrag(new OneFragment(), "ONE");
-        mAdapter.addFrag(new TwoFragment(), "TWO");
-        mAdapter.addFrag(new ThreeFragment(), "THREE");
-        mAdapter.addFrag(new FourFragment(), "FOUR");
-        mAdapter.addFrag(new FiveFragment(), "FIVE");
-        mAdapter.addFrag(new SixFragment(), "SIX");
-        mAdapter.addFrag(new SevenFragment(), "SEVEN");
-        mAdapter.addFrag(new EightFragment(), "EIGHT");
-        mAdapter.addFrag(new NineFragment(), "NINE");
-        mAdapter.addFrag(new TenFragment(), "TEN");
         mViewPager.setAdapter(mAdapter);
     }
 

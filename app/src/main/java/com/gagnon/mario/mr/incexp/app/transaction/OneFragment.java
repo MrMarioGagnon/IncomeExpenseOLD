@@ -1,4 +1,4 @@
-package com.gagnon.mario.mr.incexp.app;
+package com.gagnon.mario.mr.incexp.app.transaction;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,12 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.gagnon.mario.mr.incexp.app.R;
+
 /**
  * Created by mario on 2/1/2016.
  */
-public class ThreeFragment extends Fragment {
+public class OneFragment extends Fragment {
 
-    public ThreeFragment() {
+    public OneFragment() {
         // Required empty public constructor
     }
 
@@ -24,11 +26,12 @@ public class ThreeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         View x = inflater.inflate(R.layout.main_fragment, container, false);
 
         TextView textView = (TextView)x.findViewById(R.id.section_label);
         if(null != textView){
-            textView.setText("Three");
+            textView.setText("ONE");
         }
 
 

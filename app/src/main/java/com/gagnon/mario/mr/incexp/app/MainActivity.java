@@ -24,7 +24,6 @@ import com.gagnon.mario.mr.incexp.app.account.AccountFragment;
 import com.gagnon.mario.mr.incexp.app.category.Category;
 import com.gagnon.mario.mr.incexp.app.category.CategoryEditorActivity;
 import com.gagnon.mario.mr.incexp.app.category.CategoryFragment;
-import com.gagnon.mario.mr.incexp.app.category.ExpandableListView1;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorEditorActivity;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
@@ -32,6 +31,7 @@ import com.gagnon.mario.mr.incexp.app.helper.Utility;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethod;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodEditorActivity;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodFragment;
+import com.gagnon.mario.mr.incexp.app.transaction.TransactionFragment;
 
 public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener,
         AccountFragment.OnItemSelectedListener,
