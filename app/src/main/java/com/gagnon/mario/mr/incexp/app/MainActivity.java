@@ -27,11 +27,14 @@ import com.gagnon.mario.mr.incexp.app.category.CategoryFragment;
 import com.gagnon.mario.mr.incexp.app.contributor.Contributor;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorEditorActivity;
 import com.gagnon.mario.mr.incexp.app.contributor.ContributorFragment;
+import com.gagnon.mario.mr.incexp.app.data.IncomeExpenseRequestWrapper;
 import com.gagnon.mario.mr.incexp.app.helper.Utility;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethod;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodEditorActivity;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodFragment;
 import com.gagnon.mario.mr.incexp.app.transaction.TransactionFragment;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener,
         AccountFragment.OnItemSelectedListener,
@@ -74,10 +77,10 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
         mFragmentManager = getSupportFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
-        mFragmentTransaction.replace(R.id.containerView, new TransactionFragment(), "transaction").commit();
+        //mFragmentTransaction.replace(R.id.containerView, new TransactionFragment(), "transaction").commit();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Transaction");
+        //toolbar.setTitle("Transaction");
 
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -122,7 +125,13 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
                     MainActivity.this.toolbar.setTitle("Transaction");
 
                     FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
-                    xfragmentTransaction.replace(R.id.containerView, new TransactionFragment(), "transaction").commit();
+
+                    TransactionFragment tf = new TransactionFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable( "accounts", IncomeExpenseRequestWrapper.getAccounts(getContentResolver(), true ));
+                    tf.setArguments(bundle);
+
+                    xfragmentTransaction.replace(R.id.containerView, tf, "transaction").commit();
                 }
 
                 if (menuItem.getItemId() == R.id.nav_settings) {

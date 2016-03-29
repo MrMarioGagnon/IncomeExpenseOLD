@@ -246,8 +246,6 @@ public class IncomeExpenseRequestWrapper {
 
     }
 
-
-
     public static ArrayList<Contributor> getPaymentMethodContributors(@NonNull ContentResolver contentResolver, Long paymentMethodId){
 
         ArrayList<Contributor> contributors = new ArrayList<>();
@@ -275,6 +273,35 @@ public class IncomeExpenseRequestWrapper {
 
         return contributors;
 
+    }
+
+    public static ArrayList<Account> getAccounts(@NonNull ContentResolver contentResolver, Boolean active){
+        ArrayList<Account> accounts = new ArrayList<>();
+        Cursor cursor = null;
+
+        try{
+            String selection = String.format("%1$s=?", IncomeExpenseContract.AccountEntry.COLUMN_CLOSE);
+            String[] selectionArgs = new String[] { active == true ? "0" : "1"  };
+            String sortOrder = String.format("%1$s ASC", IncomeExpenseContract.AccountEntry.COLUMN_NAME);
+            cursor = contentResolver.query(IncomeExpenseContract.AccountEntry.CONTENT_URI, null, selection, selectionArgs,sortOrder);
+
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                Long id = cursor.getLong( cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_ID));
+                String name = cursor.getString(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_NAME));
+                String currency = cursor.getString( cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY) );
+                Integer close = cursor.getInt(cursor.getColumnIndex(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE));
+
+                accounts.add(Account.create(id, name,currency, new Boolean( close == 0 ? "false" : "true")   ,null, null));
+            }
+
+
+        }finally{
+            if(null != cursor){
+                cursor.close();
+            }
+        }
+        Log.d(LOG_TAG, String.format("%1$d accounts extracted", accounts.size()));
+        return accounts;
     }
 
 

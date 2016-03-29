@@ -105,6 +105,7 @@ public class AccountRepositorySynchronizer {
                 ContentValues accountValues = new ContentValues();
                 accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_NAME, itemToBeSave.getName());
                 accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY, itemToBeSave.getCurrency());
+                accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE, itemToBeSave.getIsClose());
 
                 operations.add(
                         ContentProviderOperation.newInsert(mItemUri)
@@ -178,6 +179,7 @@ public class AccountRepositorySynchronizer {
                 ContentValues accountValues = new ContentValues();
                 accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_NAME, itemToBeSave.getName());
                 accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CURRENCY, itemToBeSave.getCurrency());
+                accountValues.put(IncomeExpenseContract.AccountEntry.COLUMN_CLOSE, itemToBeSave.getIsClose());
 
                 operations.add(
                         ContentProviderOperation.newUpdate(mItemUri)

@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gagnon.mario.mr.incexp.app.R;
+import com.gagnon.mario.mr.incexp.app.account.Account;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +25,21 @@ public class TransactionFragment extends Fragment {
 
     private ViewPager mViewPager;
     private TransactionFragment.SectionsPagerAdapter  mAdapter;
-
+    private List<Account> mAccounts;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        Bundle bundle = getArguments();
+        if(null != bundle){
+            mAccounts = (List<Account>) bundle.getSerializable("accounts");
+        }
+        if(mAccounts == null){
+            mAccounts = new ArrayList<>();
+        }
+
+
         /**
          *Inflate tab_layout and setup Views.
          */
@@ -58,7 +69,12 @@ public class TransactionFragment extends Fragment {
 
     private void setupViewPager(){
 
-        mAdapter.addFrag(new OneFragment(), "ONE");
+        mAdapter.addFrag(new DashboardFragment(), "DashBoard");
+
+        for(Account account: mAccounts){
+            mAdapter.addFrag(new DashboardFragment(), account.getName());
+        }
+
         mViewPager.setAdapter(mAdapter);
     }
 

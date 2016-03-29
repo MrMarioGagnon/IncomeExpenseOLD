@@ -20,6 +20,7 @@
     <string name="label_contributors">Contributors :</string>
     <string name="label_group">Group :</string>
     <string name="label_categories">Categories :</string>
+    <string name="label_close">Close :</string>
 
     <string name="hint_account_name">Enter account name</string>
     <string name="hint_contributor_name">Enter contributor name</string>
@@ -99,5 +100,8 @@
     <string name="category_group_home">Home</string>
     <string name="category_group_personal">Personal</string>
     <string name="category_group_vacation">Vacation</string>
+
+    <string name="account_active">Account Active</string>
+    <string name="account_close">Account Close</string>
 
 </resources>

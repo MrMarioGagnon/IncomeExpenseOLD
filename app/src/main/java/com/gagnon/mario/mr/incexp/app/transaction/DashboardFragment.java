@@ -12,9 +12,9 @@ import com.gagnon.mario.mr.incexp.app.R;
 /**
  * Created by mario on 2/1/2016.
  */
-public class OneFragment extends Fragment {
+public class DashboardFragment extends Fragment {
 
-    public OneFragment() {
+    public DashboardFragment() {
         // Required empty public constructor
     }
 
@@ -29,11 +29,16 @@ public class OneFragment extends Fragment {
         // Inflate the layout for this fragment
         View x = inflater.inflate(R.layout.main_fragment, container, false);
 
-        TextView textView = (TextView)x.findViewById(R.id.section_label);
-        if(null != textView){
-            textView.setText("ONE");
+        Bundle bundle = getArguments();
+        String title="";
+        if(null != bundle){
+            title = bundle.getString("tag");
         }
 
+        TextView textView = (TextView)x.findViewById(R.id.section_label);
+        if(null != textView){
+            textView.setText(title);
+        }
 
         return x;
     }

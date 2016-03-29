@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.gagnon.mario.mr.incexp.app.R;
@@ -67,6 +68,7 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
     private TextView mTextViewValidationErrorMessage;
     private Spinner mSpinnerCurrency;
     private View.OnClickListener mOnButtonClickListener;
+    private View.OnClickListener mOnSwitchClickListener;
     private View.OnClickListener mOnContributorImageButtonClickListener;
     private View.OnClickListener mOnCategoryImageButtonClickListener;
     private TextWatcher mOnTextChangeListener;
@@ -82,6 +84,7 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
     private MultipleChoiceEventHandler mCategoryMultipleChoiceEventHandler;
     private boolean[] mSelectedCategory;
     private TextView mTextViewCategories;
+    private Switch mSwitchClose;
 
 
     private List<ItemStateChangeListener> mListeners;
@@ -119,6 +122,18 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
             }
         };
 
+        mOnSwitchClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Switch s = (Switch)v;
+
+                s.setText(s.isChecked() ? getString(R.string.account_close) : getString(R.string.account_active));
+
+                mButtonSave.setEnabled(true);
+            }
+        };
+
         mOnButtonClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,6 +153,7 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
                         mAccount.setName(mEditTextName.getText().toString());
                         mAccount.setCurrency((String) mSpinnerCurrency
                                 .getSelectedItem());
+                        mAccount.setIsClose( mSwitchClose.isChecked()  );
 
                         // if not null, Contributors Dialog Box was call
                         if (mSelectedContributor != null) {
@@ -298,6 +314,8 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
 
         mTextViewCategories = (TextView) rootView.findViewById(R.id.textview_categories);
 
+        mSwitchClose = (Switch) rootView.findViewById(R.id.switch_close);
+
         if (null == savedInstanceState) {
 
             mEditTextName.setText(mAccount.getName());
@@ -315,6 +333,10 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
             mTextViewCategories.setText(mAccount.getCategoriesForDisplay());
 
             mButtonSave.setEnabled(false);
+
+            mSwitchClose.setChecked(mAccount.getIsClose());
+            mSwitchClose.setText(mSwitchClose.isChecked() ? getString(R.string.account_close) : getString(R.string.account_active));
+
 
         } else {
             if (savedInstanceState.containsKey(KEY_SAVE_INSTANCE_STATE_BUTTON_SAVE_STATE)) {
@@ -339,6 +361,7 @@ public class AccountEditorFragment extends Fragment implements ItemStateChangeHa
         mTextViewContributors.addTextChangedListener(mOnTextChangeListener);
         mTextViewCategories.addTextChangedListener(mOnTextChangeListener);
         mSpinnerCurrency.setOnItemSelectedListener(mOnItemSelectedListener);
+        mSwitchClose.setOnClickListener(mOnSwitchClickListener);
 
     }
 

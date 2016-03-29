@@ -85,7 +85,11 @@ public class Account extends ObjectBase implements Serializable, Comparable<Acco
     }
 
     public void setIsClose(Boolean isClose) {
-        mIsClose = isClose;
+
+        if(!mIsClose.equals(isClose)) {
+            mDirty = true;
+            mIsClose = isClose;
+        }
     }
 
     @Override
