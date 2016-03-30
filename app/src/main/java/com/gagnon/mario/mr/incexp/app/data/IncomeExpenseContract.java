@@ -40,13 +40,16 @@ public class IncomeExpenseContract {
 
         public static final String COLUMN_ID = _ID;
         public static final String COLUMN_ACCOUNT_ID = "accountId";
+        public static final String COLUMN_ACOUNT_NAME = String.format("%1$s.%2$s", AccountEntry.TABLE_NAME, AccountEntry.COLUMN_NAME);
         public static final String COLUMN_CATEGORY_ID = "categoryId";
+        public static final String COLUMN_CATEGORY_NAME = String.format("%1$s.%2$s", CategoryEntry.TABLE_NAME, CategoryEntry.COLUMN_NAME);
         public static final String COLUMN_TYPE = "type";
         public static final String COLUMN_DATE = "date";
         public static final String COLUMN_AMOUNT = "amount";
         public static final String COLUMN_CURRENCY = "currency";
         public static final String COLUMN_EXCHANGE_RATE = "exchangeRate";
         public static final String COLUMN_PAYMENT_METHOD_ID = "paymentMethodId";
+        public static final String COLUMN_PAYMENT_METHOD_NAME = String.format("%1$s.%2$s", PaymentMethodEntry.TABLE_NAME, PaymentMethodEntry.COLUMN_NAME);
         public static final String COLUMN_NOTE = "note";
         public static final String COLUMN_IMAGE_PATH = "imagePath";
 

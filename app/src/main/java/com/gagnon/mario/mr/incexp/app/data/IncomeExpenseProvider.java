@@ -38,6 +38,7 @@ public class IncomeExpenseProvider extends ContentProvider {
     private static final SQLiteQueryBuilder mAccountContributorQueryBuilder;
     private static final SQLiteQueryBuilder mPaymentMethodContributorQueryBuilder;
     private static final SQLiteQueryBuilder mAccountCategoryQueryBuilder;
+    private static final SQLiteQueryBuilder mTransactionQueryBuilder;
 
     private static final String sCategoryIdSelection =
             IncomeExpenseContract.CategoryEntry.TABLE_NAME +
@@ -91,6 +92,14 @@ public class IncomeExpenseProvider extends ContentProvider {
                         "." + IncomeExpenseContract.AccountCategoryEntry.COLUMN_CATEGORY_ID +
                         "=" + IncomeExpenseContract.CategoryEntry.TABLE_NAME +
                         "." + IncomeExpenseContract.CategoryEntry.COLUMN_ID);
+
+        mTransactionQueryBuilder = new SQLiteQueryBuilder();
+        mTransactionQueryBuilder.setTables(
+                IncomeExpenseContract.TransactionEntry.TABLE_NAME +
+                        " INNER JOIN " + IncomeExpenseContract.AccountEntry.TABLE_NAME + " ON " + IncomeExpenseContract.TransactionEntry.TABLE_NAME + "." + IncomeExpenseContract.TransactionEntry.COLUMN_ACCOUNT_ID + "=" + IncomeExpenseContract.AccountEntry.TABLE_NAME + "." + IncomeExpenseContract.AccountEntry.COLUMN_ID +
+                        " INNER JOIN " + IncomeExpenseContract.CategoryEntry.TABLE_NAME + " ON " + IncomeExpenseContract.TransactionEntry.TABLE_NAME + "." + IncomeExpenseContract.TransactionEntry.COLUMN_CATEGORY_ID + "=" + IncomeExpenseContract.CategoryEntry.TABLE_NAME + "." + IncomeExpenseContract.CategoryEntry.COLUMN_ID +
+                        " INNER JOIN " + IncomeExpenseContract.PaymentMethodEntry.TABLE_NAME + " ON " + IncomeExpenseContract.TransactionEntry.TABLE_NAME + "." + IncomeExpenseContract.TransactionEntry.COLUMN_PAYMENT_METHOD_ID + "=" + IncomeExpenseContract.PaymentMethodEntry.TABLE_NAME + "." + IncomeExpenseContract.PaymentMethodEntry.COLUMN_ID
+        );
 
     }
 
@@ -282,14 +291,8 @@ public class IncomeExpenseProvider extends ContentProvider {
         selection = sTransactionIdSelection;
         selectionArgs = new String[]{String.valueOf(id)};
 
-        return mOpenHelper.getReadableDatabase().query(IncomeExpenseContract.TransactionEntry.TABLE_NAME,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null
-        );
+        return getTransaction(projection, selection, selectionArgs);
+
     }
 
     @Override
@@ -321,15 +324,7 @@ public class IncomeExpenseProvider extends ContentProvider {
                 break;
             }
             case TRANSACTION: {
-                retCursor = mOpenHelper.getReadableDatabase().query(
-                        IncomeExpenseContract.TransactionEntry.TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder
-                );
+                retCursor = getTransaction(projection, selection, selectionArgs);
                 break;
             }
             case TRANSACTION_WITH_ID: {
@@ -803,6 +798,17 @@ public class IncomeExpenseProvider extends ContentProvider {
                 null,
                 null,
                 null);
+    }
+
+    public Cursor getTransaction(String[] projection, String selection, String[] selectionArgs){
+        return mTransactionQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null);
+
     }
 
 }

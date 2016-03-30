@@ -32,9 +32,7 @@ import com.gagnon.mario.mr.incexp.app.helper.Utility;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethod;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodEditorActivity;
 import com.gagnon.mario.mr.incexp.app.payment_method.PaymentMethodFragment;
-import com.gagnon.mario.mr.incexp.app.transaction.TransactionFragment;
-
-import java.util.ArrayList;
+import com.gagnon.mario.mr.incexp.app.transaction.TransactionContainerFragment;
 
 public class MainActivity extends AppCompatActivity implements ContributorFragment.OnItemSelectedListener,
         AccountFragment.OnItemSelectedListener,
@@ -72,15 +70,15 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
         /**
          * Lets inflate the very first fragment
-         * Here , we are inflating the TransactionFragment as the first Fragment
+         * Here , we are inflating the TransactionContainerFragment as the first Fragment
          */
 
         mFragmentManager = getSupportFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
-        //mFragmentTransaction.replace(R.id.containerView, new TransactionFragment(), "transaction").commit();
+        //mFragmentTransaction.replace(R.id.containerView, new TransactionContainerFragment(), "transaction").commit();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //toolbar.setTitle("Transaction");
+        toolbar.setTitle("Income Expense");
 
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -126,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
                     FragmentTransaction xfragmentTransaction = mFragmentManager.beginTransaction();
 
-                    TransactionFragment tf = new TransactionFragment();
+                    TransactionContainerFragment tf = new TransactionContainerFragment();
                     Bundle bundle = new Bundle();
                     bundle.putSerializable( "accounts", IncomeExpenseRequestWrapper.getAccounts(getContentResolver(), true ));
                     tf.setArguments(bundle);
@@ -172,8 +170,8 @@ public class MainActivity extends AppCompatActivity implements ContributorFragme
 
                     if (null != f && f.isVisible()) {
 
-                        if (f instanceof TransactionFragment) {
-                            Snackbar.make(view, ((TransactionFragment) f).GetCurrentFragment(), Snackbar.LENGTH_LONG)
+                        if (f instanceof TransactionContainerFragment) {
+                            Snackbar.make(view, ((TransactionContainerFragment) f).GetCurrentFragment(), Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
 
                         } else {
