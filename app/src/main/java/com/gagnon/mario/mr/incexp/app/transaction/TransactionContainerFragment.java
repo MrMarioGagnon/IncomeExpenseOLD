@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import java.util.List;
 
 public class TransactionContainerFragment extends Fragment {
 
+    private static final String LOG_TAG = TransactionContainerFragment.class.getSimpleName();
 
     private ViewPager mViewPager;
     private TransactionContainerFragment.SectionsPagerAdapter  mAdapter;
@@ -73,6 +75,7 @@ public class TransactionContainerFragment extends Fragment {
 
         for(Account account: mAccounts){
 
+            Log.d(LOG_TAG, account.getId().toString());
             TransactionFragment tf = new TransactionFragment();
             Bundle bundle = new Bundle();
             bundle.putLong("AccountId", account.getId());
@@ -107,7 +110,12 @@ public class TransactionContainerFragment extends Fragment {
         }
 
         public void addFrag(Fragment fragment, String title){
-            Bundle args = new Bundle();
+            Bundle args;
+            args = fragment.getArguments();
+            if(args == null){
+                args = new Bundle();
+            }
+
             args.putString("tag", title);
             fragment.setArguments(args);
             mFragmentList.add(fragment);

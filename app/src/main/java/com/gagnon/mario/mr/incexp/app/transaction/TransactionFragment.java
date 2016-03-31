@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,6 +75,7 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
             throw new NullPointerException("Bundle");
         }
         mAccountId = bundle.getLong("AccountId");
+        Log.d(LOG_TAG, "In create view " + mAccountId.toString());
 
         mTransactionAdapter = new TransactionAdapter(getActivity(), null, 0);
 
@@ -165,8 +167,8 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
         return new CursorLoader(getActivity(),
                 transactionUri,
                 TRANSACTION_COLUMNS,
-                null,
-                null,
+                selection,
+                selectionArgs,
                 sortOrder);
     }
 
@@ -185,8 +187,6 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
     public void onLoaderReset(Loader<Cursor> loader) {
         mTransactionAdapter.swapCursor(null);
     }
-
-    // endregion LoaderManager.LoaderCallbacks Method
 
     /**
      * A callback interface that all activities containing this fragment must
