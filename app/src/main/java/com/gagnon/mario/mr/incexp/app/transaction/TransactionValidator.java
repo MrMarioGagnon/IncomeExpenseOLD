@@ -20,15 +20,13 @@ import java.util.Map;
  */
 public class TransactionValidator implements ObjectValidator {
 
-    private final List<String> mNames;
     private final Map<Integer, String> mValidationMessages;
 
-    public TransactionValidator(@NonNull List<String> names, @NonNull Map<Integer, String> validationMessages) {
-        mNames = names;
+    public TransactionValidator(@NonNull Map<Integer, String> validationMessages) {
         mValidationMessages = validationMessages;
     }
 
-    public static TransactionValidator create(Context context, List<String> names) {
+    public static TransactionValidator create(Context context) {
 
         Map<Integer, String> messages = new HashMap<>();
         messages.put(R.string.validation_name_mandatory, context.getString(R.string.validation_name_mandatory));
@@ -37,43 +35,22 @@ public class TransactionValidator implements ObjectValidator {
         messages.put(R.string.validation_contributors_mandatory, context.getString(R.string.validation_contributors_mandatory));
         messages.put(R.string.validation_categories_mandatory, context.getString(R.string.validation_categories_mandatory));
 
-        return new TransactionValidator(names, messages);
-    }
-
-    private boolean isNameExists(String name) {
-
-        return mNames.contains(name.toUpperCase());
-
+        return new TransactionValidator(messages);
     }
 
     public ValidationStatus Validate(@NonNull ObjectBase objectToValidate){
 
         List<String> messages = new ArrayList<>();
 
-        if (!(objectToValidate instanceof Account)) {
+        if (!(objectToValidate instanceof Transaction)) {
             return ValidationStatus.create("Wrong object type.");
         }
 
-        Account account = (Account) objectToValidate;
-        String name = account.getName().trim();
-        String currency = account.getCurrency().trim();
-
-        if (name.length() == 0) {
-            messages.add(mValidationMessages.get(R.string.validation_name_mandatory));
-        } else if (isNameExists(name)) {
-            messages.add(mValidationMessages.get(R.string.validation_name_already_exists));
-        }
+        Transaction transaction = (Transaction) objectToValidate;
+        String currency = transaction.getCurrency().trim();
 
         if (currency.length() == 0) {
             messages.add(mValidationMessages.get(R.string.validation_currency_mandatory));
-        }
-
-        if (account.getContributors().size() == 0) {
-            messages.add((mValidationMessages.get(R.string.validation_contributors_mandatory)));
-        }
-
-        if (account.getCategories().size() == 0) {
-            messages.add((mValidationMessages.get(R.string.validation_categories_mandatory)));
         }
 
         return ValidationStatus.create(Tools.join(messages, "\n"));
