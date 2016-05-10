@@ -297,10 +297,14 @@ public class TransactionEditorFragment extends Fragment implements ItemStateChan
         Bundle arguments = getArguments();
         if (arguments != null) {
             mTransaction = (Transaction) arguments.getSerializable("item");
-            mAccounts = (List<Account>) arguments.getSerializable("accounts");
-            mCategories = (List<Category>) arguments.getSerializable("categories");
-            mCurrencies = (List<String>) arguments.getSerializable("currencies");
-            mPaymentMethods = (List<PaymentMethod>) arguments.getSerializable("paymentmethods");
+            //mAccounts = (List<Account>) arguments.getSerializable("accounts");
+            mAccounts = new ArrayList<>();
+            //mCategories = (List<Category>) arguments.getSerializable("categories");
+            mCategories = new ArrayList<>();
+            //mCurrencies = (List<String>) arguments.getSerializable("currencies");
+            mCurrencies = new ArrayList<>();
+            //mPaymentMethods = (List<PaymentMethod>) arguments.getSerializable("paymentmethods");
+            mPaymentMethods = new ArrayList<>();
         } else {
             mTransaction = Transaction.createNew();
             mAccounts = new ArrayList<>();
@@ -340,7 +344,7 @@ public class TransactionEditorFragment extends Fragment implements ItemStateChan
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.account_editor_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.transaction_editor_fragment, container, false);
 
         mTextViewValidationErrorMessage = (TextView) rootView.findViewById(R.id.textViewValidationErrorMessage);
 
